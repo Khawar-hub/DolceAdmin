@@ -1,0 +1,17 @@
+@import "../../theme/colorsConfig.scss";
+
+.authPage {
+  background-image: linear-gradient(to bottom right, #f2f2f2 30%, #543f2d 70%);
+
+  .authHeading {
+    font-size: 40px;
+    letter-spacing: 10px;
+    color: #543f2d;
+    font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+    text-shadow: 5px 5px 3px rgb(212, 212, 212);
+  }
+
+  .logoTitle:hover {
+    color: black;
+  }
+}

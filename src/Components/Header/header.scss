@@ -1,0 +1,30 @@
+@import "../../theme/colorsConfig.scss";
+
+.header-box {
+  display: flex;
+  align-items: center;
+  background-color: $primary;
+  height: 60px;
+  width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 0px 20px;
+
+  .header-title-btn {
+    display: flex;
+    align-items: center;
+  }
+
+  .header-title {
+    color: white;
+    text-transform: uppercase;
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+  }
+
+  .header-avatar {
+    margin-left: auto;
+    cursor: pointer;
+  }
+}

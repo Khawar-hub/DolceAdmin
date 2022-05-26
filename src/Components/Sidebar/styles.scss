@@ -1,0 +1,85 @@
+@import "../../theme//colorsConfig.scss";
+
+.sidebar {
+  height: 100%;
+  overflow: hidden;
+  display: grid;
+  transition: width 200ms;
+  grid-template-columns: 1fr;
+  grid-template-rows: 100px 1fr auto;
+  grid-template-areas:
+    "logo-box"
+    "link-box"
+    "toggle-btn";
+
+  .logo-box {
+    grid-area: logo-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .logo-heading {
+      overflow: hidden;
+    }
+  }
+  .logo-img{
+    height: 150px;
+    width: 200px;
+    margin-top: 50px;
+  }
+  
+
+  .links-box {
+    overflow-y: auto;
+    grid-area: link-box;
+    margin-top: 40px;
+  }
+
+  .drawer-toggle-btn {
+    grid-area: toggle-btn;
+    & > button {
+      border-radius: 0px;
+      font-size: 14;
+      padding: 13px 0;
+    }
+  }
+
+  .links-box::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .links-box::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  .links-box::-webkit-scrollbar-thumb {
+    background-color: $primary;
+    &:hover {
+      background-color: #555;
+    }
+  }
+
+  .navLink {
+    color: black;
+    text-decoration: none;
+    .list-item.Mui-selected {
+      border-right: 3px solid $primary;
+      background-color: $selected-sidebar;
+      .MuiListItemText-root {
+        color: $primary;
+      }
+    }
+
+    .list-item {
+      .MuiListItemText-root {
+        .MuiTypography-root {
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+      }
+      .MuiListItemText-secondary {
+        font-style: italic;
+      }
+    }
+  }
+
+}

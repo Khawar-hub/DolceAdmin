@@ -1,0 +1,46 @@
+@import "./theme/colorsConfig.scss";
+
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&display=swap");
+
+* {
+  // font-family: "Poppins", sans-serif !important;
+  font-family: "Nunito", sans-serif !important;
+  font-weight: 400;
+}
+
+body {
+  //  sidebar selected menu
+  .ant-menu:not(.ant-menu-horizontal) .ant-menu-item-selected {
+    background-color: #d6def0;
+  }
+
+  // transition
+  .my-node-enter {
+    transform: translate3d(100%, 0, 0);
+    opacity: 0;
+  }
+  .my-node-enter-active {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    transition: all 300ms;
+  }
+  .my-node-exit {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+  .my-node-exit-active {
+    opacity: 0;
+    transform: translate3d(-100%, 0, 0);
+    transition: all 300ms;
+  }
+}
+
+.ant-layout-sider-light .ant-layout-sider-trigger {
+  background-color: $primary;
+  color: white;
+}
+
+.ant-tooltip-inner > * {
+  color: rgb(255, 255, 255) !important;
+  font-weight: 300;
+}
