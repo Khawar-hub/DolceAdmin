@@ -10,6 +10,7 @@ import LoginIcon from "@mui/icons-material/Login";
 import "./login.scss";
 import { useSnackbar } from "notistack";
 import { projectName } from "../../theme/themeConfig";
+import { authSignIn } from "../../Firebase/firebase";
 
 const LoginSchema = Yup.object().shape({
   email: Yup.string().email("Invalid Email").required("Required"),
@@ -35,13 +36,8 @@ const Login = () => {
   };
 
   const handleLogin = async (values, setSubmitting) => {
-    console.log(values);
-    setTimeout(() => {
-      dispatch(userLogin(values));
-      navigate("/admin/statistics");
-      notification("Logged in.");
-      setSubmitting(false);
-    }, 1500);
+    authSignIn(values.email, values.password, dispatch, navigate, notification);
+    setSubmitting(false);
   };
 
   return (
