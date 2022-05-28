@@ -280,6 +280,7 @@ const ref = firebase.firestore().collection("Managers");
         getUsers={getUsers}
         editUser={editUser}
         edit={edit}
+      
       />
       </Box>
     );
