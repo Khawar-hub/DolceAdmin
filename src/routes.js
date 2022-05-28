@@ -1,9 +1,10 @@
-import { BarChart, Dashboard,Home,Add,Settings } from "@mui/icons-material";
+import { BarChart, Dashboard,Home,Add,Settings,ManageAccounts } from "@mui/icons-material";
 import Stats from "./Pages/Stats/Stats";
 import Users from "./Pages/Users/Users";
 import Homes from './Pages/Home/Home'
 import Organization from './Pages/Orgranization/Organization'
 import Setting from './Pages/Settings/Settings'
+import Managers from './Pages/Managers/Managers'
 export const routes = [
   {
     path: "/admin/home",
@@ -16,6 +17,12 @@ export const routes = [
     name: "Add Organization",
     icon: () => <Add />,
     component: <Organization />,
+  },
+  {
+    path: "/admin/managers",
+    name: "Managers",
+    icon: () => <ManageAccounts />,
+    component: <Managers />,
   },
   
   {
