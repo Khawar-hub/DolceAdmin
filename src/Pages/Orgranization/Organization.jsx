@@ -29,22 +29,98 @@ import {
     
     TablePagination,
   } from "@mui/material";
+  import { cloneDeep } from "lodash";
+  import { firebase } from "../../Firebase/config";
+  import { useSnackbar } from "notistack";
   import dayjs from "dayjs";
   import "./styles.scss";
   import { KeyboardArrowRight, KeyboardArrowDown } from "@mui/icons-material";
-  const AddBusinessUser = lazy(() =>
+  const AddOrganiztion = lazy(() =>
   import("../../Components/AddNewBusinessUser/AddNewBusinessUser")
 );
+
+const ref = firebase.firestore().collection("Managers");
   const Stats = () => {
+    const { enqueueSnackbar: notify } = useSnackbar();
+      const [search, setSearch] = useState([]);
+    const [allFilteredData, setAllFilteredData] = useState([]);
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
     const [addUserDialog, setAddUserDialog] = useState(false);
     const [editUser, setEditUser] = useState(null);
     const [edit, setEdit] = useState(false);
-    const user=[{name:'asd',email:'asd',phone:'123',Gender:'asd',Age:'sd',username:'asd',isBlocked:false}]
+    const[organiztions,setOrganization]=useState([])
+    const [searchValue, setSearchValue] = useState("");
+    useEffect(() => {
+      let arr = handleSearch(searchValue);
+      setSearch(arr);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [allFilteredData]);
+    useEffect(()=>{
+       getUsers()
+    
+    },[organiztions])
     const handleUserDialogClose = () => {
       setAddUserDialog(false);
       setEdit(false);
       setEditUser(null);
     };
+    const getUsers=async()=>{
+      try {
+        const allDocs = await ref.get();
+        let arr = [];
+        allDocs.forEach((doc) => arr.push({ ...doc.data(), _id: doc.id }));
+        setOrganization(arr)
+        setAllFilteredData(arr)
+       
+      } catch (error) {
+        console.log(error.message);
+      }
+    }
+    const handleDelete = async (id, name = "") => {
+     
+      try {
+       
+          await ref
+            .doc(id)
+            .delete()
+            .then(() => {
+              notify(`${name} deleted.`);
+              getUsers();
+            });
+          
+      } catch (error) {
+        notify(error.message, { variant: "error" });
+        console.log(error.message);
+      } finally {
+        
+      }
+    };
+    const handleSearch = (value = "") => {
+      if (value !== "") {
+        setPage(0);
+      }
+      value = value.trim().toLowerCase();
+      let arr = cloneDeep(allFilteredData);
+      arr = arr.filter(
+        (item) =>
+          item?.name?.toLowerCase().includes(value) ||
+          item?.email?.toLowerCase().includes(value)
+      );
+      setSearch(arr);
+      setSearchValue(value);
+      return arr;
+    };
+    const handlePageChange = (newPage) => {
+      setPage(newPage);
+    };
+  
+    const handleChangeRowsPerPage = (event) => {
+      setRowsPerPage(parseInt(event.target.value, 10));
+      setPage(0);
+    };
+  
+  
     return (
       <Box className="stats">
         <Grid container alignItems="stretch" columnSpacing={2} rowSpacing={2}>
@@ -52,7 +128,7 @@ import {
           <Grid item xs={12}>
             <Divider textAlign="left">
               <Typography variant="h5" color="primary">
-                Add New Organiztion
+                Add New Organization
               </Typography>
             </Divider>
           </Grid>
@@ -72,23 +148,24 @@ import {
             size="small"
             label="Search by name or email"
             type="text"
+            onChange={(e) => handleSearch(e.target.value)}
           
           />
           <Box sx={{ mt: { xs: 2, sm: 0 } }}>
-            <Button
+            {/* <Button
              
               startIcon={
                <KeyboardArrowRight />
               }
             >
               Filters
-            </Button>
+            </Button> */}
             <Button
             onClick={()=>setAddUserDialog(true)}
               variant="contained"
               color="primary"
             >
-              Add User
+              Add Organization
             </Button>
           </Box>
         </Box>
@@ -105,13 +182,19 @@ import {
                   <TableCell>Phone</TableCell>
                   <TableCell>Gender</TableCell>
                   <TableCell>Age</TableCell>
-                  <TableCell>Type</TableCell>
                   <TableCell>Username</TableCell>
+                  <TableCell>Password</TableCell>
                   <TableCell>Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {user.map((user) => (
+              {(rowsPerPage > 0
+                  ? search.slice(
+                      page * rowsPerPage,
+                      page * rowsPerPage + rowsPerPage
+                    )
+                  : search
+                ).map((user) => (
                   <>
                     <TableRow
                       hover
@@ -135,46 +218,27 @@ import {
                       <TableCell>{user.phone}</TableCell>
                       <TableCell>{user.Gender}</TableCell>
                       <TableCell>{user.Age}</TableCell>
-                      <TableCell>
-                        <Chip
-                          size="small"
-                          color="success"
-                          variant={
-                            "Standard"
-                          }
-                          label={
-                          "Standard"
-                          }
-                        />
-                      </TableCell>
                       <TableCell>{user.username}</TableCell>
+                     
+                      <TableCell>{user.password}</TableCell>
                      
                       <TableCell>
                         
                           <ButtonGroup size="small" variant="outlined">
                             <Button
                               color="info"
-                             
+                             onClick={()=>{
+                               setEditUser(user)
+                               setEdit(true)
+                               setAddUserDialog(true)
+
+                             }}
                             >
                               Edit
                             </Button>
-                            {user.isBlocked ? (
-                              <Button
-                               
-                                color="warning"
-                              >
-                                Unblock
-                              </Button>
-                            ) : (
-                              <Button
-                                
-                                color="warning"
-                              >
-                                Block
-                              </Button>
-                            )}
+                           
                             <Button
-                             
+                             onClick={()=>handleDelete(user.id,user.name)}
                               color="error"
                             >
                               Delete
@@ -198,11 +262,11 @@ import {
               </TableBody>
               <TablePagination
                 rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
-                count={2}
-                rowsPerPage={2}
-                page={1}
-      
-               
+                count={allFilteredData.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={(event, newPage) => handlePageChange(newPage)}
+                onRowsPerPageChange={handleChangeRowsPerPage}
                 showFirstButton
                 showLastButton
               />
@@ -210,10 +274,10 @@ import {
           </TableContainer>
           </Grid>
         </Grid>
-        <AddBusinessUser
+        <AddOrganiztion
         open={addUserDialog}
         handleClose={handleUserDialogClose}
-       
+        getUsers={getUsers}
         editUser={editUser}
         edit={edit}
       />

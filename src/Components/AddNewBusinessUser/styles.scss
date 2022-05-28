@@ -1,0 +1,88 @@
+.details {
+    display: flex;
+    height: 70vh;
+    margin-top: 1rem;
+    padding: 1rem;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+    .profile-image {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: flex-start;
+    }
+    .cover {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: flex-end;
+    }
+    .user-image {
+      height: 300px;
+      width: 300px;
+      margin-bottom: 40px;
+      cursor: pointer;
+    }
+    .img__wrap {
+      position: relative;
+      height: 300px;
+      width: 300px;
+    }
+    .img__description_layer {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgb(1,1,8);
+      background: linear-gradient(0deg, rgba(1,1,8,1) 43%, rgba(254,254,254,0) 58%);
+      border-radius: 50%;
+      color: #fff;
+      visibility: hidden;
+      opacity: 0;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      text-align: center;
+      font-size: 12px;
+      cursor: pointer;
+
+      /* transition effect. not necessary */
+      transition: opacity 0.2s, visibility 0.2s;
+    }
+
+    .img__wrap:hover .img__description_layer {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .img__description {
+      padding-bottom: 10px;
+      transition: 0.2s;
+      transform: translateY(1em);
+    }
+
+    .img__wrap:hover .img__description {
+      transform: translateY(2);
+    }
+  }
+  .close-button{
+    font-size: xx-large;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    cursor: pointer;
+}
+.input-error{
+  color: #d32f2f;
+  font-weight: 400 !important;
+  font-size: 0.75rem !important;
+  line-height: 1.66 !important;
+  letter-spacing: 0.03333em !important;
+  text-align: left !important;
+  margin-top: 3px !important;
+  margin-right: 14px !important;
+  margin-bottom: 0 !important;
+  margin-left: 14px !important;
+}

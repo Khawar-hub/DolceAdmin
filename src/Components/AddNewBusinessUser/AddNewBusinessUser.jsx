@@ -16,14 +16,15 @@ import {
   RadioGroup,
   Typography,
   Chip,
+  Avatar
 } from "@mui/material";
 import { Formik, Form, Field } from "formik";
 import { TextField } from "formik-mui";
 import * as yup from "yup";
 import { useSnackbar } from "notistack";
 import { ADD_AUTH_USER } from "../../Shared/baseURL";
-
-const ref = firebase.firestore().collection("Users");
+import "./styles.scss";
+const ref = firebase.firestore().collection("Managers");
 
 const AddNewBusinessUser = ({
   open,
@@ -35,7 +36,11 @@ const AddNewBusinessUser = ({
   // state
   const { enqueueSnackbar: notify } = useSnackbar();
   const [preference, setPreference] = useState([]);
-
+  const [barImages, setBarImages] = React.useState({
+    logo: "",
+   
+  });
+  const hiddenFileInput = React.useRef(null);
   // validation schema
   const AddSchema = yup.object().shape({
     name: yup.string().required("Required"),
@@ -61,7 +66,7 @@ const AddNewBusinessUser = ({
     Gender: "Male",
     phone: "",
     password: "",
-    profileStatus: 0,
+  
   };
 
   const editInitialState = {
@@ -82,40 +87,40 @@ const AddNewBusinessUser = ({
   //   }
   // }, [edit, editUser]);
 
-  // const handleSubmit = async (values, setSubmitting) => {
-  //   try {
-  //     const res = await axios.post(ADD_AUTH_USER, {
-  //       email: values.email,
-  //       password: values.password,
-  //     });
-  //     if (res.status === 200) {
-  //       console.log(res.data);
-  //       const { userID } = res.data;
-  //       let data = {
-  //         ...values,
-  //         _id: userID,
-  //         isBlocked: false,
-  //         FavoriteEvents: [],
-  //         Preferences: preference,
-  //       };
-  //       delete data.password;
-  //       await ref
-  //         .doc(userID)
-  //         .set(data, { merge: true })
-  //         .then(() => {
-  //           notify("User added");
-  //           getUsers();
-  //         });
-  //     }
-  //   } catch (error) {
-  //     if (error.response) {
-  //       notify(error.response.data, { variant: "error" });
-  //     }
-  //   } finally {
-  //     setSubmitting(false);
-  //     restoreInitialState();
-  //   }
-  // };
+  const handleSubmit = async (values, setSubmitting) => {
+    try {
+      // const res = await axios.post(ADD_AUTH_USER, {
+      //   email: values.email,
+      //   password: values.password,
+      // });
+      // if (res.status === 200) {
+      //   console.log(res.data);
+      //   const { userID } = res.data;
+      const _id=firebase.firestore().collection('Random').doc().id;
+        let data = {
+          ...values,
+          id: _id,
+          
+        };
+      //   delete data.password;
+    
+        await ref
+          .doc(_id)
+          .set(data, { merge: true })
+          .then(() => {
+            notify("Manager added");
+            getUsers();
+          });
+      
+    } catch (error) {
+      if (error.response) {
+        notify(error.response.data, { variant: "error" });
+      }
+    } finally {
+      setSubmitting(false);
+      restoreInitialState();
+    }
+  };
 
   // const handleAddPreferences = (interest) => {
   //   let arr = [...preference];
@@ -127,53 +132,101 @@ const AddNewBusinessUser = ({
   //   setPreference(arr);
   // };
 
-  // const handleEditSubmit = async (values, setSubmitting) => {
-  //   try {
-  //     let data = {
-  //       ...values,
-  //       Preferences: preference,
-  //     };
-  //     console.log(data);
-  //     await ref
-  //       .doc(editUser._id)
-  //       .set(data, { merge: true })
-  //       .then(() => {
-  //         notify(`${editUser.name} updated.`);
-  //         getUsers();
-  //       });
-  //   } catch (error) {
-  //     console.log(error.message);
-  //   } finally {
-  //     setSubmitting(false);
-  //     restoreInitialState();
-  //   }
-  // };
+  const handleEditSubmit = async (values, setSubmitting) => {
+    try {
+      // let data = {
+      //   ...values,
+      //   Preferences: preference,
+      // };
+      // console.log(data);
+      await ref
+        .doc(editUser.id)
+        .set(values, { merge: true })
+        .then(() => {
+          notify(`${editUser.name} updated.`);
+          getUsers();
+        });
+    } catch (error) {
+      console.log(error.message);
+    } finally {
+      setSubmitting(false);
+      restoreInitialState();
+    }
+  };
 
   const restoreInitialState = () => {
     handleClose();
     // setPreference([]);
   };
+  const handleClick = () => {
+    hiddenFileInput.current.click();
+  };
+  const handleChange = (event) => {
+    const file = event.target.files[0];
+    const name = event.target.name;
+    const reader = new FileReader();
+
+    reader.addEventListener(
+      "load",
+      function () {
+        // convert image file to base64 string
+        if (file.type === "image/png" || file.type === "image/jpeg") {
+        
+          setBarImages({ logo:reader.result });
+        } else {
+          alert(
+            "Error: Please a insert valid image file with following extensions .jpeg .png"
+          );
+        }
+      },
+      false
+    );
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  };
 
   return (
     <Dialog maxWidth="md" fullWidth open={open} onClose={handleClose}>
       <DialogTitle>
-        {edit ? `Edit ${editUser.name}` : "Add Business User"}
+        {edit ? `Edit ${editUser.name}` : "Add new Organization"}
       </DialogTitle>
       <DialogContent>
         <Formik
           initialValues={edit ? editInitialState : initialState}
           onSubmit={(values, { setSubmitting }) => {
-            // if (edit) {
-            //   handleEditSubmit(values, setSubmitting);
-            // } else {
-            //   handleSubmit(values, setSubmitting);
-            // }
+            if (edit) {
+              handleEditSubmit(values, setSubmitting);
+            } else {
+              handleSubmit(values, setSubmitting);
+            }
           }}
           validationSchema={AddSchema}
         >
           {({ isSubmitting, submitForm, values, setFieldValue }) => (
             <Form>
               <Grid container sx={{ mt: 2 }} spacing={2}>
+              <Grid item xs={12} className="profile-image">
+                  <div className="img__wrap" onClick={handleClick}>
+                    <input
+                      accept="image/*"
+                      id="contained-button-file"
+                      name="logo"
+                      type="file"
+                      ref={hiddenFileInput}
+                      onChange={handleChange}
+                      style={{ display: "none" }}
+                    />
+                    <Avatar
+                      src={barImages.logo}
+                      alt="log"
+                      className="user-image"
+                    />
+                    <div class="img__description_layer">
+                      <p class="img__description">Add logo</p>
+                    </div>
+                  </div>
+                </Grid>
                 <Grid item xs={12} md={6}>
                   <Field
                     component={TextField}
@@ -225,7 +278,7 @@ const AddNewBusinessUser = ({
                     fullWidth
                   />
                 </Grid>
-                {!edit && (
+                {/* {!edit && (
                   <Grid item xs={12} md={6}>
                     <FormControl>
                       <FormLabel id="demo-row-radio-buttons-group-label">
@@ -255,7 +308,7 @@ const AddNewBusinessUser = ({
                       </RadioGroup>
                     </FormControl>
                   </Grid>
-                )}
+                )} */}
                 <Grid item xs={12} md={6}>
                   <FormControl>
                     <FormLabel id="demo-row-radio-buttons-group-label">
