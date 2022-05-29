@@ -59,7 +59,7 @@ const ref = firebase.firestore().collection("Managers");
     useEffect(()=>{
        getUsers()
     
-    },[organiztions])
+    },[])
     const handleUserDialogClose = () => {
       setAddUserDialog(false);
       setEdit(false);

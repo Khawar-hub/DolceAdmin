@@ -8,7 +8,7 @@ import {
 } from "@react-google-maps/api";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { SketchPicker } from 'react-color'
+import { SketchPicker } from "react-color";
 import {
   Dialog,
   DialogTitle,
@@ -24,10 +24,11 @@ import {
   RadioGroup,
   Typography,
   Chip,
-  Avatar
+  Avatar,
+  MenuItem,
 } from "@mui/material";
-import { Formik, Form, Field } from "formik";
-import { TextField,Select } from "formik-mui";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import { TextField, Select } from "formik-mui";
 import * as yup from "yup";
 import { useSnackbar } from "notistack";
 import { ADD_AUTH_USER } from "../../Shared/baseURL";
@@ -45,14 +46,14 @@ const AddNewBusinessUser = ({
   // state
   const { enqueueSnackbar: notify } = useSnackbar();
   const [address, setAddress] = useState("");
+  const [libraries] = useState(["places"]);
   const [startDate, setStartDate] = useState(new Date());
   const [startDate2, setStartDate2] = useState(new Date());
   const [preference, setPreference] = useState([]);
-  const[position,setPosition]=useState(null)
+  const [position, setPosition] = useState(null);
   const [blockPickerColor, setBlockPickerColor] = useState("#543f2d");
   const [barImages, setBarImages] = React.useState({
     logo: "",
-   
   });
   const autocompleteRef = React.useRef();
 
@@ -60,30 +61,29 @@ const AddNewBusinessUser = ({
   // validation schema
   const AddSchema = yup.object().shape({
     name: yup.string().required("Required"),
-    phone: yup.string(),
+    Phone: yup.string(),
     email: yup.string().email().required("Required"),
-    logo: yup.string().required("Required"),
+    logo: yup.mixed().required("Required"),
     Address: yup.string(),
     manager: yup.string().required("Required"),
-   StartDate:yup.string().required("Required"),
-   EndDate:yup.string().required("Required"),
-   Payment:yup.string().required("Required"),
-   color:yup.string().required("Required"),
+    StartDate: yup.string().required("Required"),
+    EndDate: yup.string().required("Required"),
+    Payment: yup.string().required("Required"),
+    color: yup.string().required("Required"),
   });
 
   // initial states
   const initialState = {
-    logo:'',
     name: "",
-    Address:"",
-    color:"",
+    Address: "",
+    color: "",
+    logo: "",
     email: "",
     manager: "",
     Phone: "",
     StartDate: new Date(),
-    EndDate:new Date(),
-    Payment:""
-  
+    EndDate: new Date(),
+    Payment: "",
   };
 
   const editInitialState = {
@@ -92,34 +92,30 @@ const AddNewBusinessUser = ({
     username: editUser?.username,
     Age: editUser?.Age,
     Gender: editUser?.Gender,
-    phone: editUser?.phone ?? "",
+    Phone: editUser?.phone ?? "",
   };
 
   useEffect(() => {
-      getManagers()
+    getManagers();
   }, []);
-  const[managers,setManagers]=useState([])
-  const getManagers=async()=>{
+  const [managers, setManagers] = useState([]);
+  const getManagers = async () => {
     try {
       const allDocs = await ref.get();
       let arr = [];
       allDocs.forEach((doc) => arr.push({ ...doc.data(), _id: doc.id }));
-      let temp=[]
-      arr.map((e)=>{
+      let temp = [];
+      arr.map((e) => {
         temp.push({
-          id:e.id,
-          name:e.name
-        })
-
-      })
-      setManagers(temp)
-      
-     
+          id: e.id,
+          name: e.name,
+        });
+      });
+      setManagers(temp);
     } catch (error) {
       console.log(error.message);
     }
-
-  }
+  };
 
   const handleSubmit = async (values, setSubmitting) => {
     try {
@@ -130,27 +126,23 @@ const AddNewBusinessUser = ({
       // if (res.status === 200) {
       //   console.log(res.data);
       //   const { userID } = res.data;
-      const _id=firebase.firestore().collection('Random').doc().id;
-        let data = {
-          ...values,
-          id: _id,
-          logo:barImages.logo,
-          color:blockPickerColor,
-          startDate:startDate,
-          EndDate:startDate2
-
-          
-        };
+      const _id = firebase.firestore().collection("Random").doc().id;
+      let data = {
+        ...values,
+        id: _id,
+        logo: barImages.logo,
+        startDate: startDate,
+        EndDate: startDate2,
+      };
       //   delete data.password;
-    
-        await ref2
-          .doc(_id)
-          .set(data, { merge: true })
-          .then(() => {
-            notify("Organization added");
-            getUsers();
-          });
-      
+
+      await ref2
+        .doc(_id)
+        .set(data, { merge: true })
+        .then(() => {
+          notify("Organization added");
+          getUsers();
+        });
     } catch (error) {
       if (error.response) {
         notify(error.response.data, { variant: "error" });
@@ -210,8 +202,7 @@ const AddNewBusinessUser = ({
       function () {
         // convert image file to base64 string
         if (file.type === "image/png" || file.type === "image/jpeg") {
-        
-          setBarImages({ logo:reader.result });
+          setBarImages({ logo: reader.result });
         } else {
           alert(
             "Error: Please a insert valid image file with following extensions .jpeg .png"
@@ -229,7 +220,7 @@ const AddNewBusinessUser = ({
   }, []);
   const onPlaceChanged = (obj) => {
     if (autocompleteRef !== null) {
-      console.log(autocompleteRef.current.getPlace())
+      console.log(autocompleteRef.current.getPlace());
       setPosition(
         obj ?? {
           lat: autocompleteRef.current.getPlace().geometry.location.lat(),
@@ -261,9 +252,13 @@ const AddNewBusinessUser = ({
           initialValues={edit ? editInitialState : initialState}
           onSubmit={(values, { setSubmitting }) => {
             if (edit) {
-              handleEditSubmit(values, setSubmitting);
+              // handleEditSubmit(values, setSubmitting);
+              console.log(values, "values");
+              setSubmitting(false);
             } else {
-              handleSubmit(values, setSubmitting);
+              // handleSubmit(values, setSubmitting);
+              console.log(values, "values");
+              setSubmitting(false);
             }
           }}
           validationSchema={AddSchema}
@@ -271,7 +266,12 @@ const AddNewBusinessUser = ({
           {({ isSubmitting, submitForm, values, setFieldValue }) => (
             <Form>
               <Grid container sx={{ mt: 2 }} spacing={2}>
-              <Grid style={{flexDirection:'row'}} item xs={8}  className="profile-image">
+                <Grid
+                  style={{ flexDirection: "row" }}
+                  item
+                  xs={6}
+                  className="profile-image"
+                >
                   <div className="img__wrap" onClick={handleClick}>
                     <input
                       accept="image/*"
@@ -279,11 +279,18 @@ const AddNewBusinessUser = ({
                       name="logo"
                       type="file"
                       ref={hiddenFileInput}
-                      onChange={handleChange}
+                      onChange={(e) => {
+                        handleChange(e);
+                        setFieldValue("logo", e.target.files[0]);
+                      }}
                       style={{ display: "none" }}
                     />
                     <Avatar
-                      style={{height:'100px',width:'100px'}}
+                      style={{
+                        height: "100px",
+                        width: "100px",
+                        cursor: "pointer",
+                      }}
                       src={barImages.logo}
                       alt="log"
                       className="user-image"
@@ -292,27 +299,34 @@ const AddNewBusinessUser = ({
                       <p class="img__description">Add logo</p>
                     </div>
                   </div>
-                  <Grid item xs={12} md={6}>
-                    {/* <Field
+                  <ErrorMessage
+                    name="logo"
+                    render={(msg) => <div className="input-error">{msg}</div>}
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  {/* <Field
                       component={TextField}
                       label="Color"
                       name="Color"
                       fullWidth
                     /> */}
-                    <SketchPicker
-                      name="color"
-                      color={blockPickerColor}
-                      onChange={(color) => {
-                        setBlockPickerColor(color.hex);
-                      }}
-                     />
-                       <div class="img__description_layer">
-                      <p class="img__description">Color</p>
-                    </div>
-
-                  </Grid>
+                  <SketchPicker
+                    name="color"
+                    color={blockPickerColor}
+                    onChange={(color) => {
+                      setBlockPickerColor(color.hex);
+                      setFieldValue("color", color.hex);
+                    }}
+                  />
+                  <div class="img__description_layer">
+                    <p class="img__description">Color</p>
+                  </div>
+                  <ErrorMessage
+                    name="color"
+                    render={(msg) => <div className="input-error">{msg}</div>}
+                  />
                 </Grid>
-             
                 <Grid item xs={12} md={6}>
                   <Field
                     component={TextField}
@@ -321,23 +335,24 @@ const AddNewBusinessUser = ({
                     fullWidth
                   />
                 </Grid>
-               
+
                 <Grid item xs={12} md={6}>
-                <LoadScript googleMapsApiKey={"AIzaSyAW5O831v7xI0OVGJufVHJiIcJgeMybNdA"} libraries={["places"]}>
-                <Autocomplete
-              onLoad={onAutoCompleteLoad}
-              onPlaceChanged={onPlaceChanged}
-            
-            >
-               <Field
-                      component={TextField}
-                      label="Address"
-                      name="Address"
-                      fullWidth
-                    />
-            </Autocomplete>
+                  <LoadScript
+                    googleMapsApiKey="AIzaSyAW5O831v7xI0OVGJufVHJiIcJgeMybNdA"
+                    libraries={libraries}
+                  >
+                    <Autocomplete
+                      onLoad={onAutoCompleteLoad}
+                      onPlaceChanged={onPlaceChanged}
+                    >
+                      <Field
+                        component={TextField}
+                        label="Address"
+                        name="Address"
+                        fullWidth
+                      />
+                    </Autocomplete>
                   </LoadScript>
-                  
                 </Grid>
                 <Grid item xs={12} md={6}>
                   <Field
@@ -347,90 +362,65 @@ const AddNewBusinessUser = ({
                     fullWidth
                   />
                 </Grid>
-                
-                 
-                
-                <Grid item xs={12} md={6}>
-                <div class="img__description_layer">
-                      <p class="img__description">Select Manager</p>
-                    </div>
-                <Field as="select" name="manager">
-                  {managers.map((item)=>{
-                    return(
-                      <option value={item.id}>{item.name}</option>
-                    )
 
-                  })}
-                
-       
-          </Field>
+                <Grid item xs={12} md={6}>
+                  <FormControl fullWidth>
+                    <Field
+                      component={Select}
+                      type="text"
+                      label="Manager"
+                      name="manager"
+                    >
+                      {managers.map((item) => (
+                        <MenuItem value={item.id} key={item.id}>
+                          {item.name}
+                        </MenuItem>
+                      ))}
+                    </Field>
+                  </FormControl>
                 </Grid>
                 <Grid item xs={12} md={6}>
                   <Field
                     component={TextField}
                     label="Phone"
                     name="Phone"
+                    type="number"
                     fullWidth
                   />
                 </Grid>
-                {/* {!edit && (
-                  <Grid item xs={12} md={6}>
-                    <FormControl>
-                      <FormLabel id="demo-row-radio-buttons-group-label">
-                        User Type
-                      </FormLabel>
-                      <RadioGroup
-                        row
-                        onChange={(e) => {
-                          setFieldValue(
-                            "profileStatus",
-                            parseInt(e.target.value)
-                          );
-                        }}
-                      >
-                        <FormControlLabel
-                          value={0}
-                          control={<Radio />}
-                          label="Standard"
-                          checked={values.profileStatus === 0}
-                        />
-                        <FormControlLabel
-                          value={1}
-                          control={<Radio />}
-                          label="Business"
-                          checked={values.profileStatus === 1}
-                        />
-                      </RadioGroup>
-                    </FormControl>
-                  </Grid>
-                )} */}
-                 <Grid item xs={12} md={6}>
-                 <FormControl>
+                <Grid item xs={12} md={6}>
+                  <FormControl>
                     <FormLabel id="demo-row-radio-buttons-group-label">
                       Subscription Start Date
                     </FormLabel>
 
-                 <DatePicker name="StartDate" selected={startDate} onChange={(date) => setStartDate(date)} />
-                 </FormControl>
-
-                 </Grid>
-                 <Grid item xs={12} md={6}>
-                 <FormControl>
+                    <DatePicker
+                      name="StartDate"
+                      selected={startDate}
+                      onChange={(date) => setStartDate(date)}
+                    />
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <FormControl>
                     <FormLabel id="demo-row-radio-buttons-group-label">
                       Subscription End Date
                     </FormLabel>
 
-                 <DatePicker name="EndDate" selected={startDate2} onChange={(date) => setStartDate2(date)} />
-                 </FormControl>
-
-                 </Grid>
+                    <DatePicker
+                      name="EndDate"
+                      selected={startDate2}
+                      onChange={(date) => setStartDate2(date)}
+                    />
+                  </FormControl>
+                </Grid>
                 <Grid item xs={12} md={6}>
                   <FormControl>
                     <FormLabel id="demo-row-radio-buttons-group-label">
                       Payment
                     </FormLabel>
                     <RadioGroup
-                    name="Payment"
+                      name="Payment"
                       row
                       onChange={(e) => setFieldValue("Payment", e.target.value)}
                     >
@@ -438,39 +428,40 @@ const AddNewBusinessUser = ({
                         value="Cash"
                         control={<Radio />}
                         label="Cash"
-                        checked={values.Gender === "Cash"}
+                        checked={values.Payment === "Cash"}
                       />
                       <FormControlLabel
                         value="Check"
                         control={<Radio />}
                         label="Check"
-                        checked={values.Gender === "Check"}
+                        checked={values.Payment === "Check"}
                       />
                       <FormControlLabel
                         value="Card"
                         control={<Radio />}
                         label="Card"
-                        checked={values.Gender === "Card"}
-                        
+                        checked={values.Payment === "Card"}
                       />
                       <FormControlLabel
                         value="Link"
                         control={<Radio />}
                         label="Link"
-                        checked={values.Gender === "Link"}
-                        
+                        checked={values.Payment === "Link"}
                       />
-                       <FormControlLabel
+                      <FormControlLabel
                         value="Bank Transfer"
                         control={<Radio />}
                         label="Bank Transfer"
-                        checked={values.Gender === "Bank Transfer"}
-                        
+                        checked={values.Payment === "Bank Transfer"}
                       />
                     </RadioGroup>
                   </FormControl>
+                  <ErrorMessage
+                    name="Payment"
+                    render={(msg) => <div className="input-error">{msg}</div>}
+                  />
                 </Grid>
-              
+
                 <Grid item xs={12}>
                   {isSubmitting && <LinearProgress />}
                 </Grid>
