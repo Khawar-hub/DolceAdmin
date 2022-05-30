@@ -53,7 +53,7 @@ const AddNewBusinessUser = ({
   const [position, setPosition] = useState(null);
   const [blockPickerColor, setBlockPickerColor] = useState("#543f2d");
   const [barImages, setBarImages] = React.useState({
-    logo: "",
+    logo: editUser?editUser?.logo:"",
   });
   const autocompleteRef = React.useRef();
 
@@ -87,12 +87,16 @@ const AddNewBusinessUser = ({
   };
 
   const editInitialState = {
-    name: editUser?.name,
-    email: editUser?.email,
-    username: editUser?.username,
-    Age: editUser?.Age,
-    Gender: editUser?.Gender,
-    Phone: editUser?.phone ?? "",
+    name:editUser?.name,
+    Address:editUser?.Address,
+    color:editUser?.color,
+    logo:editUser?.logo,
+    email:editUser?.email,
+    manager: editUser?.manager_name,
+    Phone: editUser?.Phone,
+    StartDate: new Date(),
+    EndDate: new Date(),
+    Payment: editUser?.Payment,
   };
 
   useEffect(() => {
@@ -119,13 +123,7 @@ const AddNewBusinessUser = ({
 
   const handleSubmit = async (values, setSubmitting) => {
     try {
-      // const res = await axios.post(ADD_AUTH_USER, {
-      //   email: values.email,
-      //   password: values.password,
-      // });
-      // if (res.status === 200) {
-      //   console.log(res.data);
-      //   const { userID } = res.data;
+     const dataManager= await ref.doc(values.manager).get()
       const _id = firebase.firestore().collection("Random").doc().id;
       let data = {
         ...values,
@@ -133,6 +131,7 @@ const AddNewBusinessUser = ({
         logo: barImages.logo,
         startDate: startDate,
         EndDate: startDate2,
+        manager_name:dataManager.data().name
       };
       //   delete data.password;
 
@@ -165,14 +164,15 @@ const AddNewBusinessUser = ({
 
   const handleEditSubmit = async (values, setSubmitting) => {
     try {
-      // let data = {
-      //   ...values,
-      //   Preferences: preference,
-      // };
+      const dataManager= await ref.doc(values.manager).get()
+      let data = {
+        ...values,
+       manager_name:dataManager.data().name
+      };
       // console.log(data);
-      await ref
+      await ref2
         .doc(editUser.id)
-        .set(values, { merge: true })
+        .set(data, { merge: true })
         .then(() => {
           notify(`${editUser.name} updated.`);
           getUsers();
@@ -252,13 +252,18 @@ const AddNewBusinessUser = ({
           initialValues={edit ? editInitialState : initialState}
           onSubmit={(values, { setSubmitting }) => {
             if (edit) {
-              // handleEditSubmit(values, setSubmitting);
+              handleEditSubmit(values, setSubmitting);
               console.log(values, "values");
-              setSubmitting(false);
+               setTimeout(() => {
+                setSubmitting(false);
+              }, 400);
             } else {
-              // handleSubmit(values, setSubmitting);
+              handleSubmit(values, setSubmitting);
               console.log(values, "values");
-              setSubmitting(false);
+              setTimeout(() => {
+                setSubmitting(false);
+              }, 400);
+           
             }
           }}
           validationSchema={AddSchema}
@@ -372,7 +377,7 @@ const AddNewBusinessUser = ({
                       name="manager"
                     >
                       {managers.map((item) => (
-                        <MenuItem value={item.id} key={item.id}>
+                        <MenuItem value={item.id}  key={item.id}>
                           {item.name}
                         </MenuItem>
                       ))}

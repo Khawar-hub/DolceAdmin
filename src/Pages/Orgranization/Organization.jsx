@@ -16,7 +16,7 @@ import {
     TableCell,
     TableBody,
     TextField,
-  
+  Avatar,
     ButtonGroup,
     CircularProgress,
     Collapse,
@@ -34,12 +34,13 @@ import {
   import { useSnackbar } from "notistack";
   import dayjs from "dayjs";
   import "./styles.scss";
-  import { KeyboardArrowRight, KeyboardArrowDown } from "@mui/icons-material";
+  import { KeyboardArrowRight, KeyboardArrowDown, ModeComment } from "@mui/icons-material";
   const AddOrganiztion = lazy(() =>
   import("../../Components/AddNewBusinessUser/AddNewBusinessUser")
 );
 
-const ref = firebase.firestore().collection("Managers");
+const ref = firebase.firestore().collection("Organizations");
+
   const Stats = () => {
     const { enqueueSnackbar: notify } = useSnackbar();
       const [search, setSearch] = useState([]);
@@ -59,7 +60,7 @@ const ref = firebase.firestore().collection("Managers");
     useEffect(()=>{
        getUsers()
     
-    },[])
+    },[organiztions])
     const handleUserDialogClose = () => {
       setAddUserDialog(false);
       setEdit(false);
@@ -68,8 +69,18 @@ const ref = firebase.firestore().collection("Managers");
     const getUsers=async()=>{
       try {
         const allDocs = await ref.get();
+     
         let arr = [];
-        allDocs.forEach((doc) => arr.push({ ...doc.data(), _id: doc.id }));
+        
+        allDocs.forEach(async(doc) => {
+       
+          arr.push({ 
+          ...doc.data(), 
+          _id: doc.id,
+         
+
+        
+        })});
         setOrganization(arr)
         setAllFilteredData(arr)
        
@@ -176,14 +187,16 @@ const ref = firebase.firestore().collection("Managers");
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell />
+              
+                  <TableCell >Logo</TableCell>
                   <TableCell>Name</TableCell>
                   <TableCell>Email</TableCell>
                   <TableCell>Phone</TableCell>
-                  <TableCell>Gender</TableCell>
-                  <TableCell>Age</TableCell>
-                  <TableCell>Username</TableCell>
-                  <TableCell>Password</TableCell>
+                  <TableCell>Address</TableCell>
+                  <TableCell>Color</TableCell>
+                  <TableCell>Manager</TableCell>
+                  <TableCell>Subscribtion</TableCell>
+                  <TableCell>Payment</TableCell>
                   <TableCell>Actions</TableCell>
                 </TableRow>
               </TableHead>
@@ -201,26 +214,21 @@ const ref = firebase.firestore().collection("Managers");
                       key={user._id}
                       sx={{ "& > *": { borderBottom: "unset" } }}
                     >
+                     
                       <TableCell>
-                        <IconButton>
-                         
-                            <KeyboardArrowRight />
-                          
-                        </IconButton>
-                      </TableCell>
-                      <TableCell>
-                        {/* <Box sx={{ display: "flex", alignItems: "center" }}> */}
-                        {/* <Avatar src={user.profilePic} sx={{ mr: 1 }} /> */}
+                        <Box sx={{ display: "flex", alignItems: "center" }}> 
+                        <Avatar src={user.logo} sx={{ mr: 5 }} />
                         {user.name}
-                        {/* </Box> */}
+                         </Box>
                       </TableCell>
                       <TableCell>{user.email}</TableCell>
-                      <TableCell>{user.phone}</TableCell>
-                      <TableCell>{user.Gender}</TableCell>
-                      <TableCell>{user.Age}</TableCell>
-                      <TableCell>{user.username}</TableCell>
+                      <TableCell>{user.Phone}</TableCell>
+                      <TableCell>{user.Address}</TableCell>
+                      <TableCell style={{color:user.color,backgroundColor:user.color}}>{user.color}</TableCell>
+                      <TableCell>{user.manager_name}</TableCell>
+                      <TableCell>{new Date().getDate(user.StartDate)+"/"+new Date().getMonth(user.StartDate)+'/'+new Date().getFullYear(user.StartDate)   +"-"+new Date().getDate(user.EndDate)+"/"+new Date().getMonth(user.EndDate)+'/'+new Date().getFullYear(user.EndDate) }</TableCell>
                      
-                      <TableCell>{user.password}</TableCell>
+                      <TableCell>{user.Payment}</TableCell>
                      
                       <TableCell>
                         
