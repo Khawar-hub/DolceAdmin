@@ -15,19 +15,20 @@ import {
   Radio,
   RadioGroup,
   Typography,
+  Avatar,
   Chip,
   MenuItem
 } from "@mui/material";
-import { Formik, Form, Field } from "formik";
+import { Formik, Form, Field ,ErrorMessage} from "formik";
 import { TextField ,Select} from "formik-mui";
 import * as yup from "yup";
 import { useSnackbar } from "notistack";
 import { ADD_AUTH_USER } from "../../Shared/baseURL";
 
-const ref = firebase.firestore().collection("Users");
-const ref2 = firebase.firestore().collection("Organizations");
+const ref = firebase.firestore().collection("Products");
+const ref2 = firebase.firestore().collection("Categories");
 
-const AddUser = ({
+const AddProducts = ({
   open,
   getUsers,
   handleClose,
@@ -37,45 +38,37 @@ const AddUser = ({
   // state
   const { enqueueSnackbar: notify } = useSnackbar();
   const [preference, setPreference] = useState([]);
+  const [barImages, setBarImages] = React.useState({
+    logo: editUser?editUser?.logo:"",
+  });
 
+  const hiddenFileInput = React.useRef(null);
   // validation schema
   const AddSchema = yup.object().shape({
     name: yup.string().required("Required"),
-    phone: yup.string(),
-    email: yup.string().email().required("Required"),
-    username: yup.string().required("Required"),
-    organization:yup.string().required("Required"),
-    OfficeNumber: yup.number().min(1).positive().integer().required("Required"),
-    password: edit
-      ? yup.string()
-      : yup
-          .string()
-          .required("Required")
-          .min(6, "Password must be greater than 6 characters"),
+    logo: yup.mixed().required("Required"),
+    price:yup.string().required("Required"),
+    description:yup.string().required("Required"),
+    category:yup.string().required("Required"),
   });
 
   // initial states
   const initialState = {
     name: "",
-    email: "",
-    username: "",
-     OfficeNumber:0,
-    phone: "",
-    organization:"",
-    password: "",
-    wallet:0
+   logo:"",
+   price:"",
+   description:"",
+   category:"",
   
   };
 
   const editInitialState = {
     name: editUser?.name,
-    email: editUser?.email,
-    username: editUser?.username,
-    OfficeNumber: editUser?.OfficeNumber,
-    phone: editUser?.phone,
-    organization: editUser?.organization,
-    password:editUser?.password,
-    wallet:0
+   logo:editUser?.logo,
+   price:editUser?.price,
+   description:editUser?.description,
+   category:"",
+    
   };
   useEffect(() => {
     getManagers();
@@ -110,35 +103,43 @@ const AddUser = ({
 
   const handleSubmit = async (values, setSubmitting) => {
     try {
-      
-      const dataManager= await ref2.doc(values.organization).get()
-      await firebase.auth().createUserWithEmailAndPassword(values?.email, values?.password).then(async (res) => {
-          if(res.user){
+      const dataManager= await ref2.doc(values.category).get()
+
+      const _id=firebase.firestore().collection('Random').doc().id;
             let data={
               ...values,
-              id:res?.user?.uid,
-              orgname:dataManager.data().name,
-              isBlocked:false,
+              id:_id,
+              logo: barImages.logo,
+              catname:dataManager?.data().name
+             
             }
           
            
      
         
             await ref
-              .doc(res?.user?.uid)
+              .doc(_id)
               .set(data, { merge: true })
               .then(() => {
-                notify("User added");
+                notify("Product added");
                 setSubmitting(false);
                
               });
-          }
+              let temp=[]
+              temp.push(_id)
+              await ref2
+              .doc(values.category)
+              .set({products:temp}, { merge: true })
+              .then(() => {
+                
+                setSubmitting(false);
+               
+              });
           
           
-      }).catch((error) => {
-          notify(error.message,{variant:'error'})
-  
-      })
+          
+    
+
       
       
     } catch (error) {
@@ -175,6 +176,16 @@ const AddUser = ({
           notify(`${editUser.name} updated.`);
           getUsers();
         });
+        let temp=[]
+              temp.push(values?.category)
+              await ref2
+              .doc(editUser.id)
+              .set({products:temp}, { merge: true })
+              .then(() => {
+                
+                setSubmitting(false);
+               
+              });
     } catch (error) {
       console.log(error.message);
     } finally {
@@ -182,7 +193,32 @@ const AddUser = ({
       restoreInitialState();
     }
   };
+  const handleClick = () => {
+    hiddenFileInput.current.click();
+  };
+  const handleChange = (event) => {
+    const file = event.target.files[0];
+    const name = event.target.name;
+    const reader = new FileReader();
 
+    reader.addEventListener(
+      "load",
+      function () {
+        // convert image file to base64 string
+        if (file.type === "image/png" || file.type === "image/jpeg") {
+          setBarImages({ logo: reader.result });
+        } else {
+          alert(
+            "Error: Please a insert valid image file with following extensions .jpeg .png"
+          );
+        }
+      },
+      false
+    );
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  };
   const restoreInitialState = () => {
     handleClose();
     // setPreference([]);
@@ -191,7 +227,7 @@ const AddUser = ({
   return (
     <Dialog maxWidth="md" fullWidth open={open} onClose={handleClose}>
       <DialogTitle>
-        {edit ? `Edit ${editUser.name}` : "Add User"}
+        {edit ? `Edit ${editUser.name}` : "Add Product"}
       </DialogTitle>
       <DialogContent>
         <Formik
@@ -207,7 +243,46 @@ const AddUser = ({
         >
           {({ isSubmitting, submitForm, values, setFieldValue }) => (
             <Form>
+              
               <Grid container sx={{ mt: 2 }} spacing={2}>
+                <Grid
+                  style={{ flexDirection: "row" }}
+                  item
+                  xs={3}
+                  className="profile-image"
+                >
+                  <div className="img__wrap" onClick={handleClick}>
+                    <input
+                      accept="image/*"
+                      id="contained-button-file"
+                      name="logo"
+                      type="file"
+                      ref={hiddenFileInput}
+                      onChange={(e) => {
+                        handleChange(e);
+                        setFieldValue("logo", e.target.files[0]);
+                      }}
+                      style={{ display: "none" }}
+                    />
+                    <Avatar
+                      style={{
+                        height: "100px",
+                        width: "100px",
+                        cursor: "pointer",
+                      }}
+                      src={barImages.logo}
+                      alt="log"
+                      className="user-image"
+                    />
+                    <div class="img__description_layer">
+                      <p class="img__description">Add lmage</p>
+                    </div>
+                  </div>
+                  <ErrorMessage
+                    name="logo"
+                    render={(msg) => <div className="input-error">{msg}</div>}
+                  />
+                </Grid>
                 <Grid item xs={12} md={6}>
                   <Field
                     component={TextField}
@@ -219,20 +294,36 @@ const AddUser = ({
                 <Grid item xs={12} md={6}>
                   <Field
                     component={TextField}
-                    label="Username"
-                    name="username"
+                    label="Price"
+                    name="price"
                     fullWidth
                   />
                 </Grid>
                 <Grid item xs={12} md={6}>
                   <Field
                     component={TextField}
-                    label="Email"
-                    name="email"
+                    label="Description"
+                    name="description"
                     fullWidth
                   />
                 </Grid>
-                {!edit && (
+                <Grid item xs={12} md={6}>
+                  <FormControl fullWidth>
+                    <Field
+                      component={Select}
+                      type="text"
+                      label="Category"
+                      name="category"
+                    >
+                      {managers.map((item) => (
+                        <MenuItem value={item.id}  key={item.id}>
+                          {item.name}
+                        </MenuItem>
+                      ))}
+                    </Field>
+                  </FormControl>
+                </Grid>
+                {/* {!edit && (
                   <Grid item xs={12} md={6}>
                     <Field
                       component={TextField}
@@ -250,8 +341,8 @@ const AddUser = ({
                     type="text"
                     fullWidth
                   />
-                </Grid>
-                <Grid item xs={12} md={6}>
+                </Grid> */}
+                {/* <Grid item xs={12} md={6}>
                   <Field
                     component={TextField}
                     label="Phone"
@@ -267,9 +358,9 @@ const AddUser = ({
                     name="wallet"
                     fullWidth
                   />
-                </Grid>:null}
+                </Grid>:null} */}
                 
-                <Grid item xs={12} md={6}>
+                {/* <Grid item xs={12} md={6}>
                   <FormControl fullWidth>
                     <Field
                       component={Select}
@@ -284,7 +375,7 @@ const AddUser = ({
                       ))}
                     </Field>
                   </FormControl>
-                </Grid>
+                </Grid> */}
                 {/* {!edit && (
                   <Grid item xs={12} md={6}>
                     <FormControl>
@@ -380,4 +471,4 @@ const AddUser = ({
   );
 };
 
-export default AddUser;
+export default AddProducts;

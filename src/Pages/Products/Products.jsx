@@ -26,6 +26,7 @@ import {
     RadioGroup,
     FormLabel,
     Chip,
+    Avatar,
     
     TablePagination,
   } from "@mui/material";
@@ -35,11 +36,11 @@ import {
   import dayjs from "dayjs";
 
   import { KeyboardArrowRight, KeyboardArrowDown } from "@mui/icons-material";
-  const AddUser = lazy(() =>
-  import("../../Components/AddUser/AddUser")
+  const AddProducts = lazy(() =>
+  import("../../Components/AddProducts/AddProducts")
 );
 
-const ref = firebase.firestore().collection("Users");
+const ref = firebase.firestore().collection("Products");
   const Stats = () => {
     const { enqueueSnackbar: notify } = useSnackbar();
       const [search, setSearch] = useState([]);
@@ -119,23 +120,7 @@ const ref = firebase.firestore().collection("Users");
       setRowsPerPage(parseInt(event.target.value, 10));
       setPage(0);
     };
-    const [btnLoading, setBtnLoading] = useState("");
-    const handleBlockStatus = async (id, name, status) => {
-      setBtnLoading(id);
-      try {
-        await ref
-          .doc(id)
-          .set({ isBlocked: status }, { merge: true })
-          .then(() => {
-            notify(`${name} ${status ? "DeActivated" : "Activated"}.`);
-            getUsers();
-          });
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setBtnLoading("");
-      }
-    };
+  
   
     return (
       <Box className="stats">
@@ -144,7 +129,7 @@ const ref = firebase.firestore().collection("Users");
           <Grid item xs={12}>
             <Divider textAlign="left">
               <Typography variant="h5" color="primary">
-                Users
+               Products
               </Typography>
             </Divider>
           </Grid>
@@ -181,7 +166,7 @@ const ref = firebase.firestore().collection("Users");
               variant="contained"
               color="primary"
             >
-              Add User
+              Add Product
             </Button>
           </Box>
         </Box>
@@ -192,15 +177,11 @@ const ref = firebase.firestore().collection("Users");
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell />
+                
+                  <TableCell>lmage</TableCell>
                   <TableCell>Name</TableCell>
-                  <TableCell>Email</TableCell>
-                  <TableCell>Phone</TableCell>
-                  <TableCell>Office Number</TableCell>
-                  <TableCell>Organization</TableCell>
-                  <TableCell>Username</TableCell>
-                  <TableCell>Password</TableCell>
-                  <TableCell>Wallet</TableCell>
+                  <TableCell>Price</TableCell>
+                  <TableCell>Description</TableCell>
                   <TableCell>Actions</TableCell>
                 </TableRow>
               </TableHead>
@@ -218,32 +199,20 @@ const ref = firebase.firestore().collection("Users");
                       key={user._id}
                       sx={{ "& > *": { borderBottom: "unset" } }}
                     >
-                      <TableCell>
-                        <IconButton>
-                         
-                            <KeyboardArrowRight />
-                          
-                        </IconButton>
-                      </TableCell>
-                      <TableCell>
-                        {/* <Box sx={{ display: "flex", alignItems: "center" }}> */}
-                        {/* <Avatar src={user.profilePic} sx={{ mr: 1 }} /> */}
-                        {user.name}
-                        {/* </Box> */}
-                      </TableCell>
-                      <TableCell>{user.email}</TableCell>
-                      <TableCell>{user.phone}</TableCell>
-                      <TableCell>{user.OfficeNumber}</TableCell>
-                      <TableCell>{user.orgname}</TableCell>
-                      <TableCell>{user.username}</TableCell>
                      
-                      <TableCell>{user.password}</TableCell>
-                      <TableCell>$ {user.wallet}</TableCell>
+                     <TableCell>
+                        <Box sx={{ display: "flex", alignItems: "center" }}> 
+                        <Avatar src={user.logo} sx={{ mr: 5 }} />
+                        
+                         </Box>
+                      </TableCell>
+                      <TableCell>{user.name}</TableCell>
+                      <TableCell>{user.price}</TableCell>
+                      <TableCell>{user.description}</TableCell>
+                     
                      
                       <TableCell>
-                      {btnLoading === user.id ? (
-                          <CircularProgress size={20} />
-                        ) : (
+                        
                           <ButtonGroup size="small" variant="outlined">
                             <Button
                               color="info"
@@ -256,25 +225,6 @@ const ref = firebase.firestore().collection("Users");
                             >
                               Edit
                             </Button>
-                            {user.isBlocked ? (
-                              <Button
-                                onClick={() =>
-                                  handleBlockStatus(user.id, user.name, false)
-                                }
-                                color="warning"
-                              >
-                                Activate
-                              </Button>
-                            ) : (
-                              <Button
-                                onClick={() =>
-                                  handleBlockStatus(user.id, user.name, true)
-                                }
-                                color="warning"
-                              >
-                                DeActivate
-                              </Button>
-                            )}
                            
                             <Button
                              onClick={()=>handleDelete(user.id,user.name)}
@@ -283,19 +233,10 @@ const ref = firebase.firestore().collection("Users");
                               Delete
                             </Button>
                           </ButtonGroup>
-                        )}
+                        
                       </TableCell>
                     </TableRow>
-                    <TableRow>
-                      <TableCell
-                        colSpan={12}
-                        sx={{ paddingBottom: 0, paddingTop: 0 }}
-                      >
-                        <Collapse unmountOnExit>
-                          {/* <UserDetails user={user} /> */}
-                        </Collapse>
-                      </TableCell>
-                    </TableRow>
+                  
                   </>
                 ))}
               </TableBody>
@@ -313,7 +254,7 @@ const ref = firebase.firestore().collection("Users");
           </TableContainer>
           </Grid>
         </Grid>
-        <AddUser
+        <AddProducts
         open={addUserDialog}
         handleClose={handleUserDialogClose}
         getUsers={getUsers}
