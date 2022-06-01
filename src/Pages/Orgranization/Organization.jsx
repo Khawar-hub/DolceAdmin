@@ -218,9 +218,10 @@ const ref = firebase.firestore().collection("Organizations");
                       <TableCell>
                         <Box sx={{ display: "flex", alignItems: "center" }}> 
                         <Avatar src={user.logo} sx={{ mr: 5 }} />
-                        {user.name}
+                        
                          </Box>
                       </TableCell>
+                      <TableCell>{user.name}</TableCell>
                       <TableCell>{user.email}</TableCell>
                       <TableCell>{user.Phone}</TableCell>
                       <TableCell>{user.Address}</TableCell>
@@ -255,16 +256,7 @@ const ref = firebase.firestore().collection("Organizations");
                         
                       </TableCell>
                     </TableRow>
-                    <TableRow>
-                      <TableCell
-                        colSpan={12}
-                        sx={{ paddingBottom: 0, paddingTop: 0 }}
-                      >
-                        <Collapse unmountOnExit>
-                          {/* <UserDetails user={user} /> */}
-                        </Collapse>
-                      </TableCell>
-                    </TableRow>
+                    
                   </>
                 ))}
               </TableBody>

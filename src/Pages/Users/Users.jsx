@@ -39,7 +39,7 @@ import {
   import("../../Components/AddUser/AddUser")
 );
 
-const ref = firebase.firestore().collection("Managers");
+const ref = firebase.firestore().collection("Users");
   const Stats = () => {
     const { enqueueSnackbar: notify } = useSnackbar();
       const [search, setSearch] = useState([]);
@@ -180,8 +180,8 @@ const ref = firebase.firestore().collection("Managers");
                   <TableCell>Name</TableCell>
                   <TableCell>Email</TableCell>
                   <TableCell>Phone</TableCell>
-                  <TableCell>Gender</TableCell>
-                  <TableCell>Age</TableCell>
+                  <TableCell>Office Number</TableCell>
+                  <TableCell>Organization</TableCell>
                   <TableCell>Username</TableCell>
                   <TableCell>Password</TableCell>
                   <TableCell>Actions</TableCell>
@@ -216,8 +216,8 @@ const ref = firebase.firestore().collection("Managers");
                       </TableCell>
                       <TableCell>{user.email}</TableCell>
                       <TableCell>{user.phone}</TableCell>
-                      <TableCell>{user.Gender}</TableCell>
-                      <TableCell>{user.Age}</TableCell>
+                      <TableCell>{user.OfficeNumber}</TableCell>
+                      <TableCell>{user.orgname}</TableCell>
                       <TableCell>{user.username}</TableCell>
                      
                       <TableCell>{user.password}</TableCell>
