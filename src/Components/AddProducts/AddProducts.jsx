@@ -125,11 +125,12 @@ const AddProducts = ({
                 setSubmitting(false);
                
               });
-              let temp=[]
-              temp.push(_id)
+             
               await ref2
               .doc(values.category)
-              .set({products:temp}, { merge: true })
+              .update({
+                FavoriteBars: firebase.firestore.FieldValue.arrayUnion(_id),
+              })
               .then(() => {
                 
                 setSubmitting(false);

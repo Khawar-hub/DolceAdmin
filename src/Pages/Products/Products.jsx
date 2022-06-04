@@ -71,6 +71,7 @@ const ref = firebase.firestore().collection("Products");
         const allDocs = await ref.get();
         let arr = [];
         allDocs.forEach((doc) => arr.push({ ...doc.data(), _id: doc.id }));
+
         setManagers(arr)
         setAllFilteredData(arr)
        
@@ -182,6 +183,7 @@ const ref = firebase.firestore().collection("Products");
                   <TableCell>Name</TableCell>
                   <TableCell>Price</TableCell>
                   <TableCell>Description</TableCell>
+                  <TableCell>Category</TableCell>
                   <TableCell>Actions</TableCell>
                 </TableRow>
               </TableHead>
@@ -209,6 +211,7 @@ const ref = firebase.firestore().collection("Products");
                       <TableCell>{user.name}</TableCell>
                       <TableCell>{user.price}</TableCell>
                       <TableCell>{user.description}</TableCell>
+                      <TableCell>{user.catname}</TableCell>
                      
                      
                       <TableCell>
