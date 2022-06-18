@@ -1,5 +1,6 @@
-import { storage } from "./config";
 
+import {firebase} from './config'
+const storage =firebase.storage()
 export const multiImageUpload = async (imageFileList) => {
   let imagesUrlArray = [];
   let imageUrl = "";
@@ -18,6 +19,7 @@ export const multiImageUpload = async (imageFileList) => {
 };
 
 export const singleImageUpload = async (path, imageFile) => {
+
   const upload = await storage.ref(`/${path}/${imageFile.name}`).put(imageFile);
   const imageUrl = await upload.ref.getDownloadURL();
   return imageUrl;

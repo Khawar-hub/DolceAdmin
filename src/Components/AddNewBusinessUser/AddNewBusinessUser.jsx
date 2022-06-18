@@ -33,6 +33,7 @@ import * as yup from "yup";
 import { useSnackbar } from "notistack";
 import { ADD_AUTH_USER } from "../../Shared/baseURL";
 import "./styles.scss";
+import { singleImageUpload } from "../../Firebase/utils";
 const ref = firebase.firestore().collection("Managers");
 const ref2 = firebase.firestore().collection("Organizations");
 
@@ -92,7 +93,7 @@ const AddNewBusinessUser = ({
     color:editUser?.color,
     logo:editUser?.logo,
     email:editUser?.email,
-    manager: editUser?.manager_name,
+    manager: editUser?.manager,
     Phone: editUser?.Phone,
     StartDate: new Date(),
     EndDate: new Date(),
@@ -123,12 +124,14 @@ const AddNewBusinessUser = ({
 
   const handleSubmit = async (values, setSubmitting) => {
     try {
+      const _id=firebase.firestore().collection('Random').doc().id;
+      const url =await singleImageUpload(`images/Organizations/${_id}`,barImages.file)
      const dataManager= await ref.doc(values.manager).get()
-      const _id = firebase.firestore().collection("Random").doc().id;
+   
       let data = {
         ...values,
         id: _id,
-        logo: barImages.logo,
+        logo:url,
         startDate: startDate,
         EndDate: startDate2,
         manager_name:dataManager.data().name
@@ -164,12 +167,16 @@ const AddNewBusinessUser = ({
 
   const handleEditSubmit = async (values, setSubmitting) => {
     try {
+   
+      const url =await singleImageUpload(`images/Organizations/${editUser.id}`,values.logo)
       const dataManager= await ref.doc(values.manager).get()
+
       let data = {
         ...values,
-       manager_name:dataManager.data().name
+       manager_name:dataManager.data().name,
+       logo:url
       };
-      // console.log(data);
+   
       await ref2
         .doc(editUser.id)
         .set(data, { merge: true })
@@ -202,7 +209,7 @@ const AddNewBusinessUser = ({
       function () {
         // convert image file to base64 string
         if (file.type === "image/png" || file.type === "image/jpeg") {
-          setBarImages({ logo: reader.result });
+          setBarImages({ logo: reader.result,file:file });
         } else {
           alert(
             "Error: Please a insert valid image file with following extensions .jpeg .png"
@@ -253,16 +260,16 @@ const AddNewBusinessUser = ({
           onSubmit={(values, { setSubmitting }) => {
             if (edit) {
               handleEditSubmit(values, setSubmitting);
-              console.log(values, "values");
+            
                setTimeout(() => {
                 setSubmitting(false);
-              }, 400);
+              }, 3000);
             } else {
               handleSubmit(values, setSubmitting);
               console.log(values, "values");
               setTimeout(() => {
                 setSubmitting(false);
-              }, 400);
+              }, 3000);
            
             }
           }}
@@ -296,7 +303,7 @@ const AddNewBusinessUser = ({
                         width: "100px",
                         cursor: "pointer",
                       }}
-                      src={barImages.logo}
+                      src={barImages.logo?barImages.logo:editUser.logo}
                       alt="log"
                       className="user-image"
                     />

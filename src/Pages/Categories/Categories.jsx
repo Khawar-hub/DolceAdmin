@@ -179,7 +179,7 @@ const ref = firebase.firestore().collection("Categories");
                 <TableRow>
                 
                   <TableCell>logo</TableCell>
-                  <TableCell>Email</TableCell>
+                  <TableCell>Name</TableCell>
                   <TableCell>Actions</TableCell>
                 </TableRow>
               </TableHead>

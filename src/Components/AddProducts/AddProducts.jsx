@@ -24,6 +24,7 @@ import { TextField ,Select} from "formik-mui";
 import * as yup from "yup";
 import { useSnackbar } from "notistack";
 import { ADD_AUTH_USER } from "../../Shared/baseURL";
+import { singleImageUpload } from "../../Firebase/utils";
 
 const ref = firebase.firestore().collection("Products");
 const ref2 = firebase.firestore().collection("Categories");
@@ -106,10 +107,11 @@ const AddProducts = ({
       const dataManager= await ref2.doc(values.category).get()
 
       const _id=firebase.firestore().collection('Random').doc().id;
+      const url =await singleImageUpload(`images/Products/${_id}`,barImages.file)
             let data={
               ...values,
               id:_id,
-              logo: barImages.logo,
+              logo: url,
               catname:dataManager?.data().name
              
             }
@@ -165,14 +167,14 @@ const AddProducts = ({
 
   const handleEditSubmit = async (values, setSubmitting) => {
     try {
-      // let data = {
-      //   ...values,
-      //   Preferences: preference,
-      // };
-      // console.log(data);
+      const url =await singleImageUpload(`images/Products/${editUser.id}`,values.logo)
+      let data = {
+       ...values,
+       logo:url
+     };
       await ref
         .doc(editUser.id)
-        .set(values, { merge: true })
+        .set(data, { merge: true })
         .then(() => {
           notify(`${editUser.name} updated.`);
           getUsers();
@@ -207,7 +209,7 @@ const AddProducts = ({
       function () {
         // convert image file to base64 string
         if (file.type === "image/png" || file.type === "image/jpeg") {
-          setBarImages({ logo: reader.result });
+          setBarImages({ logo: reader.result ,file:file});
         } else {
           alert(
             "Error: Please a insert valid image file with following extensions .jpeg .png"
@@ -271,7 +273,7 @@ const AddProducts = ({
                         width: "100px",
                         cursor: "pointer",
                       }}
-                      src={barImages.logo}
+                      src={barImages.logo?barImages.logo:editUser?.logo}
                       alt="log"
                       className="user-image"
                     />
