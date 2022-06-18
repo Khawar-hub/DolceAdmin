@@ -31,7 +31,7 @@ const Login = () => {
 
   const checkUser = () => {
     if (user) {
-      navigate("/admin/statistics");
+      navigate("/admin/neworders");
     }
   };
 
