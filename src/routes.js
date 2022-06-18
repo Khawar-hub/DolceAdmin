@@ -1,4 +1,5 @@
-import { BarChart, Dashboard,Home,Add,Settings,ManageAccounts,Category,DataObject } from "@mui/icons-material";
+import { BarChart, Dashboard,Home,Add,Settings,ManageAccounts,Category,DataObject,NotificationAdd,Place
+ } from "@mui/icons-material";
 import Stats from "./Pages/Stats/Stats";
 import Users from "./Pages/Users/Users";
 import Homes from './Pages/Home/Home'
@@ -7,12 +8,20 @@ import Setting from './Pages/Settings/Settings'
 import Managers from './Pages/Managers/Managers'
 import Categories from './Pages/Categories/Categories'
 import Products from './Pages/Products/Products'
+import NewOrders from './Pages/NewOrders/NewOrders'
+import Country from './Pages/Country/Country'
 export const routes = [
   {
     path: "/admin/home",
     name: "Home",
     icon: () => <Home />,
     component: <Homes />,
+  },
+  {
+    path: "/admin/neworders",
+    name: "New Orders",
+    icon: () => <NotificationAdd/>,
+    component: <NewOrders />,
   },
   {
     path: "/admin/organization",
@@ -44,6 +53,12 @@ export const routes = [
     name: "Products",
     icon: () => <DataObject />,
     component: <Products />,
+  },
+  {
+    path: "/admin/country",
+    name: "Countries",
+    icon: () => <Place />,
+    component: <Country />,
   },
   {
     path: "/admin/statistics",
