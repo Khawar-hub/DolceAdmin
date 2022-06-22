@@ -303,7 +303,7 @@ const AddNewBusinessUser = ({
                         width: "100px",
                         cursor: "pointer",
                       }}
-                      src={barImages.logo?barImages.logo:editUser.logo}
+                      src={barImages.logo?barImages.logo:editUser?.logo}
                       alt="log"
                       className="user-image"
                     />
