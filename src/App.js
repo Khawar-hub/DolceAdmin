@@ -1,5 +1,5 @@
 import React, { useEffect, useState, lazy, Suspense } from "react";
-import { routes } from "./routes";
+import { routes,route } from "./routes";
 import { Route, Routes } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -16,7 +16,8 @@ const App = () => {
   // state
   const navigate = useNavigate();
   const user = useSelector((state) => state.user.user);
-
+  console.log(user?.role)
+  
   // sidebar width
   const [drawerWidth, setDrawerWidth] = useState(240);
 
@@ -87,13 +88,22 @@ const App = () => {
             >
               <ErrorBoundary FallbackComponent={ErrorFallback}>
                 <Suspense fallback={<div>Loading...</div>}>
+                  {user?.role=="manager"?
                   <Routes>
-                    {routes.map((item) => {
+                    {route.map((item) => {
                       return (
                         <Route path={item.path} element={item.component} />
                       );
                     })}
-                  </Routes>
+                  </Routes>:
+                  <Routes>
+                  {routes.map((item) => {
+                    return (
+                      <Route path={item.path} element={item.component} />
+                    );
+                  })}
+                </Routes>
+                  }
                 </Suspense>
               </ErrorBoundary>
             </Container>

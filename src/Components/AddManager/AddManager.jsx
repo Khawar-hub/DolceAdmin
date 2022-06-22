@@ -16,14 +16,17 @@ import {
   RadioGroup,
   Typography,
   Chip,
+
+  MenuItem
 } from "@mui/material";
-import { Formik, Form, Field } from "formik";
-import { TextField } from "formik-mui";
+import { Formik, Form, Field} from "formik";
+import { TextField ,Select} from "formik-mui";
 import * as yup from "yup";
 import { useSnackbar } from "notistack";
 import { ADD_AUTH_USER } from "../../Shared/baseURL";
 
 const ref = firebase.firestore().collection("Managers");
+const ref2 = firebase.firestore().collection("Organizations");
 
 const AddNewBusinessUser = ({
   open,
@@ -51,6 +54,27 @@ const AddNewBusinessUser = ({
           .required("Required")
           .min(6, "Password must be greater than 6 characters"),
   });
+  useEffect(() => {
+    getManagers();
+  }, []);
+  const [managers, setManagers] = useState([]);
+  const getManagers = async () => {
+    try {
+      const allDocs = await ref2.get();
+      let arr = [];
+      allDocs.forEach((doc) => arr.push({ ...doc.data(), _id: doc.id }));
+      let temp = [];
+      arr.map((e) => {
+        temp.push({
+          id: e.id,
+          name: e.name,
+        });
+      });
+      setManagers(temp);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
   // initial states
   const initialState = {
@@ -84,6 +108,36 @@ const AddNewBusinessUser = ({
 
   const handleSubmit = async (values, setSubmitting) => {
     try {
+        const dataManager= await ref2.doc(values.organization).get()
+      const _id=firebase.firestore().collection('Random').doc().id;
+      await firebase.auth().createUserWithEmailAndPassword(values?.email, values?.password).then(async (res) => {
+        if(res.user){
+          let data={
+            ...values,
+            id:res?.user?.uid,
+            orgname:dataManager.data().name,
+            isBlocked:false,
+            role:"manager"
+          }
+        
+         
+   
+      
+          await ref
+            .doc(res?.user?.uid)
+            .set(data, { merge: true })
+            .then(() => {
+              notify("Manager added");
+              setSubmitting(false);
+             
+            });
+        }
+        
+        
+    }).catch((error) => {
+        notify(error.message,{variant:'error'})
+
+    })
       // const res = await axios.post(ADD_AUTH_USER, {
       //   email: values.email,
       //   password: values.password,
@@ -91,21 +145,11 @@ const AddNewBusinessUser = ({
       // if (res.status === 200) {
       //   console.log(res.data);
       //   const { userID } = res.data;
-      const _id=firebase.firestore().collection('Random').doc().id;
-        let data = {
-          ...values,
-          id: _id,
-          
-        };
+    
+       
       //   delete data.password;
     
-        await ref
-          .doc(_id)
-          .set(data, { merge: true })
-          .then(() => {
-            notify("Manager added");
-            getUsers();
-          });
+       
       
     } catch (error) {
       if (error.response) {
@@ -224,6 +268,22 @@ const AddNewBusinessUser = ({
                     name="phone"
                     fullWidth
                   />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <FormControl fullWidth>
+                    <Field
+                      component={Select}
+                      type="text"
+                      label="Organization"
+                      name="organization"
+                    >
+                      {managers.map((item) => (
+                        <MenuItem value={item.id}  key={item.id}>
+                          {item.name}
+                        </MenuItem>
+                      ))}
+                    </Field>
+                  </FormControl>
                 </Grid>
                 {/* {!edit && (
                   <Grid item xs={12} md={6}>

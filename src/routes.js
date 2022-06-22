@@ -10,6 +10,8 @@ import Categories from './Pages/Categories/Categories'
 import Products from './Pages/Products/Products'
 import NewOrders from './Pages/NewOrders/NewOrders'
 import Country from './Pages/Country/Country'
+
+
 export const routes = [
   {
     path: "/admin/home",
@@ -72,4 +74,20 @@ export const routes = [
     icon: () => <Settings />,
     component: <Setting />,
   },
+];
+export const route = [
+  {
+    path: "/admin/home",
+    name: "Home",
+    icon: () => <Home />,
+    component: <Homes />,
+  },
+  
+  {
+    path: "/admin/users",
+    name: "Users",
+    icon: () => <BarChart />,
+    component: <Users />,
+  },
+ 
 ];

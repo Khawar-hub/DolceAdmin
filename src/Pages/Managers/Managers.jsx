@@ -184,6 +184,7 @@ const ref = firebase.firestore().collection("Managers");
                   <TableCell>Age</TableCell>
                   <TableCell>Username</TableCell>
                   <TableCell>Password</TableCell>
+                  <TableCell>Organization</TableCell>
                   <TableCell>Actions</TableCell>
                 </TableRow>
               </TableHead>
@@ -221,6 +222,7 @@ const ref = firebase.firestore().collection("Managers");
                       <TableCell>{user.username}</TableCell>
                      
                       <TableCell>{user.password}</TableCell>
+                      <TableCell>{user.orgname}</TableCell>
                      
                       <TableCell>
                         
