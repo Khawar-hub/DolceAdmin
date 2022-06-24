@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
-import { routes } from "../../routes";
+import { route, routes } from "../../routes";
 import { useSelector, useDispatch } from "react-redux";
 import { setSidebarKey } from "../../Redux/Actions/sidebarKey";
 import {
@@ -29,13 +29,13 @@ const SideBar = ({
 }) => {
   const dispatch = useDispatch();
   const [filterRoutes, setFilterRoutes] = useState([]);
-  const role = useSelector((state) => state.user.role);
+  const role = useSelector((state) => state.user.user);
   const key = useSelector((state) => state.key);
 
   useEffect(() => {
     let arr = [];
-    if (role !== "super") {
-      arr = routes.filter((item) => item.layout !== "super");
+    if (role?.role =="manager") {
+      arr = route
     } else {
       arr = routes;
     }
