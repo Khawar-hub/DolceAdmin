@@ -238,7 +238,7 @@ const ref = firebase.firestore().collection("Users");
                       <TableCell>{user.username}</TableCell>
                      
                       <TableCell>{user.password}</TableCell>
-                      <TableCell>$ {user.wallet}</TableCell>
+                      <TableCell>AED {user.wallet}</TableCell>
                      
                       <TableCell>
                       {btnLoading === user.id ? (
