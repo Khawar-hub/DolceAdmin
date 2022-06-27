@@ -204,7 +204,7 @@ const ref = firebase.firestore().collection("New Orders");
                           <ButtonGroup size="small" variant="outlined">
                            
                             <Button
-                             onClick={()=>handleDelete(user.id,user.name)}
+                             onClick={()=>handleDelete(user.oid,user.CustomerName)}
                               color="error"
                             >
                               Delete

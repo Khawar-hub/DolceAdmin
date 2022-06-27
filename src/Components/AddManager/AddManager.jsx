@@ -108,14 +108,14 @@ const AddNewBusinessUser = ({
 
   const handleSubmit = async (values, setSubmitting) => {
     try {
-        const dataManager= await ref2.doc(values.organization).get()
+        // const dataManager= await ref2.doc(values.organization).get()
       const _id=firebase.firestore().collection('Random').doc().id;
       await firebase.auth().createUserWithEmailAndPassword(values?.email, values?.password).then(async (res) => {
         if(res.user){
           let data={
             ...values,
             id:res?.user?.uid,
-            orgname:dataManager.data().name,
+            // orgname:dataManager.data().name,
             isBlocked:false,
             role:"manager"
           }
@@ -269,7 +269,7 @@ const AddNewBusinessUser = ({
                     fullWidth
                   />
                 </Grid>
-                <Grid item xs={12} md={6}>
+                {/* <Grid item xs={12} md={6}>
                   <FormControl fullWidth>
                     <Field
                       component={Select}
@@ -284,7 +284,7 @@ const AddNewBusinessUser = ({
                       ))}
                     </Field>
                   </FormControl>
-                </Grid>
+                </Grid> */}
                 {/* {!edit && (
                   <Grid item xs={12} md={6}>
                     <FormControl>

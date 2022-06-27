@@ -62,12 +62,7 @@ export const routes = [
     icon: () => <Place />,
     component: <Country />,
   },
-  {
-    path: "/admin/statistics",
-    name: "Statistics",
-    icon: () => <Dashboard />,
-    component: <Stats />,
-  },
+
   {
     path: "/admin/settings",
     name: "Settings",
