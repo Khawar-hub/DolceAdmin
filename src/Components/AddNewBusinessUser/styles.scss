@@ -8,9 +8,8 @@
     background-size: cover;
     .profile-image {
       display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      align-items: flex-start;
+      justify-content: center;
+      align-items: center;
     }
     .cover {
       display: flex;
@@ -26,6 +25,7 @@
     }
     .img__wrap {
       position: relative;
+      margin: auto;
       height: 300px;
       width: 300px;
     }

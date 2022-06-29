@@ -26,6 +26,9 @@ import {
   Chip,
   Avatar,
   MenuItem,
+  Stepper,
+  Step,
+  StepLabel
 } from "@mui/material";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { TextField, Select } from "formik-mui";
@@ -66,10 +69,8 @@ const AddNewBusinessUser = ({
     email: yup.string().email().required("Required"),
     logo: yup.mixed().required("Required"),
     Address: yup.string(),
-    manager: yup.string().required("Required"),
-    StartDate: yup.string().required("Required"),
-    EndDate: yup.string().required("Required"),
-    Payment: yup.string().required("Required"),
+    city: yup.string().required("Required"),
+    country: yup.string().required("Required"),
     color: yup.string().required("Required"),
   });
 
@@ -80,11 +81,10 @@ const AddNewBusinessUser = ({
     color: "",
     logo: "",
     email: "",
-    manager: "",
+    city: "",
+    country:"",
     Phone: "",
-    StartDate: new Date(),
-    EndDate: new Date(),
-    Payment: "",
+ 
   };
 
   const editInitialState = {
@@ -93,11 +93,10 @@ const AddNewBusinessUser = ({
     color:editUser?.color,
     logo:editUser?.logo,
     email:editUser?.email,
-    manager: editUser?.manager,
+    city:editUser?.city,
+    country:editUser?.country,
     Phone: editUser?.Phone,
-    StartDate: new Date(),
-    EndDate: new Date(),
-    Payment: editUser?.Payment,
+ 
   };
 
   useEffect(() => {
@@ -249,12 +248,59 @@ const AddNewBusinessUser = ({
       console.log("Autocomplete is not loaded yet!");
     }
   };
+  const [activeStep, setActiveStep] = React.useState(0);
+  const [skipped, setSkipped] = React.useState(new Set());
+
+  const isStepOptional = (step) => {
+    return step === 1;
+  };
+
+  const isStepSkipped = (step) => {
+    return skipped.has(step);
+  };
+
+  const handleNext = () => {
+    let newSkipped = skipped;
+    if (isStepSkipped(activeStep)) {
+      newSkipped = new Set(newSkipped.values());
+      newSkipped.delete(activeStep);
+    }
+
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    setSkipped(newSkipped);
+  };
+
+  const handleBack = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  };
+
+  const handleSkip = () => {
+    if (!isStepOptional(activeStep)) {
+      // You probably want to guard against something like this,
+      // it should never occur unless someone's actively trying to break something.
+      throw new Error("You can't skip a step that isn't optional.");
+    }
+
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    setSkipped((prevSkipped) => {
+      const newSkipped = new Set(prevSkipped.values());
+      newSkipped.add(activeStep);
+      return newSkipped;
+    });
+  };
+
+  const handleReset = () => {
+    setActiveStep(0);
+  };
+  const steps = ['Organization Detail', 'Subscription', 'Manager','User','Payment','Menu'];
   return (
     <Dialog maxWidth="md" fullWidth open={open} onClose={handleClose}>
       <DialogTitle>
         {edit ? `Edit ${editUser.name}` : "Add new Organization"}
       </DialogTitle>
+   
       <DialogContent>
+      
         <Formik
           initialValues={edit ? editInitialState : initialState}
           onSubmit={(values, { setSubmitting }) => {
@@ -277,7 +323,40 @@ const AddNewBusinessUser = ({
         >
           {({ isSubmitting, submitForm, values, setFieldValue }) => (
             <Form>
-              <Grid container sx={{ mt: 2 }} spacing={2}>
+              <Box sx={{ width: '100%' }}>
+      <Stepper activeStep={activeStep}>
+        {steps.map((label, index) => {
+          // const stepProps={};
+          // const labelProps = {};
+          // if (isStepOptional(index)) {
+          //   labelProps.optional = (
+          //     <Typography variant="caption">Optional</Typography>
+          //   );
+          // }
+          // if (isStepSkipped(index)) {
+          //   stepProps.completed = false;
+          // }
+          return (
+            <Step key={label}>
+              <StepLabel >{label}</StepLabel>
+            </Step>
+          );
+        })}
+      </Stepper>
+      {activeStep === steps.length ? (
+        <React.Fragment>
+          <Typography sx={{ mt: 2, mb: 1 }}>
+            All steps completed - you&apos;re finished
+          </Typography>
+          <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+            <Box sx={{ flex: '1 1 auto' }} />
+            <Button onClick={handleReset}>Reset</Button>
+          </Box>
+        </React.Fragment>
+      ) :activeStep==0 ?(
+        <React.Fragment>
+       
+        <Grid container sx={{ mt: 2 }} spacing={2}>
                 <Grid
                   style={{ flexDirection: "row" }}
                   item
@@ -299,8 +378,8 @@ const AddNewBusinessUser = ({
                     />
                     <Avatar
                       style={{
-                        height: "100px",
-                        width: "100px",
+                        height: "300px",
+                        width: "300px",
                         cursor: "pointer",
                       }}
                       src={barImages.logo?barImages.logo:editUser?.logo}
@@ -374,7 +453,7 @@ const AddNewBusinessUser = ({
                     fullWidth
                   />
                 </Grid>
-
+{/* 
                 <Grid item xs={12} md={6}>
                   <FormControl fullWidth>
                     <Field
@@ -390,7 +469,7 @@ const AddNewBusinessUser = ({
                       ))}
                     </Field>
                   </FormControl>
-                </Grid>
+                </Grid> */}
                 <Grid item xs={12} md={6}>
                   <Field
                     component={TextField}
@@ -401,6 +480,22 @@ const AddNewBusinessUser = ({
                   />
                 </Grid>
                 <Grid item xs={12} md={6}>
+                  <Field
+                    component={TextField}
+                    label="City"
+                    name="city"
+                    fullWidth
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Field
+                    component={TextField}
+                    label="Country"
+                    name="country"
+                    fullWidth
+                  />
+                </Grid>
+                {/* <Grid item xs={12} md={6}>
                   <FormControl>
                     <FormLabel id="demo-row-radio-buttons-group-label">
                       Subscription Start Date
@@ -425,8 +520,8 @@ const AddNewBusinessUser = ({
                       onChange={(date) => setStartDate2(date)}
                     />
                   </FormControl>
-                </Grid>
-                <Grid item xs={12} md={6}>
+                </Grid> */}
+                {/* <Grid item xs={12} md={6}>
                   <FormControl>
                     <FormLabel id="demo-row-radio-buttons-group-label">
                       Payment
@@ -472,12 +567,12 @@ const AddNewBusinessUser = ({
                     name="Payment"
                     render={(msg) => <div className="input-error">{msg}</div>}
                   />
-                </Grid>
+                </Grid> */}
 
                 <Grid item xs={12}>
                   {isSubmitting && <LinearProgress />}
                 </Grid>
-                <Grid item xs={12}>
+                {/* <Grid item xs={12}>
                   <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                     <Button
                       onClick={restoreInitialState}
@@ -497,8 +592,286 @@ const AddNewBusinessUser = ({
                       Submit
                     </Button>
                   </Box>
-                </Grid>
+                </Grid> */}
               </Grid>
+          <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+            <Button
+              color="inherit"
+              disabled={activeStep === 0}
+              onClick={handleBack}
+              sx={{ mr: 1 }}
+            >
+              Back
+            </Button>
+            <Box sx={{ flex: '1 1 auto' }} />
+            {/* {isStepOptional(activeStep) && (
+              <Button color="inherit" onClick={handleSkip} sx={{ mr: 1 }}>
+                Skip
+              </Button>
+            )} */}
+            <Button onClick={handleNext}>
+              {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+            </Button>
+          </Box>
+        </React.Fragment>
+      ):activeStep==1?
+       <React.Fragment>
+      <Grid container sx={{ mt: 2 }} spacing={2}>
+            
+
+             
+{/* 
+              <Grid item xs={12} md={6}>
+                <FormControl fullWidth>
+                  <Field
+                    component={Select}
+                    type="text"
+                    label="Manager"
+                    name="manager"
+                  >
+                    {managers.map((item) => (
+                      <MenuItem value={item.id}  key={item.id}>
+                        {item.name}
+                      </MenuItem>
+                    ))}
+                  </Field>
+                </FormControl>
+              </Grid> */}
+              
+              <Grid item xs={12} md={6}>
+                <FormControl>
+                  <FormLabel id="demo-row-radio-buttons-group-label">
+                    Subscription Start Date
+                  </FormLabel>
+
+                  <DatePicker
+                    name="StartDate"
+                    selected={startDate}
+                    onChange={(date) => setStartDate(date)}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <FormControl>
+                  <FormLabel id="demo-row-radio-buttons-group-label">
+                    Subscription End Date
+                  </FormLabel>
+
+                  <DatePicker
+                    name="EndDate"
+                    selected={startDate2}
+                    onChange={(date) => setStartDate2(date)}
+                  />
+                </FormControl>
+              </Grid> 
+               <Grid item xs={12} md={6}>
+                <FormControl>
+                  <FormLabel id="demo-row-radio-buttons-group-label">
+                    Payment
+                  </FormLabel>
+                  <RadioGroup
+                    name="Payment"
+                    row
+                    onChange={(e) => setFieldValue("Payment", e.target.value)}
+                  >
+                    <FormControlLabel
+                      value="Cash"
+                      control={<Radio />}
+                      label="Cash"
+                      checked={values.Payment === "Cash"}
+                    />
+                    <FormControlLabel
+                      value="Check"
+                      control={<Radio />}
+                      label="Check"
+                      checked={values.Payment === "Check"}
+                    />
+                    <FormControlLabel
+                      value="Card"
+                      control={<Radio />}
+                      label="Card"
+                      checked={values.Payment === "Card"}
+                    />
+                    <FormControlLabel
+                      value="Link"
+                      control={<Radio />}
+                      label="Link"
+                      checked={values.Payment === "Link"}
+                    />
+                    <FormControlLabel
+                      value="Bank Transfer"
+                      control={<Radio />}
+                      label="Bank Transfer"
+                      checked={values.Payment === "Bank Transfer"}
+                    />
+                  </RadioGroup>
+                </FormControl>
+                <ErrorMessage
+                  name="Payment"
+                  render={(msg) => <div className="input-error">{msg}</div>}
+                />
+              </Grid>
+
+              <Grid item xs={12}>
+                {isSubmitting && <LinearProgress />}
+              </Grid>
+              {/* <Grid item xs={12}>
+                <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                  <Button
+                    onClick={restoreInitialState}
+                    variant="outlined"
+                    color="error"
+                    sx={{ mr: 1 }}
+                    disabled={isSubmitting}
+                  >
+                    Close
+                  </Button>
+                  <Button
+                    disabled={isSubmitting}
+                    disableElevation
+                    onClick={submitForm}
+                    variant="contained"
+                  >
+                    Submit
+                  </Button>
+                </Box>
+              </Grid> */}
+            </Grid>
+        <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+          <Button
+            color="inherit"
+            disabled={activeStep === 0}
+            onClick={handleBack}
+            sx={{ mr: 1 }}
+          >
+            Back
+          </Button>
+          <Box sx={{ flex: '1 1 auto' }} />
+          {/* {isStepOptional(activeStep) && (
+            <Button color="inherit" onClick={handleSkip} sx={{ mr: 1 }}>
+              Skip
+            </Button>
+          )} */}
+          <Button onClick={handleNext}>
+            {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+          </Button>
+        </Box></React.Fragment>:activeStep==2?
+           <React.Fragment>
+             <Grid container sx={{ mt: 2 }} spacing={2}>
+                <Grid item xs={12} md={6}>
+                  <Field
+                    component={TextField}
+                    label="Name"
+                    name="name"
+                    fullWidth
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Field
+                    component={TextField}
+                    label="Username"
+                    name="username"
+                    fullWidth
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Field
+                    component={TextField}
+                    label="Email"
+                    name="email"
+                    fullWidth
+                  />
+                </Grid>
+                {!edit && (
+                  <Grid item xs={12} md={6}>
+                    <Field
+                      component={TextField}
+                      label="Password"
+                      name="password"
+                      fullWidth
+                    />
+                  </Grid>
+                )}
+                <Grid item xs={12} md={6}>
+                  <Field
+                    component={TextField}
+                    label="Age"
+                    name="Age"
+                    type="text"
+                    fullWidth
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Field
+                    component={TextField}
+                    label="Phone"
+                    name="phone"
+                    fullWidth
+                  />
+                </Grid>
+               
+                <Grid item xs={12} md={6}>
+                  <FormControl>
+                    <FormLabel id="demo-row-radio-buttons-group-label">
+                      Gender
+                    </FormLabel>
+                    <RadioGroup
+                      row
+                      onChange={(e) => setFieldValue("Gender", e.target.value)}
+                    >
+                      <FormControlLabel
+                        value="Male"
+                        control={<Radio />}
+                        label="Male"
+                        checked={values.Gender === "Male"}
+                      />
+                      <FormControlLabel
+                        value="Female"
+                        control={<Radio />}
+                        label="Female"
+                        checked={values.Gender === "Female"}
+                      />
+                      <FormControlLabel
+                        value="Other"
+                        control={<Radio />}
+                        label="Other"
+                        checked={values.Gender === "Other"}
+                      />
+                    </RadioGroup>
+                  </FormControl>
+                </Grid>
+              
+                <Grid item xs={12}>
+                  {isSubmitting && <LinearProgress />}
+                </Grid>
+                
+              </Grid>
+              <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+          <Button
+            color="inherit"
+            disabled={activeStep === 0}
+            onClick={handleBack}
+            sx={{ mr: 1 }}
+          >
+            Back
+          </Button>
+          <Box sx={{ flex: '1 1 auto' }} />
+          {/* {isStepOptional(activeStep) && (
+            <Button color="inherit" onClick={handleSkip} sx={{ mr: 1 }}>
+              Skip
+            </Button>
+          )} */}
+          <Button onClick={handleNext}>
+            {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+          </Button>
+        </Box>
+           </React.Fragment>
+        :
+        <React.Fragment></React.Fragment>
+        
+        }
+    </Box>
+              
             </Form>
           )}
         </Formik>
