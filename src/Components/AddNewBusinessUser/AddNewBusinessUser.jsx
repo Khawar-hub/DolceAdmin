@@ -292,7 +292,7 @@ const AddNewBusinessUser = ({
   const handleReset = () => {
     setActiveStep(0);
   };
-  const steps = ['Organization Detail', 'Subscription', 'Manager','User','Payment','Menu'];
+  const steps = ['Organization Detail', 'Manager','User','Payment & Subscription','Menu'];
   return (
     <Dialog maxWidth="md" fullWidth open={open} onClose={handleClose}>
       <DialogTitle>
@@ -615,149 +615,119 @@ const AddNewBusinessUser = ({
           </Box>
         </React.Fragment>
       ):activeStep==1?
-       <React.Fragment>
+      <React.Fragment>
       <Grid container sx={{ mt: 2 }} spacing={2}>
-            
-
-             
-{/* 
-              <Grid item xs={12} md={6}>
-                <FormControl fullWidth>
-                  <Field
-                    component={Select}
-                    type="text"
-                    label="Manager"
-                    name="manager"
-                  >
-                    {managers.map((item) => (
-                      <MenuItem value={item.id}  key={item.id}>
-                        {item.name}
-                      </MenuItem>
-                    ))}
-                  </Field>
-                </FormControl>
-              </Grid> */}
-              
-              <Grid item xs={12} md={6}>
-                <FormControl>
-                  <FormLabel id="demo-row-radio-buttons-group-label">
-                    Subscription Start Date
-                  </FormLabel>
-
-                  <DatePicker
-                    name="StartDate"
-                    selected={startDate}
-                    onChange={(date) => setStartDate(date)}
-                  />
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <FormControl>
-                  <FormLabel id="demo-row-radio-buttons-group-label">
-                    Subscription End Date
-                  </FormLabel>
-
-                  <DatePicker
-                    name="EndDate"
-                    selected={startDate2}
-                    onChange={(date) => setStartDate2(date)}
-                  />
-                </FormControl>
-              </Grid> 
-               <Grid item xs={12} md={6}>
-                <FormControl>
-                  <FormLabel id="demo-row-radio-buttons-group-label">
-                    Payment
-                  </FormLabel>
-                  <RadioGroup
-                    name="Payment"
-                    row
-                    onChange={(e) => setFieldValue("Payment", e.target.value)}
-                  >
-                    <FormControlLabel
-                      value="Cash"
-                      control={<Radio />}
-                      label="Cash"
-                      checked={values.Payment === "Cash"}
-                    />
-                    <FormControlLabel
-                      value="Check"
-                      control={<Radio />}
-                      label="Check"
-                      checked={values.Payment === "Check"}
-                    />
-                    <FormControlLabel
-                      value="Card"
-                      control={<Radio />}
-                      label="Card"
-                      checked={values.Payment === "Card"}
-                    />
-                    <FormControlLabel
-                      value="Link"
-                      control={<Radio />}
-                      label="Link"
-                      checked={values.Payment === "Link"}
-                    />
-                    <FormControlLabel
-                      value="Bank Transfer"
-                      control={<Radio />}
-                      label="Bank Transfer"
-                      checked={values.Payment === "Bank Transfer"}
-                    />
-                  </RadioGroup>
-                </FormControl>
-                <ErrorMessage
-                  name="Payment"
-                  render={(msg) => <div className="input-error">{msg}</div>}
-                />
-              </Grid>
-
-              <Grid item xs={12}>
-                {isSubmitting && <LinearProgress />}
-              </Grid>
-              {/* <Grid item xs={12}>
-                <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                  <Button
-                    onClick={restoreInitialState}
-                    variant="outlined"
-                    color="error"
-                    sx={{ mr: 1 }}
-                    disabled={isSubmitting}
-                  >
-                    Close
-                  </Button>
-                  <Button
-                    disabled={isSubmitting}
-                    disableElevation
-                    onClick={submitForm}
-                    variant="contained"
-                  >
-                    Submit
-                  </Button>
-                </Box>
-              </Grid> */}
-            </Grid>
-        <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-          <Button
-            color="inherit"
-            disabled={activeStep === 0}
-            onClick={handleBack}
-            sx={{ mr: 1 }}
-          >
-            Back
-          </Button>
-          <Box sx={{ flex: '1 1 auto' }} />
-          {/* {isStepOptional(activeStep) && (
-            <Button color="inherit" onClick={handleSkip} sx={{ mr: 1 }}>
-              Skip
-            </Button>
-          )} */}
-          <Button onClick={handleNext}>
-            {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
-          </Button>
-        </Box></React.Fragment>:activeStep==2?
-           <React.Fragment>
-             <Grid container sx={{ mt: 2 }} spacing={2}>
+         <Grid item xs={12} md={6}>
+           <Field
+             component={TextField}
+             label="Name"
+             name="name"
+             fullWidth
+           />
+         </Grid>
+         <Grid item xs={12} md={6}>
+           <Field
+             component={TextField}
+             label="Username"
+             name="username"
+             fullWidth
+           />
+         </Grid>
+         <Grid item xs={12} md={6}>
+           <Field
+             component={TextField}
+             label="Email"
+             name="email"
+             fullWidth
+           />
+         </Grid>
+         {!edit && (
+           <Grid item xs={12} md={6}>
+             <Field
+               component={TextField}
+               label="Password"
+               name="password"
+               fullWidth
+             />
+           </Grid>
+         )}
+         <Grid item xs={12} md={6}>
+           <Field
+             component={TextField}
+             label="Age"
+             name="Age"
+             type="text"
+             fullWidth
+           />
+         </Grid>
+         <Grid item xs={12} md={6}>
+           <Field
+             component={TextField}
+             label="Phone"
+             name="phone"
+             fullWidth
+           />
+         </Grid>
+        
+         <Grid item xs={12} md={6}>
+           <FormControl>
+             <FormLabel id="demo-row-radio-buttons-group-label">
+               Gender
+             </FormLabel>
+             <RadioGroup
+               row
+               onChange={(e) => setFieldValue("Gender", e.target.value)}
+             >
+               <FormControlLabel
+                 value="Male"
+                 control={<Radio />}
+                 label="Male"
+                 checked={values.Gender === "Male"}
+               />
+               <FormControlLabel
+                 value="Female"
+                 control={<Radio />}
+                 label="Female"
+                 checked={values.Gender === "Female"}
+               />
+               <FormControlLabel
+                 value="Other"
+                 control={<Radio />}
+                 label="Other"
+                 checked={values.Gender === "Other"}
+               />
+             </RadioGroup>
+           </FormControl>
+         </Grid>
+       
+         <Grid item xs={12}>
+           {isSubmitting && <LinearProgress />}
+         </Grid>
+         
+       </Grid>
+       <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+   <Button
+     color="inherit"
+     disabled={activeStep === 0}
+     onClick={handleBack}
+     sx={{ mr: 1 }}
+   >
+     Back
+   </Button>
+   <Box sx={{ flex: '1 1 auto' }} />
+   {/* {isStepOptional(activeStep) && (
+     <Button color="inherit" onClick={handleSkip} sx={{ mr: 1 }}>
+       Skip
+     </Button>
+   )} */}
+   <Button onClick={handleNext}>
+     {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+   </Button>
+ </Box>
+    </React.Fragment>
+     :activeStep==2?
+     <React.Fragment>
+       <Grid container sx={{ mt: 2 }} spacing={2}>
                 <Grid item xs={12} md={6}>
                   <Field
                     component={TextField}
@@ -795,8 +765,8 @@ const AddNewBusinessUser = ({
                 <Grid item xs={12} md={6}>
                   <Field
                     component={TextField}
-                    label="Age"
-                    name="Age"
+                    label="Office Number"
+                    name="OfficeNumber"
                     type="text"
                     fullWidth
                   />
@@ -809,8 +779,64 @@ const AddNewBusinessUser = ({
                     fullWidth
                   />
                 </Grid>
-               
+               {edit?
                 <Grid item xs={12} md={6}>
+                  <Field
+                    component={TextField}
+                    label="Wallet"
+                    name="wallet"
+                    fullWidth
+                  />
+                </Grid>:null}
+                
+                {/* <Grid item xs={12} md={6}>
+                  <FormControl fullWidth>
+                    <Field
+                      component={Select}
+                      type="text"
+                      label="Organization"
+                      name="organization"
+                    >
+                      {managers.map((item) => (
+                        <MenuItem value={item.id}  key={item.id}>
+                          {item.name}
+                        </MenuItem>
+                      ))}
+                    </Field>
+                  </FormControl>
+                </Grid> */}
+                {/* {!edit && (
+                  <Grid item xs={12} md={6}>
+                    <FormControl>
+                      <FormLabel id="demo-row-radio-buttons-group-label">
+                        User Type
+                      </FormLabel>
+                      <RadioGroup
+                        row
+                        onChange={(e) => {
+                          setFieldValue(
+                            "profileStatus",
+                            parseInt(e.target.value)
+                          );
+                        }}
+                      >
+                        <FormControlLabel
+                          value={0}
+                          control={<Radio />}
+                          label="Standard"
+                          checked={values.profileStatus === 0}
+                        />
+                        <FormControlLabel
+                          value={1}
+                          control={<Radio />}
+                          label="Business"
+                          checked={values.profileStatus === 1}
+                        />
+                      </RadioGroup>
+                    </FormControl>
+                  </Grid>
+                )} */}
+                {/* <Grid item xs={12} md={6}>
                   <FormControl>
                     <FormLabel id="demo-row-radio-buttons-group-label">
                       Gender
@@ -839,35 +865,180 @@ const AddNewBusinessUser = ({
                       />
                     </RadioGroup>
                   </FormControl>
-                </Grid>
+                </Grid> */}
               
                 <Grid item xs={12}>
                   {isSubmitting && <LinearProgress />}
                 </Grid>
-                
+                <Grid item xs={12}>
+                  <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                    <Button
+                      onClick={restoreInitialState}
+                      variant="outlined"
+                      color="error"
+                      sx={{ mr: 1 }}
+                      disabled={isSubmitting}
+                    >
+                      Close
+                    </Button>
+                    <Button
+                      disabled={isSubmitting}
+                      disableElevation
+                      onClick={submitForm}
+                      variant="contained"
+                    >
+                      Submit
+                    </Button>
+                  </Box>
+                </Grid>
               </Grid>
-              <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-          <Button
-            color="inherit"
-            disabled={activeStep === 0}
-            onClick={handleBack}
-            sx={{ mr: 1 }}
-          >
-            Back
-          </Button>
-          <Box sx={{ flex: '1 1 auto' }} />
-          {/* {isStepOptional(activeStep) && (
-            <Button color="inherit" onClick={handleSkip} sx={{ mr: 1 }}>
-              Skip
+     </React.Fragment>
+    
+        :activeStep==3?
+        <React.Fragment>
+        <Grid container sx={{ mt: 2 }} spacing={2}>
+              
+   
+               
+   {/* 
+                <Grid item xs={12} md={6}>
+                  <FormControl fullWidth>
+                    <Field
+                      component={Select}
+                      type="text"
+                      label="Manager"
+                      name="manager"
+                    >
+                      {managers.map((item) => (
+                        <MenuItem value={item.id}  key={item.id}>
+                          {item.name}
+                        </MenuItem>
+                      ))}
+                    </Field>
+                  </FormControl>
+                </Grid> */}
+                
+                <Grid item xs={12} md={6}>
+                  <FormControl>
+                    <FormLabel id="demo-row-radio-buttons-group-label">
+                      Subscription Start Date
+                    </FormLabel>
+   
+                    <DatePicker
+                      name="StartDate"
+                      selected={startDate}
+                      onChange={(date) => setStartDate(date)}
+                    />
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <FormControl>
+                    <FormLabel id="demo-row-radio-buttons-group-label">
+                      Subscription End Date
+                    </FormLabel>
+   
+                    <DatePicker
+                      name="EndDate"
+                      selected={startDate2}
+                      onChange={(date) => setStartDate2(date)}
+                    />
+                  </FormControl>
+                </Grid> 
+                 <Grid item xs={12} md={6}>
+                  <FormControl>
+                    <FormLabel id="demo-row-radio-buttons-group-label">
+                      Payment
+                    </FormLabel>
+                    <RadioGroup
+                      name="Payment"
+                      row
+                      onChange={(e) => setFieldValue("Payment", e.target.value)}
+                    >
+                      <FormControlLabel
+                        value="Cash"
+                        control={<Radio />}
+                        label="Cash"
+                        checked={values.Payment === "Cash"}
+                      />
+                      <FormControlLabel
+                        value="Check"
+                        control={<Radio />}
+                        label="Check"
+                        checked={values.Payment === "Check"}
+                      />
+                      <FormControlLabel
+                        value="Card"
+                        control={<Radio />}
+                        label="Card"
+                        checked={values.Payment === "Card"}
+                      />
+                      <FormControlLabel
+                        value="Link"
+                        control={<Radio />}
+                        label="Link"
+                        checked={values.Payment === "Link"}
+                      />
+                      <FormControlLabel
+                        value="Bank Transfer"
+                        control={<Radio />}
+                        label="Bank Transfer"
+                        checked={values.Payment === "Bank Transfer"}
+                      />
+                    </RadioGroup>
+                  </FormControl>
+                  <ErrorMessage
+                    name="Payment"
+                    render={(msg) => <div className="input-error">{msg}</div>}
+                  />
+                </Grid>
+   
+                <Grid item xs={12}>
+                  {isSubmitting && <LinearProgress />}
+                </Grid>
+                {/* <Grid item xs={12}>
+                  <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                    <Button
+                      onClick={restoreInitialState}
+                      variant="outlined"
+                      color="error"
+                      sx={{ mr: 1 }}
+                      disabled={isSubmitting}
+                    >
+                      Close
+                    </Button>
+                    <Button
+                      disabled={isSubmitting}
+                      disableElevation
+                      onClick={submitForm}
+                      variant="contained"
+                    >
+                      Submit
+                    </Button>
+                  </Box>
+                </Grid> */}
+              </Grid>
+          <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+            <Button
+              color="inherit"
+              disabled={activeStep === 0}
+              onClick={handleBack}
+              sx={{ mr: 1 }}
+            >
+              Back
             </Button>
-          )} */}
-          <Button onClick={handleNext}>
-            {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
-          </Button>
-        </Box>
-           </React.Fragment>
-        :
-        <React.Fragment></React.Fragment>
+            <Box sx={{ flex: '1 1 auto' }} />
+            {/* {isStepOptional(activeStep) && (
+              <Button color="inherit" onClick={handleSkip} sx={{ mr: 1 }}>
+                Skip
+              </Button>
+            )} */}
+            <Button onClick={handleNext}>
+              {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+            </Button>
+          </Box></React.Fragment>:
+          <React.Fragment>
+            
+          </React.Fragment>
         
         }
     </Box>
