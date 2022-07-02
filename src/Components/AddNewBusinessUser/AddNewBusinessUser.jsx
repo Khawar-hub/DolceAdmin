@@ -28,7 +28,7 @@ import {
   MenuItem,
   Stepper,
   Step,
-  StepLabel
+  StepLabel,
 } from "@mui/material";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { TextField, Select } from "formik-mui";
@@ -57,7 +57,7 @@ const AddNewBusinessUser = ({
   const [position, setPosition] = useState(null);
   const [blockPickerColor, setBlockPickerColor] = useState("#543f2d");
   const [barImages, setBarImages] = React.useState({
-    logo: editUser?editUser?.logo:"",
+    logo: editUser ? editUser?.logo : "",
   });
   const autocompleteRef = React.useRef();
 
@@ -86,13 +86,12 @@ const AddNewBusinessUser = ({
     UserOfficeNumber: yup.string(),
     UserPassword: yup.string(),
     UserWallet: yup.string(),
-    StartDate: yup.string().required("Required"),
-    EndDate: yup.string().required("Required"),
+    // StartDate: yup.string().required("Required"),
+    // EndDate: yup.string().required("Required"),
     StripeKey: yup.string().required("Required"),
     SecretKey: yup.string().required("Required"),
-    CatImg:yup.mixed().required("Required"),
-    CatName:yup.string().required("Required"),
-    
+    CatImg: yup.mixed().required("Required"),
+    CatName: yup.string().required("Required"),
   });
 
   // initial states
@@ -103,7 +102,7 @@ const AddNewBusinessUser = ({
     OrgLogo: "",
     OrgEmail: "",
     OrgCity: "",
-    OrgCountry:"",
+    OrgCountry: "",
     OrgPhone: "",
     ManagerName: "",
     ManagerUsername: "",
@@ -112,34 +111,33 @@ const AddNewBusinessUser = ({
     ManagerAge: "",
     ManagerPassword: "",
     ManagerGender: "",
-    UserName:"",
-    UserUsername:"",
-    UserEmail:"",
-    UserPhone:"",
-    UserOfficeNumber:"",
-    UserPassword:"",
-    UserWallet:"",
+    UserName: "",
+    UserUsername: "",
+    UserEmail: "",
+    UserPhone: "",
+    UserOfficeNumber: "",
+    UserPassword: "",
+    UserWallet: "",
     StartDate: "",
     EndDate: "",
     StripeKey: "",
     SecretKey: "",
-    CatImg:"",
-    CatName:""
- 
+    CatImg: "",
+    CatName: "",
   };
 
   const editInitialState = {
-    OrgName:editUser?.OrgName,
-    OrgAddress:editUser?.OrgAddress,
-    OrgColor:editUser?.OrgColor,
-    OrgLogo:editUser?.OrgLogo,
-    OrgEmail:editUser?.OrgEmail,
-    OrgCity:editUser?.OrgCity,
-    OrgCountry:editUser?.OrgCountry,
+    OrgName: editUser?.OrgName,
+    OrgAddress: editUser?.OrgAddress,
+    OrgColor: editUser?.OrgColor,
+    OrgLogo: editUser?.OrgLogo,
+    OrgEmail: editUser?.OrgEmail,
+    OrgCity: editUser?.OrgCity,
+    OrgCountry: editUser?.OrgCountry,
     OrgPhone: editUser?.OrgPhone,
-    ManagerName: editUser?. ManagerName,
-    ManagerUsername: editUser?. ManagerUsername,
-    ManagerEmail: editUser?. ManagerEmail,
+    ManagerName: editUser?.ManagerName,
+    ManagerUsername: editUser?.ManagerUsername,
+    ManagerEmail: editUser?.ManagerEmail,
     ManagerPhone: editUser?.ManagerPhone,
     ManagerAge: editUser?.ManagerAge,
     ManagerPassword: editUser?.ManagerPassword,
@@ -150,14 +148,13 @@ const AddNewBusinessUser = ({
     UserPhone: editUser?.UserPhone,
     UserOfficeNumber: editUser?.UserOfficeNumber,
     UserPassword: editUser?.UserPassword,
-    UserWallet:editUser?.Wallet,
+    UserWallet: editUser?.Wallet,
     StartDate: editUser?.StartDate,
     EndDate: editUser?.EndDate,
     StripeKey: editUser?.StripeKey,
     SecretKey: editUser?.SecretKey,
-    CatImg:editUser?.CatImg,
-    CatName:editUser?.CatName
- 
+    CatImg: editUser?.CatImg,
+    CatName: editUser?.CatName,
   };
 
   useEffect(() => {
@@ -183,12 +180,12 @@ const AddNewBusinessUser = ({
   };
 
   const handleSubmit = async (values, setSubmitting) => {
-    console.log(values)
+    console.log(values);
     // try {
     //   const _id=firebase.firestore().collection('Random').doc().id;
     //   const url =await singleImageUpload(`images/Organizations/${_id}`,barImages.file)
     //  const dataManager= await ref.doc(values.manager).get()
-   
+
     //   let data = {
     //     ...values,
     //     id: _id,
@@ -228,16 +225,18 @@ const AddNewBusinessUser = ({
 
   const handleEditSubmit = async (values, setSubmitting) => {
     try {
-   
-      const url =await singleImageUpload(`images/Organizations/${editUser.id}`,values.logo)
-      const dataManager= await ref.doc(values.manager).get()
+      const url = await singleImageUpload(
+        `images/Organizations/${editUser.id}`,
+        values.logo
+      );
+      const dataManager = await ref.doc(values.manager).get();
 
       let data = {
         ...values,
-       manager_name:dataManager.data().name,
-       logo:url
+        manager_name: dataManager.data().name,
+        logo: url,
       };
-   
+
       await ref2
         .doc(editUser.id)
         .set(data, { merge: true })
@@ -270,7 +269,7 @@ const AddNewBusinessUser = ({
       function () {
         // convert image file to base64 string
         if (file.type === "image/png" || file.type === "image/jpeg") {
-          setBarImages({ logo: reader.result,file:file });
+          setBarImages({ logo: reader.result, file: file });
         } else {
           alert(
             "Error: Please a insert valid image file with following extensions .jpeg .png"
@@ -354,171 +353,178 @@ const AddNewBusinessUser = ({
   const handleReset = () => {
     setActiveStep(0);
   };
-  const steps = ['Organization Detail', 'Manager','User (optional)','Payment & Subscription','Category'];
+  const steps = [
+    "Organization Detail",
+    "Manager",
+    "User (optional)",
+    "Payment & Subscription",
+    "Category",
+  ];
   return (
     <Dialog maxWidth="md" fullWidth open={open} onClose={handleClose}>
       <DialogTitle>
         {edit ? `Edit ${editUser.name}` : "Add new Organization"}
       </DialogTitle>
-   
+
       <DialogContent>
-      
         <Formik
           initialValues={edit ? editInitialState : initialState}
           onSubmit={(values, { setSubmitting }) => {
-            console.log(values, "values");
             if (edit) {
               handleEditSubmit(values, setSubmitting);
-            
-               setTimeout(() => {
+
+              setTimeout(() => {
                 setSubmitting(false);
               }, 3000);
             } else {
               handleSubmit(values, setSubmitting);
-             
+
               setTimeout(() => {
                 setSubmitting(false);
               }, 3000);
-           
             }
           }}
           validationSchema={AddSchema}
         >
-          {({ isSubmitting, submitForm, values, setFieldValue,errors }) => (
-        
+          {({ isSubmitting, submitForm, values, setFieldValue, errors }) => (
             <Form>
-            
-              <Box sx={{ width: '100%' }}>
-      <Stepper activeStep={activeStep}>
-        {steps.map((label, index) => {
-          // const stepProps={};
-          // const labelProps = {};
-          // if (isStepOptional(index)) {
-          //   labelProps.optional = (
-          //     <Typography variant="caption">Optional</Typography>
-          //   );
-          // }
-          // if (isStepSkipped(index)) {
-          //   stepProps.completed = false;
-          // }
-          return (
-            <Step key={label}>
-              <StepLabel >{label}</StepLabel>
-            </Step>
-          );
-        })}
-      </Stepper>
-      {activeStep === steps.length ? (
-        <React.Fragment>
-          <Typography sx={{ mt: 2, mb: 1 }}>
-            All steps completed - you&apos;re finished
-          </Typography>
-          <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-            <Box sx={{ flex: '1 1 auto' }} />
-            <Button onClick={handleReset}>Reset</Button>
-          </Box>
-        </React.Fragment>
-      ) :activeStep==0 ?(
-        <React.Fragment>
-       
-        <Grid container sx={{ mt: 2 }} spacing={2}>
-                <Grid
-                  style={{ flexDirection: "row" }}
-                  item
-                  xs={6}
-                  className="profile-image"
-                >
-                  <div className="img__wrap" onClick={handleClick}>
-                    <input
-                      accept="image/*"
-                      id="contained-button-file"
-                      name="OrgLogo"
-                      type="file"
-                      ref={hiddenFileInput}
-                      onChange={(e) => {
-                        handleChange(e);
-                        setFieldValue("OrgLogo", e.target.files[0]);
-                      }}
-                      style={{ display: "none" }}
-                    />
-                    <Avatar
-                      style={{
-                        height: "300px",
-                        width: "300px",
-                        cursor: "pointer",
-                      }}
-                      src={barImages.logo?barImages.logo:editUser?.logo}
-                      alt="log"
-                      className="user-image"
-                    />
-                    <div class="img__description_layer">
-                      <p class="img__description">Add logo</p>
-                    </div>
-                  </div>
-                  <ErrorMessage
-                    name="OrgLogo"
-                    render={(msg) => <div className="input-error">{msg}</div>}
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  {/* <Field
+              <Box sx={{ width: "100%" }}>
+                <Stepper activeStep={activeStep}>
+                  {steps.map((label, index) => {
+                    // const stepProps={};
+                    // const labelProps = {};
+                    // if (isStepOptional(index)) {
+                    //   labelProps.optional = (
+                    //     <Typography variant="caption">Optional</Typography>
+                    //   );
+                    // }
+                    // if (isStepSkipped(index)) {
+                    //   stepProps.completed = false;
+                    // }
+                    return (
+                      <Step key={label}>
+                        <StepLabel>{label}</StepLabel>
+                      </Step>
+                    );
+                  })}
+                </Stepper>
+                {activeStep === steps.length && (
+                  <React.Fragment>
+                    <Typography sx={{ mt: 2, mb: 1 }}>
+                      All steps completed - you&apos;re finished
+                    </Typography>
+                    <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
+                      <Box sx={{ flex: "1 1 auto" }} />
+                      <Button onClick={handleReset}>Reset</Button>
+                    </Box>
+                  </React.Fragment>
+                )}
+                {activeStep == 0 && (
+                  <React.Fragment>
+                    <Grid container sx={{ mt: 2 }} spacing={2}>
+                      <Grid
+                        style={{ flexDirection: "row" }}
+                        item
+                        xs={6}
+                        className="profile-image"
+                      >
+                        <div className="img__wrap" onClick={handleClick}>
+                          <input
+                            accept="image/*"
+                            id="contained-button-file"
+                            name="OrgLogo"
+                            type="file"
+                            ref={hiddenFileInput}
+                            onChange={(e) => {
+                              handleChange(e);
+                              setFieldValue("OrgLogo", e.target.files[0]);
+                            }}
+                            style={{ display: "none" }}
+                          />
+                          <Avatar
+                            style={{
+                              height: "300px",
+                              width: "300px",
+                              cursor: "pointer",
+                            }}
+                            src={
+                              barImages.logo ? barImages.logo : editUser?.logo
+                            }
+                            alt="log"
+                            className="user-image"
+                          />
+                          <div class="img__description_layer">
+                            <p class="img__description">Add logo</p>
+                          </div>
+                        </div>
+                        <ErrorMessage
+                          name="OrgLogo"
+                          render={(msg) => (
+                            <div className="input-error">{msg}</div>
+                          )}
+                        />
+                      </Grid>
+                      <Grid item xs={12} md={6}>
+                        {/* <Field
                       component={TextField}
                       label="Color"
                       name="Color"
                       fullWidth
                     /> */}
-                  <SketchPicker
-                    name="color"
-                    color={blockPickerColor}
-                    onChange={(color) => {
-                      setBlockPickerColor(color.hex);
-                      setFieldValue("color", color.hex);
-                    }}
-                  />
-                  <div class="img__description_layer">
-                    <p class="img__description">Color</p>
-                  </div>
-                  <ErrorMessage
-                    name="color"
-                    render={(msg) => <div className="input-error">{msg}</div>}
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <Field
-                    component={TextField}
-                    label="Name"
-                    name="OrgName"
-                    fullWidth
-                  />
-                </Grid>
+                        <SketchPicker
+                          name="color"
+                          color={blockPickerColor}
+                          onChange={(color) => {
+                            setBlockPickerColor(color.hex);
+                            setFieldValue("OrgColor", color.hex);
+                          }}
+                        />
+                        <div class="img__description_layer">
+                          <p class="img__description">Color</p>
+                        </div>
+                        <ErrorMessage
+                          name="color"
+                          render={(msg) => (
+                            <div className="input-error">{msg}</div>
+                          )}
+                        />
+                      </Grid>
+                      <Grid item xs={12} md={6}>
+                        <Field
+                          component={TextField}
+                          label="Name"
+                          name="OrgName"
+                          fullWidth
+                        />
+                      </Grid>
 
-                <Grid item xs={12} md={6}>
-                  <LoadScript
-                    googleMapsApiKey="AIzaSyAW5O831v7xI0OVGJufVHJiIcJgeMybNdA"
-                    libraries={libraries}
-                  >
-                    <Autocomplete
-                      onLoad={onAutoCompleteLoad}
-                      onPlaceChanged={onPlaceChanged}
-                    >
-                      <Field
-                        component={TextField}
-                        label="Address"
-                        name="OrgAddress"
-                        fullWidth
-                      />
-                    </Autocomplete>
-                  </LoadScript>
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <Field
-                    component={TextField}
-                    label="Email"
-                    name="OrgEmail"
-                    fullWidth
-                  />
-                </Grid>
-{/* 
+                      <Grid item xs={12} md={6}>
+                        <LoadScript
+                          googleMapsApiKey="AIzaSyAW5O831v7xI0OVGJufVHJiIcJgeMybNdA"
+                          libraries={libraries}
+                        >
+                          <Autocomplete
+                            onLoad={onAutoCompleteLoad}
+                            onPlaceChanged={onPlaceChanged}
+                          >
+                            <Field
+                              component={TextField}
+                              label="Address"
+                              name="OrgAddress"
+                              fullWidth
+                            />
+                          </Autocomplete>
+                        </LoadScript>
+                      </Grid>
+                      <Grid item xs={12} md={6}>
+                        <Field
+                          component={TextField}
+                          label="Email"
+                          name="OrgEmail"
+                          fullWidth
+                        />
+                      </Grid>
+                      {/* 
                 <Grid item xs={12} md={6}>
                   <FormControl fullWidth>
                     <Field
@@ -535,32 +541,32 @@ const AddNewBusinessUser = ({
                     </Field>
                   </FormControl>
                 </Grid> */}
-                <Grid item xs={12} md={6}>
-                  <Field
-                    component={TextField}
-                    label="Phone"
-                    name="OrgPhone"
-                    type="number"
-                    fullWidth
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <Field
-                    component={TextField}
-                    label="City"
-                    name="OrgCity"
-                    fullWidth
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <Field
-                    component={TextField}
-                    label="Country"
-                    name="OrgCountry"
-                    fullWidth
-                  />
-                </Grid>
-                {/* <Grid item xs={12} md={6}>
+                      <Grid item xs={12} md={6}>
+                        <Field
+                          component={TextField}
+                          label="Phone"
+                          name="OrgPhone"
+                          type="number"
+                          fullWidth
+                        />
+                      </Grid>
+                      <Grid item xs={12} md={6}>
+                        <Field
+                          component={TextField}
+                          label="City"
+                          name="OrgCity"
+                          fullWidth
+                        />
+                      </Grid>
+                      <Grid item xs={12} md={6}>
+                        <Field
+                          component={TextField}
+                          label="Country"
+                          name="OrgCountry"
+                          fullWidth
+                        />
+                      </Grid>
+                      {/* <Grid item xs={12} md={6}>
                   <FormControl>
                     <FormLabel id="demo-row-radio-buttons-group-label">
                       Subscription Start Date
@@ -586,7 +592,7 @@ const AddNewBusinessUser = ({
                     />
                   </FormControl>
                 </Grid> */}
-                {/* <Grid item xs={12} md={6}>
+                      {/* <Grid item xs={12} md={6}>
                   <FormControl>
                     <FormLabel id="demo-row-radio-buttons-group-label">
                       Payment
@@ -634,10 +640,10 @@ const AddNewBusinessUser = ({
                   />
                 </Grid> */}
 
-                <Grid item xs={12}>
-                  {isSubmitting && <LinearProgress />}
-                </Grid>
-                {/* <Grid item xs={12}>
+                      <Grid item xs={12}>
+                        {isSubmitting && <LinearProgress />}
+                      </Grid>
+                      {/* <Grid item xs={12}>
                   <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                     <Button
                       onClick={restoreInitialState}
@@ -658,203 +664,207 @@ const AddNewBusinessUser = ({
                     </Button>
                   </Box>
                 </Grid> */}
-              </Grid>
-          <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-            <Button
-              color="inherit"
-              disabled={activeStep === 0}
-              onClick={handleBack}
-              sx={{ mr: 1 }}
-            >
-              Back
-            </Button>
-            <Box sx={{ flex: '1 1 auto' }} />
-            {/* {isStepOptional(activeStep) && (
+                    </Grid>
+                    <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
+                      <Button
+                        color="inherit"
+                        disabled={activeStep === 0}
+                        onClick={handleBack}
+                        sx={{ mr: 1 }}
+                      >
+                        Back
+                      </Button>
+                      <Box sx={{ flex: "1 1 auto" }} />
+                      {/* {isStepOptional(activeStep) && (
               <Button color="inherit" onClick={handleSkip} sx={{ mr: 1 }}>
                 Skip
               </Button>
             )} */}
-            <Button onClick={handleNext}>
-              {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
-            </Button>
-          </Box>
-        </React.Fragment>
-      ):activeStep==1?
-      <React.Fragment>
-      <Grid container sx={{ mt: 2 }} spacing={2}>
-         <Grid item xs={12} md={6}>
-           <Field
-             component={TextField}
-             label="Name"
-             name="ManagerName"
-             fullWidth
-           />
-         </Grid>
-         <Grid item xs={12} md={6}>
-           <Field
-             component={TextField}
-             label="Username"
-             name="ManagerUsername"
-             fullWidth
-           />
-         </Grid>
-         <Grid item xs={12} md={6}>
-           <Field
-             component={TextField}
-             label="Email"
-             name="ManagerEmail"
-             fullWidth
-           />
-         </Grid>
-         {!edit && (
-           <Grid item xs={12} md={6}>
-             <Field
-               component={TextField}
-               label="Password"
-               name="Managerpassword"
-               fullWidth
-             />
-           </Grid>
-         )}
-         <Grid item xs={12} md={6}>
-           <Field
-             component={TextField}
-             label="Age"
-             name="ManagerAge"
-             type="text"
-             fullWidth
-           />
-         </Grid>
-         <Grid item xs={12} md={6}>
-           <Field
-             component={TextField}
-             label="Phone"
-             name="ManagerPhone"
-             fullWidth
-           />
-         </Grid>
-        
-         <Grid item xs={12} md={6}>
-           <FormControl>
-             <FormLabel id="demo-row-radio-buttons-group-label">
-               Gender
-             </FormLabel>
-             <RadioGroup
-               row
-               onChange={(e) => setFieldValue("ManagerGender", e.target.value)}
-             >
-               <FormControlLabel
-                 value="Male"
-                 control={<Radio />}
-                 label="Male"
-                 checked={values.ManagerGender === "Male"}
-               />
-               <FormControlLabel
-                 value="Female"
-                 control={<Radio />}
-                 label="Female"
-                 checked={values.ManagerGender === "Female"}
-               />
-               <FormControlLabel
-                 value="Other"
-                 control={<Radio />}
-                 label="Other"
-                 checked={values.ManagerGender === "Other"}
-               />
-             </RadioGroup>
-           </FormControl>
-         </Grid>
-       
-         <Grid item xs={12}>
-           {isSubmitting && <LinearProgress />}
-         </Grid>
-         
-       </Grid>
-       <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-   <Button
-     color="inherit"
-     disabled={activeStep === 0}
-     onClick={handleBack}
-     sx={{ mr: 1 }}
-   >
-     Back
-   </Button>
-   <Box sx={{ flex: '1 1 auto' }} />
-   {/* {isStepOptional(activeStep) && (
+                      <Button onClick={handleNext}>
+                        {activeStep === steps.length - 1 ? "Finish" : "Next"}
+                      </Button>
+                    </Box>
+                  </React.Fragment>
+                )}
+                {activeStep == 1 && (
+                  <React.Fragment>
+                    <Grid container sx={{ mt: 2 }} spacing={2}>
+                      <Grid item xs={12} md={6}>
+                        <Field
+                          component={TextField}
+                          label="Name"
+                          name="ManagerName"
+                          fullWidth
+                        />
+                      </Grid>
+                      <Grid item xs={12} md={6}>
+                        <Field
+                          component={TextField}
+                          label="Username"
+                          name="ManagerUsername"
+                          fullWidth
+                        />
+                      </Grid>
+                      <Grid item xs={12} md={6}>
+                        <Field
+                          component={TextField}
+                          label="Email"
+                          name="ManagerEmail"
+                          fullWidth
+                        />
+                      </Grid>
+                      {!edit && (
+                        <Grid item xs={12} md={6}>
+                          <Field
+                            component={TextField}
+                            label="Password"
+                            name="ManagerPassword"
+                            fullWidth
+                          />
+                        </Grid>
+                      )}
+                      <Grid item xs={12} md={6}>
+                        <Field
+                          component={TextField}
+                          label="Age"
+                          name="ManagerAge"
+                          type="text"
+                          fullWidth
+                        />
+                      </Grid>
+                      <Grid item xs={12} md={6}>
+                        <Field
+                          component={TextField}
+                          label="Phone"
+                          name="ManagerPhone"
+                          fullWidth
+                        />
+                      </Grid>
+
+                      <Grid item xs={12} md={6}>
+                        <FormControl>
+                          <FormLabel id="demo-row-radio-buttons-group-label">
+                            Gender
+                          </FormLabel>
+                          <RadioGroup
+                            row
+                            onChange={(e) =>
+                              setFieldValue("ManagerGender", e.target.value)
+                            }
+                          >
+                            <FormControlLabel
+                              value="Male"
+                              control={<Radio />}
+                              label="Male"
+                              checked={values.ManagerGender === "Male"}
+                            />
+                            <FormControlLabel
+                              value="Female"
+                              control={<Radio />}
+                              label="Female"
+                              checked={values.ManagerGender === "Female"}
+                            />
+                            <FormControlLabel
+                              value="Other"
+                              control={<Radio />}
+                              label="Other"
+                              checked={values.ManagerGender === "Other"}
+                            />
+                          </RadioGroup>
+                        </FormControl>
+                      </Grid>
+
+                      <Grid item xs={12}>
+                        {isSubmitting && <LinearProgress />}
+                      </Grid>
+                    </Grid>
+                    <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
+                      <Button
+                        color="inherit"
+                        disabled={activeStep === 0}
+                        onClick={handleBack}
+                        sx={{ mr: 1 }}
+                      >
+                        Back
+                      </Button>
+                      <Box sx={{ flex: "1 1 auto" }} />
+                      {/* {isStepOptional(activeStep) && (
      <Button color="inherit" onClick={handleSkip} sx={{ mr: 1 }}>
        Skip
      </Button>
    )} */}
-   <Button onClick={handleNext}>
-     {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
-   </Button>
- </Box>
-    </React.Fragment>
-     :activeStep==2?
-     <React.Fragment>
-       <Grid container sx={{ mt: 2 }} spacing={2}>
-                <Grid item xs={12} md={6}>
-                  <Field
-                    component={TextField}
-                    label="Name"
-                    name="Username"
-                    fullWidth
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <Field
-                    component={TextField}
-                    label="Username"
-                    name="Userusername"
-                    fullWidth
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <Field
-                    component={TextField}
-                    label="Email"
-                    name="UserEmail"
-                    fullWidth
-                  />
-                </Grid>
-                {!edit && (
-                  <Grid item xs={12} md={6}>
-                    <Field
-                      component={TextField}
-                      label="Password"
-                      name="UserPassword"
-                      fullWidth
-                    />
-                  </Grid>
+                      <Button onClick={handleNext}>
+                        {activeStep === steps.length - 1 ? "Finish" : "Next"}
+                      </Button>
+                    </Box>
+                  </React.Fragment>
                 )}
-                <Grid item xs={12} md={6}>
-                  <Field
-                    component={TextField}
-                    label="Office Number"
-                    name="UserOfficeNumber"
-                    type="text"
-                    fullWidth
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <Field
-                    component={TextField}
-                    label="Phone"
-                    name="UserPhone"
-                    fullWidth
-                  />
-                </Grid>
-               {edit?
-                <Grid item xs={12} md={6}>
-                  <Field
-                    component={TextField}
-                    label="Wallet"
-                    name="UserWallet"
-                    fullWidth
-                  />
-                </Grid>:null}
-                
-                {/* <Grid item xs={12} md={6}>
+                {activeStep == 2 && (
+                  <React.Fragment>
+                    <Grid container sx={{ mt: 2 }} spacing={2}>
+                      <Grid item xs={12} md={6}>
+                        <Field
+                          component={TextField}
+                          label="Name"
+                          name="Username"
+                          fullWidth
+                        />
+                      </Grid>
+                      <Grid item xs={12} md={6}>
+                        <Field
+                          component={TextField}
+                          label="Username"
+                          name="Userusername"
+                          fullWidth
+                        />
+                      </Grid>
+                      <Grid item xs={12} md={6}>
+                        <Field
+                          component={TextField}
+                          label="Email"
+                          name="UserEmail"
+                          fullWidth
+                        />
+                      </Grid>
+                      {!edit && (
+                        <Grid item xs={12} md={6}>
+                          <Field
+                            component={TextField}
+                            label="Password"
+                            name="UserPassword"
+                            fullWidth
+                          />
+                        </Grid>
+                      )}
+                      <Grid item xs={12} md={6}>
+                        <Field
+                          component={TextField}
+                          label="Office Number"
+                          name="UserOfficeNumber"
+                          type="text"
+                          fullWidth
+                        />
+                      </Grid>
+                      <Grid item xs={12} md={6}>
+                        <Field
+                          component={TextField}
+                          label="Phone"
+                          name="UserPhone"
+                          fullWidth
+                        />
+                      </Grid>
+                      {edit ? (
+                        <Grid item xs={12} md={6}>
+                          <Field
+                            component={TextField}
+                            label="Wallet"
+                            name="UserWallet"
+                            fullWidth
+                          />
+                        </Grid>
+                      ) : null}
+
+                      {/* <Grid item xs={12} md={6}>
                   <FormControl fullWidth>
                     <Field
                       component={Select}
@@ -870,7 +880,7 @@ const AddNewBusinessUser = ({
                     </Field>
                   </FormControl>
                 </Grid> */}
-                {/* {!edit && (
+                      {/* {!edit && (
                   <Grid item xs={12} md={6}>
                     <FormControl>
                       <FormLabel id="demo-row-radio-buttons-group-label">
@@ -901,7 +911,7 @@ const AddNewBusinessUser = ({
                     </FormControl>
                   </Grid>
                 )} */}
-                {/* <Grid item xs={12} md={6}>
+                      {/* <Grid item xs={12} md={6}>
                   <FormControl>
                     <FormLabel id="demo-row-radio-buttons-group-label">
                       Gender
@@ -931,11 +941,11 @@ const AddNewBusinessUser = ({
                     </RadioGroup>
                   </FormControl>
                 </Grid> */}
-              
-                <Grid item xs={12}>
-                  {isSubmitting && <LinearProgress />}
-                </Grid>
-                {/* <Grid item xs={12}>
+
+                      <Grid item xs={12}>
+                        {isSubmitting && <LinearProgress />}
+                      </Grid>
+                      {/* <Grid item xs={12}>
                   <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                     <Button
                       onClick={restoreInitialState}
@@ -956,35 +966,32 @@ const AddNewBusinessUser = ({
                     </Button>
                   </Box>
                 </Grid> */}
-              </Grid>
-                <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-   <Button
-     color="inherit"
-     disabled={activeStep === 0}
-     onClick={handleBack}
-     sx={{ mr: 1 }}
-   >
-     Back
-   </Button>
-   <Box sx={{ flex: '1 1 auto' }} />
-   {/* {isStepOptional(activeStep) && (
+                    </Grid>
+                    <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
+                      <Button
+                        color="inherit"
+                        disabled={activeStep === 0}
+                        onClick={handleBack}
+                        sx={{ mr: 1 }}
+                      >
+                        Back
+                      </Button>
+                      <Box sx={{ flex: "1 1 auto" }} />
+                      {/* {isStepOptional(activeStep) && (
      <Button color="inherit" onClick={handleSkip} sx={{ mr: 1 }}>
        Skip
      </Button>
    )} */}
-   <Button onClick={handleNext}>
-     {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
-   </Button>
- </Box>
-     </React.Fragment>
-    
-        :activeStep==3?
-        <React.Fragment>
-        <Grid container sx={{ mt: 2 }} spacing={2}>
-              
-   
-               
-   {/* 
+                      <Button onClick={handleNext}>
+                        {activeStep === steps.length - 1 ? "Finish" : "Next"}
+                      </Button>
+                    </Box>
+                  </React.Fragment>
+                )}
+                {activeStep == 3 && (
+                  <React.Fragment>
+                    <Grid container sx={{ mt: 2 }} spacing={2}>
+                      {/* 
                 <Grid item xs={12} md={6}>
                   <FormControl fullWidth>
                     <Field
@@ -1001,52 +1008,50 @@ const AddNewBusinessUser = ({
                     </Field>
                   </FormControl>
                 </Grid> */}
-                
-                <Grid item xs={12} md={6}>
-                  <FormControl>
-                    <FormLabel id="demo-row-radio-buttons-group-label">
-                      Subscription Start Date
-                    </FormLabel>
-   
-                    <DatePicker
-                      name="StartDate"
-                      selected={startDate}
-                      onChange={(date) => setStartDate(date)}
-                    />
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <FormControl>
-                    <FormLabel id="demo-row-radio-buttons-group-label">
-                      Subscription End Date
-                    </FormLabel>
-   
-                    <DatePicker
-                      name="EndDate"
-                      selected={startDate2}
-                      onChange={(date) => setStartDate2(date)}
-                    />
-                  </FormControl>
-                </Grid> 
-                <Grid item xs={12} md={6}>
-                  <Field
-                    component={TextField}
-                    label="Stripe Key"
-                    name="StripeKey"
-                    fullWidth
-                  />
-                  
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <Field
-                    component={TextField}
-                    label="Secret Key"
-                    name="SecretKey"
-                    fullWidth
-                  />
-                  
-                </Grid>
-                 {/* <Grid item xs={12} md={6}>
+
+                      <Grid item xs={12} md={6}>
+                        <FormControl>
+                          <FormLabel id="demo-row-radio-buttons-group-label">
+                            Subscription Start Date
+                          </FormLabel>
+
+                          <DatePicker
+                            name="StartDate"
+                            selected={startDate}
+                            onChange={(date) => setStartDate(date)}
+                          />
+                        </FormControl>
+                      </Grid>
+                      <Grid item xs={12} md={6}>
+                        <FormControl>
+                          <FormLabel id="demo-row-radio-buttons-group-label">
+                            Subscription End Date
+                          </FormLabel>
+
+                          <DatePicker
+                            name="EndDate"
+                            selected={startDate2}
+                            onChange={(date) => setStartDate2(date)}
+                          />
+                        </FormControl>
+                      </Grid>
+                      <Grid item xs={12} md={6}>
+                        <Field
+                          component={TextField}
+                          label="Stripe Key"
+                          name="StripeKey"
+                          fullWidth
+                        />
+                      </Grid>
+                      <Grid item xs={12} md={6}>
+                        <Field
+                          component={TextField}
+                          label="Secret Key"
+                          name="SecretKey"
+                          fullWidth
+                        />
+                      </Grid>
+                      {/* <Grid item xs={12} md={6}>
                   <FormControl>
                     <FormLabel id="demo-row-radio-buttons-group-label">
                       Payment
@@ -1093,11 +1098,11 @@ const AddNewBusinessUser = ({
                     render={(msg) => <div className="input-error">{msg}</div>}
                   />
                 </Grid> */}
-   
-                <Grid item xs={12}>
-                  {isSubmitting && <LinearProgress />}
-                </Grid>
-                {/* <Grid item xs={12}>
+
+                      <Grid item xs={12}>
+                        {isSubmitting && <LinearProgress />}
+                      </Grid>
+                      {/* <Grid item xs={12}>
                   <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                     <Button
                       onClick={restoreInitialState}
@@ -1118,110 +1123,113 @@ const AddNewBusinessUser = ({
                     </Button>
                   </Box>
                 </Grid> */}
-              </Grid>
-          <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-            <Button
-              color="inherit"
-              disabled={activeStep === 0}
-              onClick={handleBack}
-              sx={{ mr: 1 }}
-            >
-              Back
-            </Button>
-            <Box sx={{ flex: '1 1 auto' }} />
-            {/* {isStepOptional(activeStep) && (
+                    </Grid>
+                    <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
+                      <Button
+                        color="inherit"
+                        disabled={activeStep === 0}
+                        onClick={handleBack}
+                        sx={{ mr: 1 }}
+                      >
+                        Back
+                      </Button>
+                      <Box sx={{ flex: "1 1 auto" }} />
+                      {/* {isStepOptional(activeStep) && (
               <Button color="inherit" onClick={handleSkip} sx={{ mr: 1 }}>
                 Skip
               </Button>
             )} */}
-            <Button onClick={handleNext}>
-              {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
-            </Button>
-          </Box></React.Fragment>:activeStep==4?
-          <React.Fragment>
-             <Grid container sx={{ mt: 2 }} spacing={2}>
-                <Grid
-                  style={{ flexDirection: "row" }}
-                  item
-                  xs={3}
-                  className="profile-image"
-                >
-                  <div className="img__wrap" onClick={handleClick}>
-                    <input
-                      accept="image/*"
-                      id="contained-button-file"
-                      name="CatImg"
-                      type="file"
-                      ref={hiddenFileInput}
-                      onChange={(e) => {
-                        handleChange(e);
-                        setFieldValue("CatImg", e.target.files[0]);
-                      }}
-                      style={{ display: "none" }}
-                    />
-                    <Avatar
-                      style={{
-                        height: "100px",
-                        width: "100px",
-                        cursor: "pointer",
-                      }}
-                      src={barImages.logo?barImages.logo:editUser?.logo}
-                      alt="log"
-                      className="user-image"
-                    />
-                    <div class="img__description_layer">
-                      <p class="img__description">Category logo</p>
-                    </div>
-                  </div>
-                  <ErrorMessage
-                    name="CatImg"
-                    render={(msg) => <div className="input-error">{msg}</div>}
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <Field
-                    component={TextField}
-                    label="Category Name"
-                    name="CatName"
-                    fullWidth
-                  />
-                    <Typography >You can add more categories and products once organization is created</Typography>
-                </Grid>
-              
-                 
-              </Grid>
-              <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-            <Button
-              color="inherit"
-              disabled={activeStep === 0}
-              onClick={handleBack}
-              sx={{ mr: 1 }}
-            >
-              Back
-            </Button>
-            <Box sx={{ flex: '1 1 auto' }} />
-            {/* {isStepOptional(activeStep) && (
+                      <Button onClick={handleNext}>
+                        {activeStep === steps.length - 1 ? "Finish" : "Next"}
+                      </Button>
+                    </Box>
+                  </React.Fragment>
+                )}
+                {activeStep == 4 && (
+                  <React.Fragment>
+                    <Grid container sx={{ mt: 2 }} spacing={2}>
+                      <Grid
+                        style={{ flexDirection: "row" }}
+                        item
+                        xs={3}
+                        className="profile-image"
+                      >
+                        <div className="img__wrap" onClick={handleClick}>
+                          <input
+                            accept="image/*"
+                            id="contained-button-file"
+                            name="CatImg"
+                            type="file"
+                            ref={hiddenFileInput}
+                            onChange={(e) => {
+                              handleChange(e);
+                              setFieldValue("CatImg", e.target.files[0]);
+                            }}
+                            style={{ display: "none" }}
+                          />
+                          <Avatar
+                            style={{
+                              height: "100px",
+                              width: "100px",
+                              cursor: "pointer",
+                            }}
+                            src={
+                              barImages.logo ? barImages.logo : editUser?.logo
+                            }
+                            alt="log"
+                            className="user-image"
+                          />
+                          <div class="img__description_layer">
+                            <p class="img__description">Category logo</p>
+                          </div>
+                        </div>
+                        <ErrorMessage
+                          name="CatImg"
+                          render={(msg) => (
+                            <div className="input-error">{msg}</div>
+                          )}
+                        />
+                      </Grid>
+                      <Grid item xs={12} md={6}>
+                        <Field
+                          component={TextField}
+                          label="Category Name"
+                          name="CatName"
+                          fullWidth
+                        />
+                        <Typography>
+                          You can add more categories and products once
+                          organization is created
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                    <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
+                      <Button
+                        color="inherit"
+                        disabled={activeStep === 0}
+                        onClick={handleBack}
+                        sx={{ mr: 1 }}
+                      >
+                        Back
+                      </Button>
+                      <Box sx={{ flex: "1 1 auto" }} />
+                      {/* {isStepOptional(activeStep) && (
               <Button color="inherit" onClick={handleSkip} sx={{ mr: 1 }}>
                 Skip
               </Button>
             )} */}
-            <Button
-             disabled={isSubmitting}
-             disableElevation
-             variant="contained"
-             onClick={submitForm}>
-              {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
-            </Button>
-          </Box>
-          </React.Fragment>
-          
-          :
-                     null
-          
-        
-        }
-    </Box>
-              
+                      <Button
+                        disabled={isSubmitting}
+                        disableElevation
+                        variant="contained"
+                        onClick={submitForm}
+                      >
+                        {activeStep === steps.length - 1 ? "Finish" : "Next"}
+                      </Button>
+                    </Box>
+                  </React.Fragment>
+                )}
+              </Box>
             </Form>
           )}
         </Formik>
