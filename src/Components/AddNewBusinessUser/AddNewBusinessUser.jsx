@@ -64,38 +64,99 @@ const AddNewBusinessUser = ({
   const hiddenFileInput = React.useRef(null);
   // validation schema
   const AddSchema = yup.object().shape({
-    name: yup.string().required("Required"),
-    Phone: yup.string(),
-    email: yup.string().email().required("Required"),
-    logo: yup.mixed().required("Required"),
-    Address: yup.string(),
-    city: yup.string().required("Required"),
-    country: yup.string().required("Required"),
-    color: yup.string().required("Required"),
+    OrgName: yup.string().required("Required"),
+    OrgPhone: yup.string(),
+    OrgEmail: yup.string().email().required("Required"),
+    OrgLogo: yup.mixed().required("Required"),
+    OrgAddress: yup.string(),
+    OrgCity: yup.string().required("Required"),
+    OrgCountry: yup.string().required("Required"),
+    OrgColor: yup.string().required("Required"),
+    ManagerName: yup.string().required("Required"),
+    ManagerUsername: yup.string().required("Required"),
+    ManagerEmail: yup.string().required("Required"),
+    ManagerPhone: yup.string().required("Required"),
+    ManagerAge: yup.string().required("Required"),
+    ManagerPassword: yup.string().required("Required"),
+    ManagerGender: yup.string().required("Required"),
+    UserName: yup.string(),
+    UserUsername: yup.string(),
+    UserEmail: yup.string(),
+    UserPhone: yup.string(),
+    UserOfficeNumber: yup.string(),
+    UserPassword: yup.string(),
+    UserWallet: yup.string(),
+    StartDate: yup.string().required("Required"),
+    EndDate: yup.string().required("Required"),
+    StripeKey: yup.string().required("Required"),
+    SecretKey: yup.string().required("Required"),
+    CatImg:yup.mixed().required("Required"),
+    CatName:yup.string().required("Required"),
+    
   });
 
   // initial states
   const initialState = {
-    name: "",
-    Address: "",
-    color: "",
-    logo: "",
-    email: "",
-    city: "",
-    country:"",
-    Phone: "",
+    OrgName: "",
+    OrgAddress: "",
+    OrgColor: "",
+    OrgLogo: "",
+    OrgEmail: "",
+    OrgCity: "",
+    OrgCountry:"",
+    OrgPhone: "",
+    ManagerName: "",
+    ManagerUsername: "",
+    ManagerEmail: "",
+    ManagerPhone: "",
+    ManagerAge: "",
+    ManagerPassword: "",
+    ManagerGender: "",
+    UserName:"",
+    UserUsername:"",
+    UserEmail:"",
+    UserPhone:"",
+    UserOfficeNumber:"",
+    UserPassword:"",
+    UserWallet:"",
+    StartDate: "",
+    EndDate: "",
+    StripeKey: "",
+    SecretKey: "",
+    CatImg:"",
+    CatName:""
  
   };
 
   const editInitialState = {
-    name:editUser?.name,
-    Address:editUser?.Address,
-    color:editUser?.color,
-    logo:editUser?.logo,
-    email:editUser?.email,
-    city:editUser?.city,
-    country:editUser?.country,
-    Phone: editUser?.Phone,
+    OrgName:editUser?.OrgName,
+    OrgAddress:editUser?.OrgAddress,
+    OrgColor:editUser?.OrgColor,
+    OrgLogo:editUser?.OrgLogo,
+    OrgEmail:editUser?.OrgEmail,
+    OrgCity:editUser?.OrgCity,
+    OrgCountry:editUser?.OrgCountry,
+    OrgPhone: editUser?.OrgPhone,
+    ManagerName: editUser?. ManagerName,
+    ManagerUsername: editUser?. ManagerUsername,
+    ManagerEmail: editUser?. ManagerEmail,
+    ManagerPhone: editUser?.ManagerPhone,
+    ManagerAge: editUser?.ManagerAge,
+    ManagerPassword: editUser?.ManagerPassword,
+    ManagerGender: editUser?.ManagerGender,
+    UserName: editUser?.UserName,
+    UserUsername: editUser?.UserUsername,
+    UserEmail: editUser?.UserEmail,
+    UserPhone: editUser?.UserPhone,
+    UserOfficeNumber: editUser?.UserOfficeNumber,
+    UserPassword: editUser?.UserPassword,
+    UserWallet:editUser?.Wallet,
+    StartDate: editUser?.StartDate,
+    EndDate: editUser?.EndDate,
+    StripeKey: editUser?.StripeKey,
+    SecretKey: editUser?.SecretKey,
+    CatImg:editUser?.CatImg,
+    CatName:editUser?.CatName
  
   };
 
@@ -122,36 +183,37 @@ const AddNewBusinessUser = ({
   };
 
   const handleSubmit = async (values, setSubmitting) => {
-    try {
-      const _id=firebase.firestore().collection('Random').doc().id;
-      const url =await singleImageUpload(`images/Organizations/${_id}`,barImages.file)
-     const dataManager= await ref.doc(values.manager).get()
+    console.log(values)
+    // try {
+    //   const _id=firebase.firestore().collection('Random').doc().id;
+    //   const url =await singleImageUpload(`images/Organizations/${_id}`,barImages.file)
+    //  const dataManager= await ref.doc(values.manager).get()
    
-      let data = {
-        ...values,
-        id: _id,
-        logo:url,
-        startDate: startDate,
-        EndDate: startDate2,
-        manager_name:dataManager.data().name
-      };
-      //   delete data.password;
+    //   let data = {
+    //     ...values,
+    //     id: _id,
+    //     logo:url,
+    //     startDate: startDate,
+    //     EndDate: startDate2,
+    //     manager_name:dataManager.data().name
+    //   };
+    //   //   delete data.password;
 
-      await ref2
-        .doc(_id)
-        .set(data, { merge: true })
-        .then(() => {
-          notify("Organization added");
-          getUsers();
-        });
-    } catch (error) {
-      if (error.response) {
-        notify(error.response.data, { variant: "error" });
-      }
-    } finally {
-      setSubmitting(false);
-      restoreInitialState();
-    }
+    //   await ref2
+    //     .doc(_id)
+    //     .set(data, { merge: true })
+    //     .then(() => {
+    //       notify("Organization added");
+    //       getUsers();
+    //     });
+    // } catch (error) {
+    //   if (error.response) {
+    //     notify(error.response.data, { variant: "error" });
+    //   }
+    // } finally {
+    //   setSubmitting(false);
+    //   restoreInitialState();
+    // }
   };
 
   // const handleAddPreferences = (interest) => {
@@ -292,7 +354,7 @@ const AddNewBusinessUser = ({
   const handleReset = () => {
     setActiveStep(0);
   };
-  const steps = ['Organization Detail', 'Manager','User','Payment & Subscription','Menu'];
+  const steps = ['Organization Detail', 'Manager','User (optional)','Payment & Subscription','Category'];
   return (
     <Dialog maxWidth="md" fullWidth open={open} onClose={handleClose}>
       <DialogTitle>
@@ -304,6 +366,7 @@ const AddNewBusinessUser = ({
         <Formik
           initialValues={edit ? editInitialState : initialState}
           onSubmit={(values, { setSubmitting }) => {
+            console.log(values, "values");
             if (edit) {
               handleEditSubmit(values, setSubmitting);
             
@@ -312,7 +375,7 @@ const AddNewBusinessUser = ({
               }, 3000);
             } else {
               handleSubmit(values, setSubmitting);
-              console.log(values, "values");
+             
               setTimeout(() => {
                 setSubmitting(false);
               }, 3000);
@@ -321,8 +384,10 @@ const AddNewBusinessUser = ({
           }}
           validationSchema={AddSchema}
         >
-          {({ isSubmitting, submitForm, values, setFieldValue }) => (
+          {({ isSubmitting, submitForm, values, setFieldValue,errors }) => (
+        
             <Form>
+            
               <Box sx={{ width: '100%' }}>
       <Stepper activeStep={activeStep}>
         {steps.map((label, index) => {
@@ -367,12 +432,12 @@ const AddNewBusinessUser = ({
                     <input
                       accept="image/*"
                       id="contained-button-file"
-                      name="logo"
+                      name="OrgLogo"
                       type="file"
                       ref={hiddenFileInput}
                       onChange={(e) => {
                         handleChange(e);
-                        setFieldValue("logo", e.target.files[0]);
+                        setFieldValue("OrgLogo", e.target.files[0]);
                       }}
                       style={{ display: "none" }}
                     />
@@ -391,7 +456,7 @@ const AddNewBusinessUser = ({
                     </div>
                   </div>
                   <ErrorMessage
-                    name="logo"
+                    name="OrgLogo"
                     render={(msg) => <div className="input-error">{msg}</div>}
                   />
                 </Grid>
@@ -422,7 +487,7 @@ const AddNewBusinessUser = ({
                   <Field
                     component={TextField}
                     label="Name"
-                    name="name"
+                    name="OrgName"
                     fullWidth
                   />
                 </Grid>
@@ -439,7 +504,7 @@ const AddNewBusinessUser = ({
                       <Field
                         component={TextField}
                         label="Address"
-                        name="Address"
+                        name="OrgAddress"
                         fullWidth
                       />
                     </Autocomplete>
@@ -449,7 +514,7 @@ const AddNewBusinessUser = ({
                   <Field
                     component={TextField}
                     label="Email"
-                    name="email"
+                    name="OrgEmail"
                     fullWidth
                   />
                 </Grid>
@@ -474,7 +539,7 @@ const AddNewBusinessUser = ({
                   <Field
                     component={TextField}
                     label="Phone"
-                    name="Phone"
+                    name="OrgPhone"
                     type="number"
                     fullWidth
                   />
@@ -483,7 +548,7 @@ const AddNewBusinessUser = ({
                   <Field
                     component={TextField}
                     label="City"
-                    name="city"
+                    name="OrgCity"
                     fullWidth
                   />
                 </Grid>
@@ -491,7 +556,7 @@ const AddNewBusinessUser = ({
                   <Field
                     component={TextField}
                     label="Country"
-                    name="country"
+                    name="OrgCountry"
                     fullWidth
                   />
                 </Grid>
@@ -621,7 +686,7 @@ const AddNewBusinessUser = ({
            <Field
              component={TextField}
              label="Name"
-             name="name"
+             name="ManagerName"
              fullWidth
            />
          </Grid>
@@ -629,7 +694,7 @@ const AddNewBusinessUser = ({
            <Field
              component={TextField}
              label="Username"
-             name="username"
+             name="ManagerUsername"
              fullWidth
            />
          </Grid>
@@ -637,7 +702,7 @@ const AddNewBusinessUser = ({
            <Field
              component={TextField}
              label="Email"
-             name="email"
+             name="ManagerEmail"
              fullWidth
            />
          </Grid>
@@ -646,7 +711,7 @@ const AddNewBusinessUser = ({
              <Field
                component={TextField}
                label="Password"
-               name="password"
+               name="Managerpassword"
                fullWidth
              />
            </Grid>
@@ -655,7 +720,7 @@ const AddNewBusinessUser = ({
            <Field
              component={TextField}
              label="Age"
-             name="Age"
+             name="ManagerAge"
              type="text"
              fullWidth
            />
@@ -664,7 +729,7 @@ const AddNewBusinessUser = ({
            <Field
              component={TextField}
              label="Phone"
-             name="phone"
+             name="ManagerPhone"
              fullWidth
            />
          </Grid>
@@ -676,25 +741,25 @@ const AddNewBusinessUser = ({
              </FormLabel>
              <RadioGroup
                row
-               onChange={(e) => setFieldValue("Gender", e.target.value)}
+               onChange={(e) => setFieldValue("ManagerGender", e.target.value)}
              >
                <FormControlLabel
                  value="Male"
                  control={<Radio />}
                  label="Male"
-                 checked={values.Gender === "Male"}
+                 checked={values.ManagerGender === "Male"}
                />
                <FormControlLabel
                  value="Female"
                  control={<Radio />}
                  label="Female"
-                 checked={values.Gender === "Female"}
+                 checked={values.ManagerGender === "Female"}
                />
                <FormControlLabel
                  value="Other"
                  control={<Radio />}
                  label="Other"
-                 checked={values.Gender === "Other"}
+                 checked={values.ManagerGender === "Other"}
                />
              </RadioGroup>
            </FormControl>
@@ -732,7 +797,7 @@ const AddNewBusinessUser = ({
                   <Field
                     component={TextField}
                     label="Name"
-                    name="name"
+                    name="Username"
                     fullWidth
                   />
                 </Grid>
@@ -740,7 +805,7 @@ const AddNewBusinessUser = ({
                   <Field
                     component={TextField}
                     label="Username"
-                    name="username"
+                    name="Userusername"
                     fullWidth
                   />
                 </Grid>
@@ -748,7 +813,7 @@ const AddNewBusinessUser = ({
                   <Field
                     component={TextField}
                     label="Email"
-                    name="email"
+                    name="UserEmail"
                     fullWidth
                   />
                 </Grid>
@@ -757,7 +822,7 @@ const AddNewBusinessUser = ({
                     <Field
                       component={TextField}
                       label="Password"
-                      name="password"
+                      name="UserPassword"
                       fullWidth
                     />
                   </Grid>
@@ -766,7 +831,7 @@ const AddNewBusinessUser = ({
                   <Field
                     component={TextField}
                     label="Office Number"
-                    name="OfficeNumber"
+                    name="UserOfficeNumber"
                     type="text"
                     fullWidth
                   />
@@ -775,7 +840,7 @@ const AddNewBusinessUser = ({
                   <Field
                     component={TextField}
                     label="Phone"
-                    name="phone"
+                    name="UserPhone"
                     fullWidth
                   />
                 </Grid>
@@ -784,7 +849,7 @@ const AddNewBusinessUser = ({
                   <Field
                     component={TextField}
                     label="Wallet"
-                    name="wallet"
+                    name="UserWallet"
                     fullWidth
                   />
                 </Grid>:null}
@@ -870,7 +935,7 @@ const AddNewBusinessUser = ({
                 <Grid item xs={12}>
                   {isSubmitting && <LinearProgress />}
                 </Grid>
-                <Grid item xs={12}>
+                {/* <Grid item xs={12}>
                   <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                     <Button
                       onClick={restoreInitialState}
@@ -887,11 +952,30 @@ const AddNewBusinessUser = ({
                       onClick={submitForm}
                       variant="contained"
                     >
-                      Submit
+                      Submits
                     </Button>
                   </Box>
-                </Grid>
+                </Grid> */}
               </Grid>
+                <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+   <Button
+     color="inherit"
+     disabled={activeStep === 0}
+     onClick={handleBack}
+     sx={{ mr: 1 }}
+   >
+     Back
+   </Button>
+   <Box sx={{ flex: '1 1 auto' }} />
+   {/* {isStepOptional(activeStep) && (
+     <Button color="inherit" onClick={handleSkip} sx={{ mr: 1 }}>
+       Skip
+     </Button>
+   )} */}
+   <Button onClick={handleNext}>
+     {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+   </Button>
+ </Box>
      </React.Fragment>
     
         :activeStep==3?
@@ -944,7 +1028,25 @@ const AddNewBusinessUser = ({
                     />
                   </FormControl>
                 </Grid> 
-                 <Grid item xs={12} md={6}>
+                <Grid item xs={12} md={6}>
+                  <Field
+                    component={TextField}
+                    label="Stripe Key"
+                    name="StripeKey"
+                    fullWidth
+                  />
+                  
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Field
+                    component={TextField}
+                    label="Secret Key"
+                    name="SecretKey"
+                    fullWidth
+                  />
+                  
+                </Grid>
+                 {/* <Grid item xs={12} md={6}>
                   <FormControl>
                     <FormLabel id="demo-row-radio-buttons-group-label">
                       Payment
@@ -990,7 +1092,7 @@ const AddNewBusinessUser = ({
                     name="Payment"
                     render={(msg) => <div className="input-error">{msg}</div>}
                   />
-                </Grid>
+                </Grid> */}
    
                 <Grid item xs={12}>
                   {isSubmitting && <LinearProgress />}
@@ -1035,10 +1137,87 @@ const AddNewBusinessUser = ({
             <Button onClick={handleNext}>
               {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
             </Button>
-          </Box></React.Fragment>:
+          </Box></React.Fragment>:activeStep==4?
           <React.Fragment>
-            
+             <Grid container sx={{ mt: 2 }} spacing={2}>
+                <Grid
+                  style={{ flexDirection: "row" }}
+                  item
+                  xs={3}
+                  className="profile-image"
+                >
+                  <div className="img__wrap" onClick={handleClick}>
+                    <input
+                      accept="image/*"
+                      id="contained-button-file"
+                      name="CatImg"
+                      type="file"
+                      ref={hiddenFileInput}
+                      onChange={(e) => {
+                        handleChange(e);
+                        setFieldValue("CatImg", e.target.files[0]);
+                      }}
+                      style={{ display: "none" }}
+                    />
+                    <Avatar
+                      style={{
+                        height: "100px",
+                        width: "100px",
+                        cursor: "pointer",
+                      }}
+                      src={barImages.logo?barImages.logo:editUser?.logo}
+                      alt="log"
+                      className="user-image"
+                    />
+                    <div class="img__description_layer">
+                      <p class="img__description">Category logo</p>
+                    </div>
+                  </div>
+                  <ErrorMessage
+                    name="CatImg"
+                    render={(msg) => <div className="input-error">{msg}</div>}
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Field
+                    component={TextField}
+                    label="Category Name"
+                    name="CatName"
+                    fullWidth
+                  />
+                    <Typography >You can add more categories and products once organization is created</Typography>
+                </Grid>
+              
+                 
+              </Grid>
+              <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+            <Button
+              color="inherit"
+              disabled={activeStep === 0}
+              onClick={handleBack}
+              sx={{ mr: 1 }}
+            >
+              Back
+            </Button>
+            <Box sx={{ flex: '1 1 auto' }} />
+            {/* {isStepOptional(activeStep) && (
+              <Button color="inherit" onClick={handleSkip} sx={{ mr: 1 }}>
+                Skip
+              </Button>
+            )} */}
+            <Button
+             disabled={isSubmitting}
+             disableElevation
+             variant="contained"
+             onClick={submitForm}>
+              {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+            </Button>
+          </Box>
           </React.Fragment>
+          
+          :
+                     null
+          
         
         }
     </Box>
