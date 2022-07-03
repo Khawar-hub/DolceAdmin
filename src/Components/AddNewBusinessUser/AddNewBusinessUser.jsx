@@ -37,8 +37,11 @@ import { useSnackbar } from "notistack";
 import { ADD_AUTH_USER } from "../../Shared/baseURL";
 import "./styles.scss";
 import { singleImageUpload } from "../../Firebase/utils";
+
 const ref = firebase.firestore().collection("Managers");
 const ref2 = firebase.firestore().collection("Organizations");
+const ref3 = firebase.firestore().collection("Users");
+const ref4 = firebase.firestore().collection("Categories");
 
 const AddNewBusinessUser = ({
   open,
@@ -59,6 +62,9 @@ const AddNewBusinessUser = ({
   const [barImages, setBarImages] = React.useState({
     logo: editUser ? editUser?.logo : "",
   });
+  const [barImagess, setBarImagess] = React.useState({
+    logo: editUser ? editUser?.logo : "",
+  });
   const autocompleteRef = React.useRef();
 
   const hiddenFileInput = React.useRef(null);
@@ -71,7 +77,7 @@ const AddNewBusinessUser = ({
     OrgAddress: yup.string(),
     OrgCity: yup.string().required("Required"),
     OrgCountry: yup.string().required("Required"),
-    OrgColor: yup.string().required("Required"),
+    OrgColor: yup.string(),
     ManagerName: yup.string().required("Required"),
     ManagerUsername: yup.string().required("Required"),
     ManagerEmail: yup.string().required("Required"),
@@ -181,36 +187,96 @@ const AddNewBusinessUser = ({
 
   const handleSubmit = async (values, setSubmitting) => {
     console.log(values);
-    // try {
-    //   const _id=firebase.firestore().collection('Random').doc().id;
-    //   const url =await singleImageUpload(`images/Organizations/${_id}`,barImages.file)
-    //  const dataManager= await ref.doc(values.manager).get()
+    let managerid;
+    let userid;
+    
+    try {
+      const _id=firebase.firestore().collection('Random').doc().id;
+      const catid=firebase.firestore().collection('Random').doc().id;
+      const url =await singleImageUpload(`images/Organizations/${_id}`,barImages.file)
+      const url2 =await singleImageUpload(`images/Category/${_id}`,barImagess.file)
+      await firebase.auth().createUserWithEmailAndPassword(values?.ManagerEmail, values?.ManagerPassword).then(async (res) => {
+        if(res.user){
+          managerid=res?.user?.uid;
+          let data={
+           
+            id:res?.user?.uid,
+            ManagerName: values?.ManagerName,
+            ManagerUsername: values?.ManagerUsername,
+            ManagerEmail: values?.ManagerEmail,
+            ManagerPhone: values?.ManagerPhone,
+            ManagerAge: values?.ManagerAge,
+            ManagerPassword: values?.ManagerPassword,
+            ManagerGender: values?.ManagerGender,
+            isBlocked:false,
+            role:"manager"
+          }
+        
+         
+   
+      
+          await ref
+            .doc(res?.user?.uid)
+            .set(data, { merge: true })
+            
+        }})
+        await firebase.auth().createUserWithEmailAndPassword(values?.UserEmail, values?.UserPassword).then(async (res) => {
+          if(res.user){
+            userid=res?.user?.uid;
+            let data={
+              ...values,
+              id:res?.user?.uid,
+              UserName: values?.UserName,
+              UserUsername: values?.UserUsername,
+              UserEmail: values?.UserEmail,
+              UserPhone: values?.UserPhone,
+              UserOfficeNumber: values?.UserOfficeNumber,
+              UserPassword: values?.UserPassword,
+              UserWallet: values?.Wallet,
+              role:"user"
+            }
+          
+           
+     
+        
+            await ref3
+              .doc(res?.user?.uid)
+              .set(data, { merge: true })
+              
+          }})
+          await ref4.doc(catid).set({
+            CatLogo:url2,
+            CatName:values.CatName,
+          },{merge:true})
+      
+      let data = {
+        ...values,
+        id: _id,
+        OrgLogo:url,
 
-    //   let data = {
-    //     ...values,
-    //     id: _id,
-    //     logo:url,
-    //     startDate: startDate,
-    //     EndDate: startDate2,
-    //     manager_name:dataManager.data().name
-    //   };
-    //   //   delete data.password;
+        managers:firebase.firestore.FieldValue.arrayUnion(managerid),
+        users:firebase.firestore.FieldValue.arrayUnion(userid),
+        startDate: startDate,
+        EndDate: startDate2,
+      
+      };
+      //   delete data.password;
 
-    //   await ref2
-    //     .doc(_id)
-    //     .set(data, { merge: true })
-    //     .then(() => {
-    //       notify("Organization added");
-    //       getUsers();
-    //     });
-    // } catch (error) {
-    //   if (error.response) {
-    //     notify(error.response.data, { variant: "error" });
-    //   }
-    // } finally {
-    //   setSubmitting(false);
-    //   restoreInitialState();
-    // }
+      await ref2
+        .doc(_id)
+        .set(data, { merge: true })
+        .then(() => {
+          notify("Organization added");
+          getUsers();
+        });
+    } catch (error) {
+      if (error.response) {
+        notify(error.response.data, { variant: "error" });
+      }
+    } finally {
+      setSubmitting(false);
+      restoreInitialState();
+    }
   };
 
   // const handleAddPreferences = (interest) => {
@@ -270,6 +336,29 @@ const AddNewBusinessUser = ({
         // convert image file to base64 string
         if (file.type === "image/png" || file.type === "image/jpeg") {
           setBarImages({ logo: reader.result, file: file });
+        } else {
+          alert(
+            "Error: Please a insert valid image file with following extensions .jpeg .png"
+          );
+        }
+      },
+      false
+    );
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  }; 
+  const handleChanges = (event) => {
+    const file = event.target.files[0];
+    const name = event.target.name;
+    const reader = new FileReader();
+
+    reader.addEventListener(
+      "load",
+      function () {
+        // convert image file to base64 string
+        if (file.type === "image/png" || file.type === "image/jpeg") {
+          setBarImagess({ logo: reader.result, file: file });
         } else {
           alert(
             "Error: Please a insert valid image file with following extensions .jpeg .png"
@@ -361,15 +450,17 @@ const AddNewBusinessUser = ({
     "Category",
   ];
   return (
-    <Dialog maxWidth="md" fullWidth open={open} onClose={handleClose}>
+    <Dialog maxWidth="md" fullWidth open={open} >
       <DialogTitle>
         {edit ? `Edit ${editUser.name}` : "Add new Organization"}
       </DialogTitle>
+      
 
       <DialogContent>
         <Formik
           initialValues={edit ? editInitialState : initialState}
           onSubmit={(values, { setSubmitting }) => {
+            console.log(values)
             if (edit) {
               handleEditSubmit(values, setSubmitting);
 
@@ -388,6 +479,7 @@ const AddNewBusinessUser = ({
         >
           {({ isSubmitting, submitForm, values, setFieldValue, errors }) => (
             <Form>
+           
               <Box sx={{ width: "100%" }}>
                 <Stepper activeStep={activeStep}>
                   {steps.map((label, index) => {
@@ -472,7 +564,7 @@ const AddNewBusinessUser = ({
                       fullWidth
                     /> */}
                         <SketchPicker
-                          name="color"
+                          name="OrgColor"
                           color={blockPickerColor}
                           onChange={(color) => {
                             setBlockPickerColor(color.hex);
@@ -640,9 +732,7 @@ const AddNewBusinessUser = ({
                   />
                 </Grid> */}
 
-                      <Grid item xs={12}>
-                        {isSubmitting && <LinearProgress />}
-                      </Grid>
+                     
                       {/* <Grid item xs={12}>
                   <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                     <Button
@@ -680,6 +770,15 @@ const AddNewBusinessUser = ({
                 Skip
               </Button>
             )} */}
+             <Button
+                        disabled={isSubmitting}
+                        disableElevation
+                       
+                        onClick={handleClose}
+                      >
+                       Close
+                      </Button>
+                      <Box sx={{ flex: "1 1 auto" }} />
                       <Button onClick={handleNext}>
                         {activeStep === steps.length - 1 ? "Finish" : "Next"}
                       </Button>
@@ -774,9 +873,7 @@ const AddNewBusinessUser = ({
                         </FormControl>
                       </Grid>
 
-                      <Grid item xs={12}>
-                        {isSubmitting && <LinearProgress />}
-                      </Grid>
+                     
                     </Grid>
                     <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
                       <Button
@@ -793,6 +890,15 @@ const AddNewBusinessUser = ({
        Skip
      </Button>
    )} */}
+    <Button
+                        disabled={isSubmitting}
+                        disableElevation
+                   
+                        onClick={handleClose}
+                      >
+                       Close
+                      </Button>
+                      <Box sx={{ flex: "1 1 auto" }} />
                       <Button onClick={handleNext}>
                         {activeStep === steps.length - 1 ? "Finish" : "Next"}
                       </Button>
@@ -864,108 +970,6 @@ const AddNewBusinessUser = ({
                         </Grid>
                       ) : null}
 
-                      {/* <Grid item xs={12} md={6}>
-                  <FormControl fullWidth>
-                    <Field
-                      component={Select}
-                      type="text"
-                      label="Organization"
-                      name="organization"
-                    >
-                      {managers.map((item) => (
-                        <MenuItem value={item.id}  key={item.id}>
-                          {item.name}
-                        </MenuItem>
-                      ))}
-                    </Field>
-                  </FormControl>
-                </Grid> */}
-                      {/* {!edit && (
-                  <Grid item xs={12} md={6}>
-                    <FormControl>
-                      <FormLabel id="demo-row-radio-buttons-group-label">
-                        User Type
-                      </FormLabel>
-                      <RadioGroup
-                        row
-                        onChange={(e) => {
-                          setFieldValue(
-                            "profileStatus",
-                            parseInt(e.target.value)
-                          );
-                        }}
-                      >
-                        <FormControlLabel
-                          value={0}
-                          control={<Radio />}
-                          label="Standard"
-                          checked={values.profileStatus === 0}
-                        />
-                        <FormControlLabel
-                          value={1}
-                          control={<Radio />}
-                          label="Business"
-                          checked={values.profileStatus === 1}
-                        />
-                      </RadioGroup>
-                    </FormControl>
-                  </Grid>
-                )} */}
-                      {/* <Grid item xs={12} md={6}>
-                  <FormControl>
-                    <FormLabel id="demo-row-radio-buttons-group-label">
-                      Gender
-                    </FormLabel>
-                    <RadioGroup
-                      row
-                      onChange={(e) => setFieldValue("Gender", e.target.value)}
-                    >
-                      <FormControlLabel
-                        value="Male"
-                        control={<Radio />}
-                        label="Male"
-                        checked={values.Gender === "Male"}
-                      />
-                      <FormControlLabel
-                        value="Female"
-                        control={<Radio />}
-                        label="Female"
-                        checked={values.Gender === "Female"}
-                      />
-                      <FormControlLabel
-                        value="Other"
-                        control={<Radio />}
-                        label="Other"
-                        checked={values.Gender === "Other"}
-                      />
-                    </RadioGroup>
-                  </FormControl>
-                </Grid> */}
-
-                      <Grid item xs={12}>
-                        {isSubmitting && <LinearProgress />}
-                      </Grid>
-                      {/* <Grid item xs={12}>
-                  <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                    <Button
-                      onClick={restoreInitialState}
-                      variant="outlined"
-                      color="error"
-                      sx={{ mr: 1 }}
-                      disabled={isSubmitting}
-                    >
-                      Close
-                    </Button>
-                    <Button
-                      disabled={isSubmitting}
-                      disableElevation
-                      onClick={submitForm}
-                      variant="contained"
-                    >
-                      Submits
-                    </Button>
-                  </Box>
-                </Grid> */}
                     </Grid>
                     <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
                       <Button
@@ -977,11 +981,16 @@ const AddNewBusinessUser = ({
                         Back
                       </Button>
                       <Box sx={{ flex: "1 1 auto" }} />
-                      {/* {isStepOptional(activeStep) && (
-     <Button color="inherit" onClick={handleSkip} sx={{ mr: 1 }}>
-       Skip
-     </Button>
-   )} */}
+                    
+    <Button
+                        disabled={isSubmitting}
+                        disableElevation
+                    
+                        onClick={handleClose}
+                      >
+                       Close
+                      </Button>
+                      <Box sx={{ flex: "1 1 auto" }} />
                       <Button onClick={handleNext}>
                         {activeStep === steps.length - 1 ? "Finish" : "Next"}
                       </Button>
@@ -991,23 +1000,7 @@ const AddNewBusinessUser = ({
                 {activeStep == 3 && (
                   <React.Fragment>
                     <Grid container sx={{ mt: 2 }} spacing={2}>
-                      {/* 
-                <Grid item xs={12} md={6}>
-                  <FormControl fullWidth>
-                    <Field
-                      component={Select}
-                      type="text"
-                      label="Manager"
-                      name="manager"
-                    >
-                      {managers.map((item) => (
-                        <MenuItem value={item.id}  key={item.id}>
-                          {item.name}
-                        </MenuItem>
-                      ))}
-                    </Field>
-                  </FormControl>
-                </Grid> */}
+                   
 
                       <Grid item xs={12} md={6}>
                         <FormControl>
@@ -1051,78 +1044,9 @@ const AddNewBusinessUser = ({
                           fullWidth
                         />
                       </Grid>
-                      {/* <Grid item xs={12} md={6}>
-                  <FormControl>
-                    <FormLabel id="demo-row-radio-buttons-group-label">
-                      Payment
-                    </FormLabel>
-                    <RadioGroup
-                      name="Payment"
-                      row
-                      onChange={(e) => setFieldValue("Payment", e.target.value)}
-                    >
-                      <FormControlLabel
-                        value="Cash"
-                        control={<Radio />}
-                        label="Cash"
-                        checked={values.Payment === "Cash"}
-                      />
-                      <FormControlLabel
-                        value="Check"
-                        control={<Radio />}
-                        label="Check"
-                        checked={values.Payment === "Check"}
-                      />
-                      <FormControlLabel
-                        value="Card"
-                        control={<Radio />}
-                        label="Card"
-                        checked={values.Payment === "Card"}
-                      />
-                      <FormControlLabel
-                        value="Link"
-                        control={<Radio />}
-                        label="Link"
-                        checked={values.Payment === "Link"}
-                      />
-                      <FormControlLabel
-                        value="Bank Transfer"
-                        control={<Radio />}
-                        label="Bank Transfer"
-                        checked={values.Payment === "Bank Transfer"}
-                      />
-                    </RadioGroup>
-                  </FormControl>
-                  <ErrorMessage
-                    name="Payment"
-                    render={(msg) => <div className="input-error">{msg}</div>}
-                  />
-                </Grid> */}
+                      
 
-                      <Grid item xs={12}>
-                        {isSubmitting && <LinearProgress />}
-                      </Grid>
-                      {/* <Grid item xs={12}>
-                  <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                    <Button
-                      onClick={restoreInitialState}
-                      variant="outlined"
-                      color="error"
-                      sx={{ mr: 1 }}
-                      disabled={isSubmitting}
-                    >
-                      Close
-                    </Button>
-                    <Button
-                      disabled={isSubmitting}
-                      disableElevation
-                      onClick={submitForm}
-                      variant="contained"
-                    >
-                      Submit
-                    </Button>
-                  </Box>
-                </Grid> */}
+                      
                     </Grid>
                     <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
                       <Button
@@ -1134,11 +1058,16 @@ const AddNewBusinessUser = ({
                         Back
                       </Button>
                       <Box sx={{ flex: "1 1 auto" }} />
-                      {/* {isStepOptional(activeStep) && (
-              <Button color="inherit" onClick={handleSkip} sx={{ mr: 1 }}>
-                Skip
-              </Button>
-            )} */}
+                     
+             <Button
+                        disabled={isSubmitting}
+                        disableElevation
+                    
+                        onClick={handleClose}
+                      >
+                       Close
+                      </Button>
+                      <Box sx={{ flex: "1 1 auto" }} />
                       <Button onClick={handleNext}>
                         {activeStep === steps.length - 1 ? "Finish" : "Next"}
                       </Button>
@@ -1162,7 +1091,7 @@ const AddNewBusinessUser = ({
                             type="file"
                             ref={hiddenFileInput}
                             onChange={(e) => {
-                              handleChange(e);
+                              handleChanges(e);
                               setFieldValue("CatImg", e.target.files[0]);
                             }}
                             style={{ display: "none" }}
@@ -1174,7 +1103,7 @@ const AddNewBusinessUser = ({
                               cursor: "pointer",
                             }}
                             src={
-                              barImages.logo ? barImages.logo : editUser?.logo
+                              barImagess.logo ? barImagess.logo : editUser?.logo
                             }
                             alt="log"
                             className="user-image"
@@ -1202,7 +1131,12 @@ const AddNewBusinessUser = ({
                           organization is created
                         </Typography>
                       </Grid>
+
                     </Grid>
+
+                    <Grid item xs={12}>
+                        {isSubmitting && <LinearProgress />}
+                      </Grid>
                     <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
                       <Button
                         color="inherit"
@@ -1218,6 +1152,15 @@ const AddNewBusinessUser = ({
                 Skip
               </Button>
             )} */}
+                     <Button
+                        disabled={isSubmitting}
+                        disableElevation
+                      
+                        onClick={handleClose}
+                      >
+                       Close
+                      </Button>
+                      <Box sx={{ flex: "1 1 auto" }} />
                       <Button
                         disabled={isSubmitting}
                         disableElevation
