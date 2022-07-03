@@ -184,91 +184,125 @@ const AddNewBusinessUser = ({
       console.log(error.message);
     }
   };
+  const addManager=async(values)=>{
+    await firebase.auth().createUserWithEmailAndPassword(values?.ManagerEmail, values?.ManagerPassword).then(async (res) => {
+      if(res.user){
+       
+        let data={
+         
+          id:res?.user?.uid,
+          ManagerName: values?.ManagerName,
+          ManagerUsername: values?.ManagerUsername,
+          ManagerEmail: values?.ManagerEmail,
+          ManagerPhone: values?.ManagerPhone,
+          ManagerAge: values?.ManagerAge,
+          ManagerPassword: values?.ManagerPassword,
+          ManagerGender: values?.ManagerGender,
+          isBlocked:false,
+          role:"manager"
+        }
+       
+       
+ 
+    
+        await ref
+          .doc(res?.user?.uid)
+          .set(data, { merge: true })
+          return res.user.uid
+          
+      }})
+   
+      
+  }
+  const addUser=async(values)=>{
+    await firebase.auth().createUserWithEmailAndPassword(values?.UserEmail, values?.UserPassword).then(async (res) => {
+      if(res.user){
+      
+        let data={
+          ...values,
+          id:res?.user?.uid,
+          UserName: values?.UserName,
+          UserUsername: values?.UserUsername,
+          UserEmail: values?.UserEmail,
+          UserPhone: values?.UserPhone,
+          UserOfficeNumber: values?.UserOfficeNumber,
+          UserPassword: values?.UserPassword,
+          UserWallet: values?.Wallet,
+          role:"user"
+        }
+      
+       
+ 
+    
+        await ref3
+          .doc(res?.user?.uid)
+          .set(data, { merge: true })
+          return res.user.uid
+          
+      }})
+  }
+  const addOrg=async(values,url,_id,catid,managerid,userid)=>{
+    let data = {
+       
+      id: _id,
+      OrgLogo:url,
+      OrgColor:values?.OrgColor,
+      OrgName:values?.OrgName,
+      OrgAddress:values?.OrgAddress,
+      OrgEmail:values?.OrgEmail,
+      OrgPhone:values?.OrgPhone,
+      OrgCity:values?.OrgCity,
+      OrgCountry:values?.OrgCountry,
+      categories:firebase.firestore.FieldValue.arrayUnion(catid),
+      managers:firebase.firestore.FieldValue.arrayUnion(managerid),
+      users:firebase.firestore.FieldValue.arrayUnion(userid),
+      startDate: startDate,
+      EndDate: startDate2,
+      SecetKey:values?.SecetKey,
+      StripeKey:values?.StripeKey
+    
+    };
+    //   delete data.password;
 
+    await ref2
+      .doc(_id)
+      .set(data, { merge: true })
+      .then(() => {
+        notify("Organization added");
+        getUsers();
+      });
+  }
+  const addCat=async(url2,values,catid)=>{
+    await ref4.doc(catid).set({
+      CatLogo:url2,
+      CatName:values.CatName,
+    },{merge:true})
+  }
+  const uploadimage=async(_id)=>{
+    const url =await singleImageUpload(`images/Organizations/${_id}`,barImages.file)
+    const url2 =await singleImageUpload(`images/Category/${_id}`,barImagess.file)
+    return {url,url2}
+  }
   const handleSubmit = async (values, setSubmitting) => {
     console.log(values);
     let managerid;
     let userid;
     
     try {
+    
       const _id=firebase.firestore().collection('Random').doc().id;
       const catid=firebase.firestore().collection('Random').doc().id;
-      const url =await singleImageUpload(`images/Organizations/${_id}`,barImages.file)
-      const url2 =await singleImageUpload(`images/Category/${_id}`,barImagess.file)
-      await firebase.auth().createUserWithEmailAndPassword(values?.ManagerEmail, values?.ManagerPassword).then(async (res) => {
-        if(res.user){
-          managerid=res?.user?.uid;
-          let data={
-           
-            id:res?.user?.uid,
-            ManagerName: values?.ManagerName,
-            ManagerUsername: values?.ManagerUsername,
-            ManagerEmail: values?.ManagerEmail,
-            ManagerPhone: values?.ManagerPhone,
-            ManagerAge: values?.ManagerAge,
-            ManagerPassword: values?.ManagerPassword,
-            ManagerGender: values?.ManagerGender,
-            isBlocked:false,
-            role:"manager"
-          }
-        
+    const res= uploadimage(_id)
+   const managerid=addManager(values)
+   const userid=addUser(values)
+   addOrg(values,res.url,_id,catid,managerid,userid)
+   addCat(res.url2,values,catid)
+       
+       
+       
          
-   
       
-          await ref
-            .doc(res?.user?.uid)
-            .set(data, { merge: true })
-            
-        }})
-        await firebase.auth().createUserWithEmailAndPassword(values?.UserEmail, values?.UserPassword).then(async (res) => {
-          if(res.user){
-            userid=res?.user?.uid;
-            let data={
-              ...values,
-              id:res?.user?.uid,
-              UserName: values?.UserName,
-              UserUsername: values?.UserUsername,
-              UserEmail: values?.UserEmail,
-              UserPhone: values?.UserPhone,
-              UserOfficeNumber: values?.UserOfficeNumber,
-              UserPassword: values?.UserPassword,
-              UserWallet: values?.Wallet,
-              role:"user"
-            }
-          
-           
-     
-        
-            await ref3
-              .doc(res?.user?.uid)
-              .set(data, { merge: true })
-              
-          }})
-          await ref4.doc(catid).set({
-            CatLogo:url2,
-            CatName:values.CatName,
-          },{merge:true})
       
-      let data = {
-        ...values,
-        id: _id,
-        OrgLogo:url,
-
-        managers:firebase.firestore.FieldValue.arrayUnion(managerid),
-        users:firebase.firestore.FieldValue.arrayUnion(userid),
-        startDate: startDate,
-        EndDate: startDate2,
-      
-      };
-      //   delete data.password;
-
-      await ref2
-        .doc(_id)
-        .set(data, { merge: true })
-        .then(() => {
-          notify("Organization added");
-          getUsers();
-        });
     } catch (error) {
       if (error.response) {
         notify(error.response.data, { variant: "error" });
