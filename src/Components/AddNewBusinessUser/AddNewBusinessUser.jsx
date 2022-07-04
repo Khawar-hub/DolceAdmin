@@ -87,7 +87,7 @@ const AddNewBusinessUser = ({
     ManagerGender: yup.string().required("Required"),
     UserName: yup.string(),
     UserUsername: yup.string(),
-    UserEmail: yup.string(),
+    UserEmail: yup.string().oneOf([yup.ref("OrgEmail")]),
     UserPhone: yup.string(),
     UserOfficeNumber: yup.string(),
     UserPassword: yup.string(),
@@ -184,132 +184,115 @@ const AddNewBusinessUser = ({
       console.log(error.message);
     }
   };
-  const addManager=async(values)=>{
-    await firebase.auth().createUserWithEmailAndPassword(values?.ManagerEmail, values?.ManagerPassword).then(async (res) => {
-      if(res.user){
-       
-        let data={
-         
-          id:res?.user?.uid,
-          ManagerName: values?.ManagerName,
-          ManagerUsername: values?.ManagerUsername,
-          ManagerEmail: values?.ManagerEmail,
-          ManagerPhone: values?.ManagerPhone,
-          ManagerAge: values?.ManagerAge,
-          ManagerPassword: values?.ManagerPassword,
-          ManagerGender: values?.ManagerGender,
-          isBlocked:false,
-          role:"manager"
-        }
-       
-       
- 
-    
-        await ref
-          .doc(res?.user?.uid)
-          .set(data, { merge: true })
-          return res.user.uid
-          
-      }})
-   
-      
-  }
-  const addUser=async(values)=>{
-    await firebase.auth().createUserWithEmailAndPassword(values?.UserEmail, values?.UserPassword).then(async (res) => {
-      if(res.user){
-      
-        let data={
-          ...values,
-          id:res?.user?.uid,
-          UserName: values?.UserName,
-          UserUsername: values?.UserUsername,
-          UserEmail: values?.UserEmail,
-          UserPhone: values?.UserPhone,
-          UserOfficeNumber: values?.UserOfficeNumber,
-          UserPassword: values?.UserPassword,
-          UserWallet: values?.Wallet,
-          role:"user"
-        }
-      
-       
- 
-    
-        await ref3
-          .doc(res?.user?.uid)
-          .set(data, { merge: true })
-          return res.user.uid
-          
-      }})
-  }
-  const addOrg=async(values,url,_id,catid,managerid,userid)=>{
-    let data = {
-       
-      id: _id,
-      OrgLogo:url,
-      OrgColor:values?.OrgColor,
-      OrgName:values?.OrgName,
-      OrgAddress:values?.OrgAddress,
-      OrgEmail:values?.OrgEmail,
-      OrgPhone:values?.OrgPhone,
-      OrgCity:values?.OrgCity,
-      OrgCountry:values?.OrgCountry,
-      categories:firebase.firestore.FieldValue.arrayUnion(catid),
-      managers:firebase.firestore.FieldValue.arrayUnion(managerid),
-      users:firebase.firestore.FieldValue.arrayUnion(userid),
-      startDate: startDate,
-      EndDate: startDate2,
-      SecetKey:values?.SecetKey,
-      StripeKey:values?.StripeKey
-    
-    };
-    //   delete data.password;
 
-    await ref2
-      .doc(_id)
-      .set(data, { merge: true })
-      .then(() => {
-        notify("Organization added");
-        getUsers();
-      });
-  }
-  const addCat=async(url2,values,catid)=>{
-    await ref4.doc(catid).set({
-      CatLogo:url2,
-      CatName:values.CatName,
-    },{merge:true})
-  }
-  const uploadimage=async(_id)=>{
-    const url =await singleImageUpload(`images/Organizations/${_id}`,barImages.file)
-    const url2 =await singleImageUpload(`images/Category/${_id}`,barImagess.file)
-    return {url,url2}
-  }
   const handleSubmit = async (values, setSubmitting) => {
     console.log(values);
     let managerid;
     let userid;
     
     try {
-    
       const _id=firebase.firestore().collection('Random').doc().id;
       const catid=firebase.firestore().collection('Random').doc().id;
-    const res= uploadimage(_id)
-   const managerid=addManager(values)
-   const userid=addUser(values)
-   addOrg(values,res.url,_id,catid,managerid,userid)
-   addCat(res.url2,values,catid)
-       
-       
-       
+      const id2=firebase.firestore().collection('Random').doc().id;
+      const url =await singleImageUpload(`images/Organizations/${_id}`,barImages.file)
+      const url2 =await singleImageUpload(`images/Category/${id2}`,barImagess.file)
+      // create user
+      const prom1=await firebase.auth().createUserWithEmailAndPassword(values?.ManagerEmail, values?.ManagerPassword).then(async (res) => {
+        if(res.user){
+          managerid=res?.user?.uid;
+          let data={
+           
+            id:res?.user?.uid,
+            ManagerName: values?.ManagerName,
+            ManagerUsername: values?.ManagerUsername,
+            ManagerEmail: values?.ManagerEmail,
+            ManagerPhone: values?.ManagerPhone,
+            ManagerAge: values?.ManagerAge,
+            ManagerPassword: values?.ManagerPassword,
+            ManagerGender: values?.ManagerGender,
+            isBlocked:false,
+            role:"manager"
+          }
+        
          
+   
       
+         return await ref
+            .doc(res?.user?.uid)
+            .set(data, { merge: true })
+            
+        }})
+        let prom2;
+        if(values?.UserEmail&&values?.UserPassword){
+         prom2= await firebase.auth().createUserWithEmailAndPassword(values?.UserEmail, values?.UserPassword).then(async (res) => {
+            if(res.user){
+              userid=res?.user?.uid;
+              let data={
+            
+                id:res?.user?.uid,
+                UserUsername: values?.UserUsername,
+                UserEmail: values?.UserEmail,
+                UserPhone: values?.UserPhone,
+                UserOfficeNumber: values?.UserOfficeNumber,
+                UserPassword: values?.UserPassword,
+                UserWallet: values?.UserWallet,
+                role:"user"
+              }
+            
+             
+       
+          
+             return await ref3
+                .doc(res?.user?.uid)
+                .set(data, { merge: true })
+                
+            }})
+        }
+       let prom3= await ref4.doc(catid).set({
+            CatLogo:url2,
+            CatName:values.CatName,
+          },{merge:true})
       
+      let data = {
+       
+        id: _id,
+        OrgLogo:url,
+        OrgColor:values?.OrgColor,
+        OrgName:values?.OrgName,
+        OrgAddress:values?.OrgAddress,
+        OrgEmail:values?.OrgEmail,
+        Categories:firebase.firestore.FieldValue.arrayUnion(catid),
+        managers:firebase.firestore.FieldValue.arrayUnion(managerid),
+        users:firebase.firestore.FieldValue.arrayUnion(userid),
+        startDate: startDate,
+        EndDate: startDate2,
+      
+      };
+      //   delete data.password;
+
+      let prom4= await ref2
+        .doc(_id)
+        .set(data, { merge: true })
+        .then(() => {
+          notify("Organization added");
+          getUsers();
+        });
+
+        Promise.allSettled([prom1,prom2,prom3,prom4]).then(Args=>{
+          console.log('resolved promises',Args);
+          restoreInitialState();
+        }).catch(err=>{
+          console.log('rejected promises',err)
+        })
     } catch (error) {
-      if (error.response) {
-        notify(error.response.data, { variant: "error" });
-      }
+     
+        notify(error.message, { variant: "error" });
+        alert(error.message)
+        console.log(error.message)
+      
     } finally {
       setSubmitting(false);
-      restoreInitialState();
+     
     }
   };
 
@@ -993,7 +976,7 @@ const AddNewBusinessUser = ({
                           fullWidth
                         />
                       </Grid>
-                      {edit ? (
+                    
                         <Grid item xs={12} md={6}>
                           <Field
                             component={TextField}
@@ -1002,7 +985,7 @@ const AddNewBusinessUser = ({
                             fullWidth
                           />
                         </Grid>
-                      ) : null}
+                      
 
                     </Grid>
                     <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
