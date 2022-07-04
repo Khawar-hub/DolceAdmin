@@ -36,6 +36,7 @@ export const routes = [
     name: "Managers",
     icon: () => <ManageAccounts />,
     component: <Managers />,
+    sidebar:false
   },
   
   {
@@ -43,15 +44,16 @@ export const routes = [
     name: "Users",
     icon: () => <BarChart />,
     component: <Users />,
+    sidebar:false
   },
   {
-    path: "/admin/category",
+    path: "/admin/category/:id",
     name: "Categories",
     icon: () => <Category />,
     component: <Categories />,
   },
   {
-    path: "/admin/products",
+    path: "/admin/products/:id",
     name: "Products",
     icon: () => <DataObject />,
     component: <Products />,

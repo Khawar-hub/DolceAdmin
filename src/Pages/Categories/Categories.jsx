@@ -36,10 +36,11 @@ import {
   import dayjs from "dayjs";
 
   import { KeyboardArrowRight, KeyboardArrowDown } from "@mui/icons-material";
+import { useParams } from 'react-router-dom';
   const AddCategory = lazy(() =>
   import("../../Components/AddCategory/AddCategory")
 );
-
+const ref2 = firebase.firestore().collection("Organizations");
 const ref = firebase.firestore().collection("Categories");
   const Stats = () => {
     const { enqueueSnackbar: notify } = useSnackbar();
@@ -60,7 +61,8 @@ const ref = firebase.firestore().collection("Categories");
     useEffect(()=>{
        getUsers()
     
-    },[managers])
+    },[])
+    const params=useParams()
     const handleUserDialogClose = () => {
       setAddUserDialog(false);
       setEdit(false);
@@ -68,9 +70,24 @@ const ref = firebase.firestore().collection("Categories");
     };
     const getUsers=async()=>{
       try {
-        const allDocs = await ref.get();
+        const allDocs = await ref2.where('id','==',params?.id).get();
+
         let arr = [];
-        allDocs.forEach((doc) => arr.push({ ...doc.data(), _id: doc.id }));
+        for(let i=0;i<=allDocs.docs.length;i++){
+             const element =allDocs?.docs[i]?.data()
+           
+           for(let x=0;x<element?.Categories?.length;x++){
+                  const id=element?.Categories[i]
+                const data=await ref.doc(id).get()
+                if(data?.data()){
+                  arr.push(data?.data())
+                }
+           }
+            
+            
+
+        }
+        console.log(arr)
         setManagers(arr)
         setAllFilteredData(arr)
        
@@ -105,8 +122,8 @@ const ref = firebase.firestore().collection("Categories");
       let arr = cloneDeep(allFilteredData);
       arr = arr.filter(
         (item) =>
-          item?.name?.toLowerCase().includes(value) ||
-          item?.email?.toLowerCase().includes(value)
+          item?.CatName?.toLowerCase().includes(value)
+        
       );
       setSearch(arr);
       setSearchValue(value);
@@ -194,17 +211,17 @@ const ref = firebase.firestore().collection("Categories");
                   <>
                     <TableRow
                       hover
-                      key={user._id}
+                      key={user.CatName}
                       sx={{ "& > *": { borderBottom: "unset" } }}
                     >
                      
                      <TableCell>
                         <Box sx={{ display: "flex", alignItems: "center" }}> 
-                        <Avatar src={user.logo} sx={{ mr: 5 }} />
+                        <Avatar src={user.CatLogo} sx={{ mr: 5 }} />
                         
                          </Box>
                       </TableCell>
-                      <TableCell>{user.name}</TableCell>
+                      <TableCell>{user.CatName}</TableCell>
                      
                      
                       <TableCell>

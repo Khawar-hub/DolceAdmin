@@ -35,6 +35,7 @@ const SideBar = ({
   useEffect(() => {
     let arr = [];
     if (role?.role =="manager") {
+
       arr = route
     } else {
       arr = routes;
@@ -72,7 +73,10 @@ const SideBar = ({
       <Box className="links-box">
         <List>
           {filterRoutes.map((route) => (
+            <>
+           
             <NavLink to={route.path} className="navLink">
+            {route?.sidebar==false?null:
               <ListItemButton
                 button
                 sx={{
@@ -98,8 +102,9 @@ const SideBar = ({
                     secondary={route?.description ?? ""}
                   />
                 )}
-              </ListItemButton>
+              </ListItemButton>}
             </NavLink>
+            </>
           ))}
         </List>
       </Box>

@@ -36,10 +36,11 @@ import {
   import dayjs from "dayjs";
 
   import { KeyboardArrowRight, KeyboardArrowDown } from "@mui/icons-material";
+import { useParams } from 'react-router-dom';
   const AddProducts = lazy(() =>
   import("../../Components/AddProducts/AddProducts")
 );
-
+const ref2 = firebase.firestore().collection("Organizations");
 const ref = firebase.firestore().collection("Products");
   const Stats = () => {
     const { enqueueSnackbar: notify } = useSnackbar();
@@ -52,6 +53,7 @@ const ref = firebase.firestore().collection("Products");
     const [edit, setEdit] = useState(false);
     const[managers,setManagers]=useState([])
     const [searchValue, setSearchValue] = useState("");
+    const params=useParams()
     useEffect(() => {
       let arr = handleSearch(searchValue);
       setSearch(arr);
@@ -60,7 +62,7 @@ const ref = firebase.firestore().collection("Products");
     useEffect(()=>{
        getUsers()
     
-    },[managers])
+    },[])
     const handleUserDialogClose = () => {
       setAddUserDialog(false);
       setEdit(false);
@@ -68,10 +70,24 @@ const ref = firebase.firestore().collection("Products");
     };
     const getUsers=async()=>{
       try {
-        const allDocs = await ref.get();
-        let arr = [];
-        allDocs.forEach((doc) => arr.push({ ...doc.data(), _id: doc.id }));
+        const allDocs = await ref2.where('id','==',params?.id).get();
 
+        let arr = [];
+        for(let i=0;i<=allDocs.docs.length;i++){
+             const element =allDocs?.docs[i]?.data()
+           
+           for(let x=0;x<element?.products?.length;x++){
+                  const id=element?.products[i]
+                const data=await ref.doc(id).get()
+                if(data?.data()){
+                  arr.push(data?.data())
+                }
+           }
+            
+            
+
+        }
+        console.log(arr)
         setManagers(arr)
         setAllFilteredData(arr)
        
@@ -106,8 +122,8 @@ const ref = firebase.firestore().collection("Products");
       let arr = cloneDeep(allFilteredData);
       arr = arr.filter(
         (item) =>
-          item?.name?.toLowerCase().includes(value) ||
-          item?.email?.toLowerCase().includes(value)
+          item?.ProdName?.toLowerCase().includes(value) 
+        
       );
       setSearch(arr);
       setSearchValue(value);

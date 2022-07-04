@@ -160,10 +160,10 @@ const navigate = useNavigate();
       navigate(`/admin/users/${user?.id}`)
      }
      else if(option=="Categories"){
-      navigation.navigate(`/admin/category`)
+      navigate(`/admin/category/${user?.id}`)
      }
      else if(option=="products"){
-      navigation.navigate(`/admin/products`)
+      navigation.navigate(`/admin/products/${user?.id}`)
      }
 
   }
