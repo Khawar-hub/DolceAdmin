@@ -33,6 +33,7 @@ const AddUser = ({
   handleClose,
   editUser,
   edit,
+  id
 }) => {
   // state
   const { enqueueSnackbar: notify } = useSnackbar();
@@ -40,13 +41,12 @@ const AddUser = ({
 
   // validation schema
   const AddSchema = yup.object().shape({
-    name: yup.string().required("Required"),
-    phone: yup.string(),
-    email: yup.string().email().required("Required"),
-    username: yup.string().required("Required"),
-    organization:yup.string().required("Required"),
-    OfficeNumber: yup.number().min(1).positive().integer().required("Required"),
-    password: edit
+    UserName: yup.string().required("Required"),
+    UserPhone: yup.string(),
+    UserEmail: yup.string().email().required("Required"),
+    UserUsername: yup.string().required("Required"),
+    UserOfficeNumber: yup.number().min(1).positive().integer().required("Required"),
+    UserPassword: edit
       ? yup.string()
       : yup
           .string()
@@ -56,26 +56,26 @@ const AddUser = ({
 
   // initial states
   const initialState = {
-    name: "",
-    email: "",
-    username: "",
-     OfficeNumber:0,
-    phone: "",
-    organization:"",
-    password: "",
-    wallet:0
+    UserName: "",
+    UserEmail: "",
+    UserUsername: "",
+     UserOfficeNumber:0,
+    UserPhone: "",
+   
+    UserPassword: "",
+    UserWallet:0
   
   };
 
   const editInitialState = {
-    name: editUser?.name,
-    email: editUser?.email,
-    username: editUser?.username,
-    OfficeNumber: editUser?.OfficeNumber,
-    phone: editUser?.phone,
-    organization: editUser?.organization,
-    password:editUser?.password,
-    wallet:0
+    UserName: editUser?.UserName,
+    UserEmail: editUser?.UserEmail,
+    UserUsername: editUser?.UserUsername,
+    UserOfficeNumber: editUser?.UserOfficeNumber,
+    UserPhone: editUser?.UserPhone,
+   
+    UserPassword:editUser?.UserPassword,
+    UserWallet:0
   };
   useEffect(() => {
     getManagers();
@@ -111,27 +111,30 @@ const AddUser = ({
   const handleSubmit = async (values, setSubmitting) => {
     try {
       
-      const dataManager= await ref2.doc(values.organization).get()
-      await firebase.auth().createUserWithEmailAndPassword(values?.email, values?.password).then(async (res) => {
-          if(res.user){
-            let data={
-              ...values,
-              id:res?.user?.uid,
-              orgname:dataManager.data().name,
-              isBlocked:false,
-            }
-          
-           
-     
+      await firebase.auth().createUserWithEmailAndPassword(values?.UserEmail, values?.UserPassword).then(async (res) => {
+        if(res.user){
+          let data={
+            ...values,
+            id:res?.user?.uid,
+            // orgname:dataManager.data().name,
+            isBlocked:false,
+            role:"user"
+          }
         
-            await ref
-              .doc(res?.user?.uid)
-              .set(data, { merge: true })
-              .then(() => {
-                notify("User added");
-                setSubmitting(false);
-               
-              });
+         
+   
+      
+          await ref
+            .doc(res?.user?.uid)
+            .set(data, { merge: true })
+            .then(() => {
+              notify("User added");
+              setSubmitting(false);
+             
+            });
+            await ref2.doc(id).set({
+              users:firebase.firestore.FieldValue.arrayUnion(res?.user?.uid)
+             },{merge:true})
           }
           
           
@@ -212,7 +215,7 @@ const AddUser = ({
                   <Field
                     component={TextField}
                     label="Name"
-                    name="name"
+                    name="UserName"
                     fullWidth
                   />
                 </Grid>
@@ -220,15 +223,16 @@ const AddUser = ({
                   <Field
                     component={TextField}
                     label="Username"
-                    name="username"
+                    name="UserUsername"
                     fullWidth
                   />
                 </Grid>
                 <Grid item xs={12} md={6}>
                   <Field
+                    disabled={editUser?true:false}
                     component={TextField}
                     label="Email"
-                    name="email"
+                    name="UserEmail"
                     fullWidth
                   />
                 </Grid>
@@ -237,7 +241,7 @@ const AddUser = ({
                     <Field
                       component={TextField}
                       label="Password"
-                      name="password"
+                      name="UserPassword"
                       fullWidth
                     />
                   </Grid>
@@ -246,7 +250,7 @@ const AddUser = ({
                   <Field
                     component={TextField}
                     label="Office Number"
-                    name="OfficeNumber"
+                    name="UserOfficeNumber"
                     type="text"
                     fullWidth
                   />
@@ -255,7 +259,7 @@ const AddUser = ({
                   <Field
                     component={TextField}
                     label="Phone"
-                    name="phone"
+                    name="UserPhone"
                     fullWidth
                   />
                 </Grid>
@@ -264,27 +268,12 @@ const AddUser = ({
                   <Field
                     component={TextField}
                     label="Wallet"
-                    name="wallet"
+                    name="UserWallet"
                     fullWidth
                   />
                 </Grid>:null}
                 
-                <Grid item xs={12} md={6}>
-                  <FormControl fullWidth>
-                    <Field
-                      component={Select}
-                      type="text"
-                      label="Organization"
-                      name="organization"
-                    >
-                      {managers.map((item) => (
-                        <MenuItem value={item.id}  key={item.id}>
-                          {item.name}
-                        </MenuItem>
-                      ))}
-                    </Field>
-                  </FormControl>
-                </Grid>
+               
                 {/* {!edit && (
                   <Grid item xs={12} md={6}>
                     <FormControl>

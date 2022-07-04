@@ -72,14 +72,16 @@ const ref2 = firebase.firestore().collection("Organizations");
     const getUsers=async()=>{
  
       try {
-        const allDocs = await ref2.where('id','==',params?.id).get();
+        const allDocs = await ref2.doc(params?.id).get();
 
         let arr = [];
-        for(let i=0;i<=allDocs.docs.length;i++){
-             const element =allDocs?.docs[i]?.data()
-           
+        const element=allDocs.data()
+        
+         
            for(let x=0;x<element?.managers?.length;x++){
-                  const id=element?.managers[i]
+      
+                  const id=element?.managers[x]
+                  console.log(id)
                 const data=await ref.doc(id).get()
                 if(data?.data()){
                   arr.push(data?.data())
@@ -88,9 +90,10 @@ const ref2 = firebase.firestore().collection("Organizations");
             
             
 
-        }
-        console.log(arr)
+        
+    
         setManagers(arr)
+        console.log(managers?.length)
         setAllFilteredData(arr)
        
       } catch (error) {
@@ -108,6 +111,9 @@ const ref2 = firebase.firestore().collection("Organizations");
               notify(`${name} deleted.`);
               getUsers();
             });
+            await ref2.doc(params?.id).set({
+               managers:firebase.firestore.FieldValue.arrayRemove(id)
+            },{merge:true})
           
       } catch (error) {
         notify(error.message, { variant: "error" });
@@ -144,9 +150,10 @@ const ref2 = firebase.firestore().collection("Organizations");
     return (
       <Box className="stats">
         <Grid container alignItems="stretch" columnSpacing={2} rowSpacing={2}>
-          
+        
           <Grid item xs={12}>
             <Divider textAlign="left">
+           
               <Typography variant="h5" color="primary">
                 Add Manager
               </Typography>
@@ -180,13 +187,14 @@ const ref2 = firebase.firestore().collection("Organizations");
             >
               Filters
             </Button> */}
+             {!managers?.length>=1?
             <Button
             onClick={()=>setAddUserDialog(true)}
               variant="contained"
               color="primary"
             >
               Add Manager
-            </Button>
+            </Button>:null}
           </Box>
         </Box>
       </Grid>
@@ -209,7 +217,7 @@ const ref2 = firebase.firestore().collection("Organizations");
                 </TableRow>
               </TableHead>
               <TableBody>
-              {console.log(search,">>????")}
+      
               {(rowsPerPage > 0
                   ? search.slice(
                       page * rowsPerPage,
@@ -299,6 +307,7 @@ const ref2 = firebase.firestore().collection("Organizations");
         </Grid>
         <AddManager
         open={addUserDialog}
+        id={params?.id}
         handleClose={handleUserDialogClose}
         getUsers={getUsers}
         editUser={editUser}

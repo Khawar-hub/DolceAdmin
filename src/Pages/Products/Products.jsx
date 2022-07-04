@@ -70,14 +70,16 @@ const ref = firebase.firestore().collection("Products");
     };
     const getUsers=async()=>{
       try {
-        const allDocs = await ref2.where('id','==',params?.id).get();
+        const allDocs = await ref2.doc(params?.id).get();
 
         let arr = [];
-        for(let i=0;i<=allDocs.docs.length;i++){
-             const element =allDocs?.docs[i]?.data()
-           
+        const element=allDocs.data()
+        
+         
            for(let x=0;x<element?.products?.length;x++){
-                  const id=element?.products[i]
+      
+                  const id=element?.products[x]
+                  console.log(id)
                 const data=await ref.doc(id).get()
                 if(data?.data()){
                   arr.push(data?.data())
@@ -86,7 +88,7 @@ const ref = firebase.firestore().collection("Products");
             
             
 
-        }
+        
         console.log(arr)
         setManagers(arr)
         setAllFilteredData(arr)
@@ -279,6 +281,7 @@ const ref = firebase.firestore().collection("Products");
         getUsers={getUsers}
         editUser={editUser}
         edit={edit}
+        id={params?.id}
       />
       </Box>
     );

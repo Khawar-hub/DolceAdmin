@@ -36,6 +36,7 @@ const AddCategory = ({
   handleClose,
   editUser,
   edit,
+  id
 }) => {
   // state
   const { enqueueSnackbar: notify } = useSnackbar();
@@ -47,20 +48,20 @@ const AddCategory = ({
   const hiddenFileInput = React.useRef(null);
   // validation schema
   const AddSchema = yup.object().shape({
-    name: yup.string().required("Required"),
-    logo: yup.mixed().required("Required"),
+    CatName: yup.string().required("Required"),
+    CatImg: yup.mixed().required("Required"),
   });
 
   // initial states
   const initialState = {
-    name: "",
-   logo:"",
+    CatName: "",
+   CatImg:"",
   
   };
 
   const editInitialState = {
-    name: editUser?.name,
-   logo:editUser?.logo
+    CatName: editUser?.CatName,
+   CatImg:editUser?.CatImg
     
   };
   useEffect(() => {
@@ -102,7 +103,7 @@ const AddCategory = ({
             let data={
               ...values,
               id:_id,
-              logo: url,
+              CatImg: url,
              
             }
           
@@ -117,6 +118,9 @@ const AddCategory = ({
                 setSubmitting(false);
                
               });
+              await ref2.doc(id).set({
+                Categories:firebase.firestore.FieldValue.arrayUnion(_id)
+               },{merge:true})
           
           
           
@@ -147,10 +151,10 @@ const AddCategory = ({
   const handleEditSubmit = async (values, setSubmitting) => {
     try {
      
-      const url =await singleImageUpload(`images/Categories/${editUser.id}`,values.logo)
+      const url =await singleImageUpload(`images/Categories/${editUser.id}`,values.CatImg)
        let data = {
         ...values,
-        logo:url
+        CatImg:url
       };
       await ref
         .doc(editUser.id)
@@ -229,12 +233,12 @@ const AddCategory = ({
                     <input
                       accept="image/*"
                       id="contained-button-file"
-                      name="logo"
+                      name="CatImg"
                       type="file"
                       ref={hiddenFileInput}
                       onChange={(e) => {
                         handleChange(e);
-                        setFieldValue("logo", e.target.files[0]);
+                        setFieldValue("CatImg", e.target.files[0]);
                       }}
                       style={{ display: "none" }}
                     />
@@ -244,7 +248,7 @@ const AddCategory = ({
                         width: "100px",
                         cursor: "pointer",
                       }}
-                      src={barImages.logo?barImages.logo:editUser?.logo}
+                      src={barImages.logo?barImages.logo:editUser?.CatImg}
                       alt="log"
                       className="user-image"
                     />
@@ -253,7 +257,7 @@ const AddCategory = ({
                     </div>
                   </div>
                   <ErrorMessage
-                    name="logo"
+                    name="CatImg"
                     render={(msg) => <div className="input-error">{msg}</div>}
                   />
                 </Grid>
@@ -261,7 +265,7 @@ const AddCategory = ({
                   <Field
                     component={TextField}
                     label="Name"
-                    name="name"
+                    name="CatName"
                     fullWidth
                   />
                 </Grid>

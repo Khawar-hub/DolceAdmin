@@ -34,6 +34,7 @@ const AddNewBusinessUser = ({
   handleClose,
   editUser,
   edit,
+  id
 }) => {
   // state
   const { enqueueSnackbar: notify } = useSnackbar();
@@ -41,13 +42,13 @@ const AddNewBusinessUser = ({
 
   // validation schema
   const AddSchema = yup.object().shape({
-    name: yup.string().required("Required"),
-    phone: yup.string(),
-    email: yup.string().email().required("Required"),
-    username: yup.string().required("Required"),
-    Age: yup.number().min(1).positive().integer().required("Required"),
-    Gender: yup.string().required("Required"),
-    password: edit
+    ManagerName: yup.string().required("Required"),
+    ManagerPhone: yup.string(),
+    ManagerEmail: yup.string().email().required("Required"),
+    ManagerUsername: yup.string().required("Required"),
+    ManagerAge: yup.number().min(1).positive().integer().required("Required"),
+    ManagerGender: yup.string().required("Required"),
+    ManagerPassword: edit
       ? yup.string()
       : yup
           .string()
@@ -78,23 +79,23 @@ const AddNewBusinessUser = ({
 
   // initial states
   const initialState = {
-    name: "",
-    email: "",
-    username: "",
-    Age: "",
-    Gender: "Male",
-    phone: "",
-    password: "",
+    ManagerName: "",
+    ManagerEmail: "",
+    ManagerUsername: "",
+    ManagerAge: "",
+    ManagerGender: "Male",
+    ManagerPhone: "",
+    ManagerPassword: "",
   
   };
 
   const editInitialState = {
-    name: editUser?.name,
-    email: editUser?.email,
-    username: editUser?.username,
-    Age: editUser?.Age,
-    Gender: editUser?.Gender,
-    phone: editUser?.phone ?? "",
+    ManagerName: editUser?.ManagerName,
+    ManagerEmail: editUser?.ManagerEmail,
+    ManagerUsername: editUser?.ManagerUsername,
+    ManagerAge: editUser?.ManagerAge,
+    ManagerGender: editUser?.ManagerGender,
+    ManagerPassword: editUser?.ManagerPassword ?? "",
   };
 
   // useEffect(() => {
@@ -109,8 +110,8 @@ const AddNewBusinessUser = ({
   const handleSubmit = async (values, setSubmitting) => {
     try {
         // const dataManager= await ref2.doc(values.organization).get()
-      const _id=firebase.firestore().collection('Random').doc().id;
-      await firebase.auth().createUserWithEmailAndPassword(values?.email, values?.password).then(async (res) => {
+     
+      await firebase.auth().createUserWithEmailAndPassword(values?.ManagerEmail, values?.ManagerPassword).then(async (res) => {
         if(res.user){
           let data={
             ...values,
@@ -131,7 +132,11 @@ const AddNewBusinessUser = ({
               setSubmitting(false);
              
             });
+            await ref2.doc(id).set({
+              managers:firebase.firestore.FieldValue.arrayUnion(res?.user?.uid)
+             },{merge:true})
         }
+       
         
         
     }).catch((error) => {
@@ -222,7 +227,7 @@ const AddNewBusinessUser = ({
                   <Field
                     component={TextField}
                     label="Name"
-                    name="name"
+                    name="ManagerName"
                     fullWidth
                   />
                 </Grid>
@@ -230,15 +235,16 @@ const AddNewBusinessUser = ({
                   <Field
                     component={TextField}
                     label="Username"
-                    name="username"
+                    name="ManagerUsername"
                     fullWidth
                   />
                 </Grid>
                 <Grid item xs={12} md={6}>
                   <Field
+                    disabled={editUser?true:false}
                     component={TextField}
                     label="Email"
-                    name="email"
+                    name="ManagerEmail"
                     fullWidth
                   />
                 </Grid>
@@ -247,7 +253,7 @@ const AddNewBusinessUser = ({
                     <Field
                       component={TextField}
                       label="Password"
-                      name="password"
+                      name="ManagerPassword"
                       fullWidth
                     />
                   </Grid>
@@ -256,7 +262,7 @@ const AddNewBusinessUser = ({
                   <Field
                     component={TextField}
                     label="Age"
-                    name="Age"
+                    name="ManagerAge"
                     type="text"
                     fullWidth
                   />
@@ -265,7 +271,7 @@ const AddNewBusinessUser = ({
                   <Field
                     component={TextField}
                     label="Phone"
-                    name="phone"
+                    name="ManagerPhone"
                     fullWidth
                   />
                 </Grid>
@@ -323,25 +329,25 @@ const AddNewBusinessUser = ({
                     </FormLabel>
                     <RadioGroup
                       row
-                      onChange={(e) => setFieldValue("Gender", e.target.value)}
+                      onChange={(e) => setFieldValue("ManagerGender", e.target.value)}
                     >
                       <FormControlLabel
                         value="Male"
                         control={<Radio />}
                         label="Male"
-                        checked={values.Gender === "Male"}
+                        checked={values.ManagerGender === "Male"}
                       />
                       <FormControlLabel
                         value="Female"
                         control={<Radio />}
                         label="Female"
-                        checked={values.Gender === "Female"}
+                        checked={values.ManagerGender === "Female"}
                       />
                       <FormControlLabel
                         value="Other"
                         control={<Radio />}
                         label="Other"
-                        checked={values.Gender === "Other"}
+                        checked={values.ManagerGender === "Other"}
                       />
                     </RadioGroup>
                   </FormControl>

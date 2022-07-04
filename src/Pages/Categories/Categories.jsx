@@ -70,14 +70,16 @@ const ref = firebase.firestore().collection("Categories");
     };
     const getUsers=async()=>{
       try {
-        const allDocs = await ref2.where('id','==',params?.id).get();
+        const allDocs = await ref2.doc(params?.id).get();
 
         let arr = [];
-        for(let i=0;i<=allDocs.docs.length;i++){
-             const element =allDocs?.docs[i]?.data()
-           
+        const element=allDocs.data()
+        
+         
            for(let x=0;x<element?.Categories?.length;x++){
-                  const id=element?.Categories[i]
+      
+                  const id=element?.Categories[x]
+                  console.log(id)
                 const data=await ref.doc(id).get()
                 if(data?.data()){
                   arr.push(data?.data())
@@ -86,7 +88,7 @@ const ref = firebase.firestore().collection("Categories");
             
             
 
-        }
+        
         console.log(arr)
         setManagers(arr)
         setAllFilteredData(arr)
@@ -106,6 +108,9 @@ const ref = firebase.firestore().collection("Categories");
               notify(`${name} deleted.`);
               getUsers();
             });
+            await ref2.doc(params?.id).set({
+              Categories:firebase.firestore.FieldValue.arrayRemove(id)
+           },{merge:true})
           
       } catch (error) {
         notify(error.message, { variant: "error" });
@@ -273,6 +278,7 @@ const ref = firebase.firestore().collection("Categories");
         getUsers={getUsers}
         editUser={editUser}
         edit={edit}
+        id={params?.id}
       />
       </Box>
     );

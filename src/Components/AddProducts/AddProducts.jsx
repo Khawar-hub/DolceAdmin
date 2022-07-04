@@ -28,13 +28,14 @@ import { singleImageUpload } from "../../Firebase/utils";
 
 const ref = firebase.firestore().collection("Products");
 const ref2 = firebase.firestore().collection("Categories");
-
+const ref3 = firebase.firestore().collection("Organizations");
 const AddProducts = ({
   open,
   getUsers,
   handleClose,
   editUser,
   edit,
+  id
 }) => {
   // state
   const { enqueueSnackbar: notify } = useSnackbar();
@@ -46,29 +47,29 @@ const AddProducts = ({
   const hiddenFileInput = React.useRef(null);
   // validation schema
   const AddSchema = yup.object().shape({
-    name: yup.string().required("Required"),
-    logo: yup.mixed().required("Required"),
-    price:yup.string().required("Required"),
-    description:yup.string().required("Required"),
-    category:yup.string().required("Required"),
+    ProdName: yup.string().required("Required"),
+    ProdLogo: yup.mixed().required("Required"),
+    ProdPrice:yup.string().required("Required"),
+    ProdDescription:yup.string().required("Required"),
+    ProdCategory:yup.string().required("Required"),
   });
 
   // initial states
   const initialState = {
-    name: "",
-   logo:"",
-   price:"",
-   description:"",
-   category:"",
+    ProdName: "",
+   ProdLogo:"",
+   ProdPrice:"",
+   ProdDescription:"",
+   ProdCategory:"",
   
   };
 
   const editInitialState = {
-    name: editUser?.name,
-   logo:editUser?.logo,
-   price:editUser?.price,
-   description:editUser?.description,
-   category:"",
+    ProdName: editUser?.name,
+   ProdLogo:editUser?.logo,
+   ProdPrice:editUser?.price,
+   ProdDescription:editUser?.description,
+   ProdCategory:"",
     
   };
   useEffect(() => {
@@ -77,17 +78,19 @@ const AddProducts = ({
   const [managers, setManagers] = useState([]);
   const getManagers = async () => {
     try {
-      const allDocs = await ref2.get();
+      const allDocs = await ref3?.doc(id).get();
       let arr = [];
-      allDocs.forEach((doc) => arr.push({ ...doc.data(), _id: doc.id }));
-      let temp = [];
-      arr.map((e) => {
-        temp.push({
-          id: e.id,
-          name: e.name,
-        });
-      });
-      setManagers(temp);
+      const element=allDocs.data()
+      for(let x=0;x<element?.Categories?.length;x++){
+      
+        const id=element?.Categories[x]
+        console.log(id)
+      const data=await ref2.doc(id).get()
+      if(data?.data()){
+        arr.push({name:data?.data()?.CatName,value:data?.data()?.id})
+      }
+    }
+    setManagers(arr)
     } catch (error) {
       console.log(error.message);
     }
@@ -104,15 +107,15 @@ const AddProducts = ({
 
   const handleSubmit = async (values, setSubmitting) => {
     try {
-      const dataManager= await ref2.doc(values.category).get()
+      const dataManager= await ref2.doc(values.ProdCategory).get()
 
       const _id=firebase.firestore().collection('Random').doc().id;
       const url =await singleImageUpload(`images/Products/${_id}`,barImages.file)
             let data={
               ...values,
               id:_id,
-              logo: url,
-              catname:dataManager?.data().name
+              ProdLogo: url,
+              ProdCategory:dataManager?.data().name
              
             }
           
@@ -127,17 +130,17 @@ const AddProducts = ({
                 setSubmitting(false);
                
               });
-             
-              await ref2
-              .doc(values.category)
-              .update({
-                FavoriteBars: firebase.firestore.FieldValue.arrayUnion(_id),
+              await ref3
+              .doc(id)
+              .set({
+                Products: firebase.firestore.FieldValue.arrayUnion(_id),
               })
-              .then(() => {
-                
-                setSubmitting(false);
-               
-              });
+              await ref2
+              .doc(values.ProdCategory)
+              .update({
+                Products: firebase.firestore.FieldValue.arrayUnion(_id),
+              })
+              
           
           
           
@@ -146,9 +149,7 @@ const AddProducts = ({
       
       
     } catch (error) {
-      if (error.response) {
-        notify(error.response.data, { variant: "error" });
-      }
+     console.log(error.message)
     } finally {
       setSubmitting(false);
       restoreInitialState();
@@ -258,12 +259,12 @@ const AddProducts = ({
                     <input
                       accept="image/*"
                       id="contained-button-file"
-                      name="logo"
+                      name="ProdLogo"
                       type="file"
                       ref={hiddenFileInput}
                       onChange={(e) => {
                         handleChange(e);
-                        setFieldValue("logo", e.target.files[0]);
+                        setFieldValue("ProdLogo", e.target.files[0]);
                       }}
                       style={{ display: "none" }}
                     />
@@ -273,7 +274,7 @@ const AddProducts = ({
                         width: "100px",
                         cursor: "pointer",
                       }}
-                      src={barImages.logo?barImages.logo:editUser?.logo}
+                      src={barImages.logo?barImages.logo:editUser?.ProdLogo}
                       alt="log"
                       className="user-image"
                     />
@@ -282,7 +283,7 @@ const AddProducts = ({
                     </div>
                   </div>
                   <ErrorMessage
-                    name="logo"
+                    name="ProdLogo"
                     render={(msg) => <div className="input-error">{msg}</div>}
                   />
                 </Grid>
@@ -290,7 +291,7 @@ const AddProducts = ({
                   <Field
                     component={TextField}
                     label="Name"
-                    name="name"
+                    name="ProdName"
                     fullWidth
                   />
                 </Grid>
@@ -298,7 +299,7 @@ const AddProducts = ({
                   <Field
                     component={TextField}
                     label="Price"
-                    name="price"
+                    name="ProdPrice"
                     fullWidth
                   />
                 </Grid>
@@ -306,7 +307,7 @@ const AddProducts = ({
                   <Field
                     component={TextField}
                     label="Description"
-                    name="description"
+                    name="ProdDescription"
                     fullWidth
                   />
                 </Grid>
@@ -316,10 +317,10 @@ const AddProducts = ({
                       component={Select}
                       type="text"
                       label="Category"
-                      name="category"
+                      name="ProdCategory"
                     >
                       {managers.map((item) => (
-                        <MenuItem value={item.id}  key={item.id}>
+                        <MenuItem value={item.value}  key={item.value}>
                           {item.name}
                         </MenuItem>
                       ))}
