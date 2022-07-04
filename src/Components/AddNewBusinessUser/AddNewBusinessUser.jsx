@@ -231,6 +231,7 @@ const AddNewBusinessUser = ({
             
                 id:res?.user?.uid,
                 UserUsername: values?.UserUsername,
+                UserName: values?.UserName,
                 UserEmail: values?.UserEmail,
                 UserPhone: values?.UserPhone,
                 UserOfficeNumber: values?.UserOfficeNumber,

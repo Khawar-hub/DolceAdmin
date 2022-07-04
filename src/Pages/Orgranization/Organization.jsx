@@ -43,6 +43,7 @@ import {
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { useNavigate } from "react-router-dom";
 const AddOrganiztion = lazy(() =>
   import("../../Components/AddNewBusinessUser/AddNewBusinessUser")
 );
@@ -77,6 +78,9 @@ const handleClose = () => {
   const [edit, setEdit] = useState(false);
   const [organiztions, setOrganization] = useState([]);
   const [searchValue, setSearchValue] = useState("");
+
+const navigate = useNavigate();
+
   useEffect(() => {
     let arr = handleSearch(searchValue);
     setSearch(arr);
@@ -148,18 +152,18 @@ const handleClose = () => {
     setPage(0);
   };
   const onPressItem=(option,user)=>{
-    alert(option)
+
      if(option=="Managers"){
-      navigation.navigate('/admin/managers',{managers:user?.managers})
+      navigate(`/admin/managers/${user?.id}`)
      }
      else if(option=="Users"){
-      navigation.navigate('/admin/users',{users:user?.users})
+      navigate(`/admin/users/${user?.id}`)
      }
      else if(option=="Categories"){
-      navigation.navigate('/admin/category',{categories:user?.categories})
+      navigation.navigate(`/admin/category`)
      }
      else if(option=="products"){
-      navigation.navigate('/admin/products',{products:user?.products})
+      navigation.navigate(`/admin/products`)
      }
 
   }

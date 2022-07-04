@@ -32,14 +32,14 @@ export const routes = [
     component: <Organization />,
   },
   {
-    path: "/admin/managers",
+    path: "/admin/managers/:id",
     name: "Managers",
     icon: () => <ManageAccounts />,
     component: <Managers />,
   },
   
   {
-    path: "/admin/users",
+    path: "/admin/users/:id",
     name: "Users",
     icon: () => <BarChart />,
     component: <Users />,

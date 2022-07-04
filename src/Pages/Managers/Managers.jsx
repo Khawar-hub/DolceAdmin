@@ -35,11 +35,14 @@ import {
   import dayjs from "dayjs";
   import "./styles.scss";
   import { KeyboardArrowRight, KeyboardArrowDown } from "@mui/icons-material";
+import { useParams } from 'react-router-dom';
   const AddManager = lazy(() =>
   import("../../Components/AddManager/AddManager")
 );
 
 const ref = firebase.firestore().collection("Managers");
+
+const ref2 = firebase.firestore().collection("Organizations");
   const Stats = () => {
     const { enqueueSnackbar: notify } = useSnackbar();
       const [search, setSearch] = useState([]);
@@ -56,20 +59,37 @@ const ref = firebase.firestore().collection("Managers");
       setSearch(arr);
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [allFilteredData]);
+    const params=useParams()
     useEffect(()=>{
        getUsers()
     
-    },[managers])
+    },[])
     const handleUserDialogClose = () => {
       setAddUserDialog(false);
       setEdit(false);
       setEditUser(null);
     };
     const getUsers=async()=>{
+ 
       try {
-        const allDocs = await ref.get();
+        const allDocs = await ref2.where('id','==',params?.id).get();
+
         let arr = [];
-        allDocs.forEach((doc) => arr.push({ ...doc.data(), _id: doc.id }));
+        for(let i=0;i<=allDocs.docs.length;i++){
+             const element =allDocs?.docs[i]?.data()
+           
+           for(let x=0;x<element?.managers?.length;x++){
+                  const id=element?.managers[i]
+                const data=await ref.doc(id).get()
+                if(data?.data()){
+                  arr.push(data?.data())
+                }
+           }
+            
+            
+
+        }
+        console.log(arr)
         setManagers(arr)
         setAllFilteredData(arr)
        
@@ -104,8 +124,8 @@ const ref = firebase.firestore().collection("Managers");
       let arr = cloneDeep(allFilteredData);
       arr = arr.filter(
         (item) =>
-          item?.name?.toLowerCase().includes(value) ||
-          item?.email?.toLowerCase().includes(value)
+          item?.ManagerName?.toLowerCase().includes(value) ||
+          item?.ManagerEmail?.toLowerCase().includes(value)
       );
       setSearch(arr);
       setSearchValue(value);
@@ -189,6 +209,7 @@ const ref = firebase.firestore().collection("Managers");
                 </TableRow>
               </TableHead>
               <TableBody>
+              {console.log(search,">>????")}
               {(rowsPerPage > 0
                   ? search.slice(
                       page * rowsPerPage,
@@ -212,16 +233,16 @@ const ref = firebase.firestore().collection("Managers");
                       <TableCell>
                         {/* <Box sx={{ display: "flex", alignItems: "center" }}> */}
                         {/* <Avatar src={user.profilePic} sx={{ mr: 1 }} /> */}
-                        {user.name}
+                        {user.ManagerName}
                         {/* </Box> */}
                       </TableCell>
-                      <TableCell>{user.email}</TableCell>
-                      <TableCell>{user.phone}</TableCell>
-                      <TableCell>{user.Gender}</TableCell>
-                      <TableCell>{user.Age}</TableCell>
-                      <TableCell>{user.username}</TableCell>
+                      <TableCell>{user.ManagerEmail}</TableCell>
+                      <TableCell>{user.ManagerPhone}</TableCell>
+                      <TableCell>{user.ManagerGender}</TableCell>
+                      <TableCell>{user.ManagerAge}</TableCell>
+                      <TableCell>{user.ManagerUsername}</TableCell>
                      
-                      <TableCell>{user.password}</TableCell>
+                      <TableCell>{user.ManagerPassword}</TableCell>
                     
                      
                       <TableCell>

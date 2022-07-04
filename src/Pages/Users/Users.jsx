@@ -35,10 +35,11 @@ import {
   import dayjs from "dayjs";
 
   import { KeyboardArrowRight, KeyboardArrowDown } from "@mui/icons-material";
+import { useParams } from 'react-router-dom';
   const AddUser = lazy(() =>
   import("../../Components/AddUser/AddUser")
 );
-
+const ref2 = firebase.firestore().collection("Organizations");
 const ref = firebase.firestore().collection("Users");
   const Stats = () => {
     const { enqueueSnackbar: notify } = useSnackbar();
@@ -59,7 +60,8 @@ const ref = firebase.firestore().collection("Users");
     useEffect(()=>{
        getUsers()
     
-    },[managers])
+    },[])
+        const params=useParams()
     const handleUserDialogClose = () => {
       setAddUserDialog(false);
       setEdit(false);
@@ -67,9 +69,24 @@ const ref = firebase.firestore().collection("Users");
     };
     const getUsers=async()=>{
       try {
-        const allDocs = await ref.get();
+        const allDocs = await ref2.where('id','==',params?.id).get();
+
         let arr = [];
-        allDocs.forEach((doc) => arr.push({ ...doc.data(), _id: doc.id }));
+        for(let i=0;i<=allDocs.docs.length;i++){
+             const element =allDocs?.docs[i]?.data()
+           
+           for(let x=0;x<element?.users?.length;x++){
+                  const id=element?.users[i]
+                const data=await ref.doc(id).get()
+                if(data?.data()){
+                  arr.push(data?.data())
+                }
+           }
+            
+            
+
+        }
+        console.log(arr)
         setManagers(arr)
         setAllFilteredData(arr)
        
@@ -104,8 +121,8 @@ const ref = firebase.firestore().collection("Users");
       let arr = cloneDeep(allFilteredData);
       arr = arr.filter(
         (item) =>
-          item?.name?.toLowerCase().includes(value) ||
-          item?.email?.toLowerCase().includes(value)
+          item?.UserName?.toLowerCase().includes(value) ||
+          item?.UserEmail?.toLowerCase().includes(value)
       );
       setSearch(arr);
       setSearchValue(value);
@@ -197,7 +214,7 @@ const ref = firebase.firestore().collection("Users");
                   <TableCell>Email</TableCell>
                   <TableCell>Phone</TableCell>
                   <TableCell>Office Number</TableCell>
-                  <TableCell>Organization</TableCell>
+                 
                   <TableCell>Username</TableCell>
                   <TableCell>Password</TableCell>
                   <TableCell>Wallet</TableCell>
@@ -228,17 +245,17 @@ const ref = firebase.firestore().collection("Users");
                       <TableCell>
                         {/* <Box sx={{ display: "flex", alignItems: "center" }}> */}
                         {/* <Avatar src={user.profilePic} sx={{ mr: 1 }} /> */}
-                        {user.name}
+                        {user.UserName}
                         {/* </Box> */}
                       </TableCell>
-                      <TableCell>{user.email}</TableCell>
-                      <TableCell>{user.phone}</TableCell>
-                      <TableCell>{user.OfficeNumber}</TableCell>
-                      <TableCell>{user.orgname}</TableCell>
-                      <TableCell>{user.username}</TableCell>
+                      <TableCell>{user.UserEmail}</TableCell>
+                      <TableCell>{user.UserPhone}</TableCell>
+                      <TableCell>{user.UserOfficeNumber}</TableCell>
+                    
+                      <TableCell>{user.UserUsername}</TableCell>
                      
-                      <TableCell>{user.password}</TableCell>
-                      <TableCell>AED {user.wallet}</TableCell>
+                      <TableCell>{user.UserPassword}</TableCell>
+                      <TableCell>AED {user.UserWallet}</TableCell>
                      
                       <TableCell>
                       {btnLoading === user.id ? (
