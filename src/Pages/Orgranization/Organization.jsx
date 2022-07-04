@@ -37,6 +37,7 @@ import {
   KeyboardArrowRight,
   KeyboardArrowDown,
   ModeComment,
+  ConnectingAirportsOutlined,
 } from "@mui/icons-material";
 const AddOrganiztion = lazy(() =>
   import("../../Components/AddNewBusinessUser/AddNewBusinessUser")
@@ -80,8 +81,10 @@ const Stats = () => {
           _id: doc.id,
         });
       });
+    
       setOrganization(arr);
       setAllFilteredData(arr);
+
     } catch (error) {
       console.log(error.message);
     }
@@ -102,16 +105,15 @@ const Stats = () => {
     }
   };
   const handleSearch = (value = "") => {
-    if (value !== "") {
-      setPage(0);
-    }
     value = value.trim().toLowerCase();
     let arr = cloneDeep(allFilteredData);
+    console.log(allFilteredData)
     arr = arr.filter(
       (item) =>
-        item?.name?.toLowerCase().includes(value) ||
-        item?.email?.toLowerCase().includes(value)
+        item?.OrgName?.toLowerCase().includes(value) ||
+        item?.OrgEmail?.toLowerCase().includes(value)
     );
+    console.log(arr)
     setSearch(arr);
     setSearchValue(value);
     return arr;
@@ -184,9 +186,9 @@ const Stats = () => {
                   <TableCell>Phone</TableCell>
                   <TableCell>Address</TableCell>
                   <TableCell>Color</TableCell>
-                  <TableCell>Manager</TableCell>
                   <TableCell>Subscribtion</TableCell>
-                  <TableCell>Payment</TableCell>
+                  <TableCell>Stripe Account</TableCell>
+                  <TableCell>Stripe Secret</TableCell>
                   <TableCell>Actions</TableCell>
                 </TableRow>
               </TableHead>
@@ -198,7 +200,9 @@ const Stats = () => {
                     )
                   : search
                 ).map((user) => (
+               
                   <>
+  
                     <TableRow
                       hover
                       key={user._id}
@@ -206,22 +210,21 @@ const Stats = () => {
                     >
                       <TableCell>
                         <Box sx={{ display: "flex", alignItems: "center" }}>
-                          <Avatar src={user.logo} sx={{ mr: 5 }} />
+                          <Avatar src={user.OrgLogo} sx={{ mr: 5 }} />
                         </Box>
                       </TableCell>
-                      <TableCell>{user.name}</TableCell>
-                      <TableCell>{user.email}</TableCell>
-                      <TableCell>{user.Phone}</TableCell>
-                      <TableCell>{user.Address}</TableCell>
+                      <TableCell>{user.OrgName}</TableCell>
+                      <TableCell>{user.OrgEmail}</TableCell>
+                      <TableCell>{user.OrgPhone}</TableCell>
+                      <TableCell>{user.OrgAddress}</TableCell>
                       <TableCell
                         style={{
                           color: user.color,
                           backgroundColor: user.color,
                         }}
                       >
-                        {user.color}
+                        {user.OrgColor}
                       </TableCell>
-                      <TableCell>{user.manager_name}</TableCell>
                       <TableCell>
                         {new Date().getDate(user.StartDate) +
                           "/" +
@@ -236,7 +239,8 @@ const Stats = () => {
                           new Date().getFullYear(user.EndDate)}
                       </TableCell>
 
-                      <TableCell>{user.Payment}</TableCell>
+                      <TableCell>{user.StripeKey}</TableCell>
+                      <TableCell>{user.SecretKey}</TableCell>
 
                       <TableCell>
                         <ButtonGroup size="small" variant="outlined">
