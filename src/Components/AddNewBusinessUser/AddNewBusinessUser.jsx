@@ -87,7 +87,7 @@ const AddNewBusinessUser = ({
     ManagerGender: yup.string().required("Required"),
     UserName: yup.string(),
     UserUsername: yup.string(),
-    UserEmail: yup.string().oneOf([yup.ref("OrgEmail")]),
+    UserEmail: yup.string(),
     UserPhone: yup.string(),
     UserOfficeNumber: yup.string(),
     UserPassword: yup.string(),
@@ -266,6 +266,8 @@ const AddNewBusinessUser = ({
         users:firebase.firestore.FieldValue.arrayUnion(userid),
         startDate: startDate,
         EndDate: startDate2,
+        SecretKey:values?.SecretKey,
+        StripeKey:values?.StripeKey
       
       };
       //   delete data.password;
@@ -310,16 +312,20 @@ const AddNewBusinessUser = ({
     try {
       const url = await singleImageUpload(
         `images/Organizations/${editUser.id}`,
-        values.logo
+        values.OrgLogo
       );
-      const dataManager = await ref.doc(values.manager).get();
+ let data={
 
-      let data = {
-        ...values,
-        manager_name: dataManager.data().name,
-        logo: url,
-      };
-
+      OrgLogo:url,
+      OrgColor:values?.OrgColor,
+      OrgName:values?.OrgName,
+      OrgAddress:values?.OrgAddress,
+      OrgEmail:values?.OrgEmail,
+      startDate: startDate,
+      EndDate: startDate2,
+      SecretKey:values?.SecretKey,
+      StripeKey:values?.StripeKey
+ }
       await ref2
         .doc(editUser.id)
         .set(data, { merge: true })
@@ -459,13 +465,19 @@ const AddNewBusinessUser = ({
   const handleReset = () => {
     setActiveStep(0);
   };
+  const step=[
+    "Organization Detail",
+    "Payment & Subscription",
+  ]
   const steps = [
+    
     "Organization Detail",
     "Manager",
     "User (optional)",
     "Payment & Subscription",
     "Category",
   ];
+ 
   return (
     <Dialog maxWidth="md" fullWidth open={open} >
       <DialogTitle>
@@ -496,6 +508,301 @@ const AddNewBusinessUser = ({
         >
           {({ isSubmitting, submitForm, values, setFieldValue, errors }) => (
             <Form>
+              {editUser?
+              <Box sx={{ width: "100%" }}>
+              <Stepper activeStep={activeStep}>
+                {step.map((label, index) => {
+                  // const stepProps={};
+                  // const labelProps = {};
+                  // if (isStepOptional(index)) {
+                  //   labelProps.optional = (
+                  //     <Typography variant="caption">Optional</Typography>
+                  //   );
+                  // }
+                  // if (isStepSkipped(index)) {
+                  //   stepProps.completed = false;
+                  // }
+                  return (
+                    <Step key={label}>
+                      <StepLabel>{label}</StepLabel>
+                    </Step>
+                  );
+                })}
+              </Stepper>
+              {activeStep === steps.length && (
+                <React.Fragment>
+                  <Typography sx={{ mt: 2, mb: 1 }}>
+                    All steps completed - you&apos;re finished
+                  </Typography>
+                  <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
+                    <Box sx={{ flex: "1 1 auto" }} />
+                    <Button onClick={handleReset}>Reset</Button>
+                  </Box>
+                </React.Fragment>
+              )}
+              {activeStep == 0 && (
+                <React.Fragment>
+                  <Grid container sx={{ mt: 2 }} spacing={2}>
+                    <Grid
+                      style={{ flexDirection: "row" }}
+                      item
+                      xs={6}
+                      className="profile-image"
+                    >
+                      <div className="img__wrap" onClick={handleClick}>
+                        <input
+                          accept="image/*"
+                          id="contained-button-file"
+                          name="OrgLogo"
+                          type="file"
+                          ref={hiddenFileInput}
+                          onChange={(e) => {
+                            handleChange(e);
+                            setFieldValue("OrgLogo", e.target.files[0]);
+                          }}
+                          style={{ display: "none" }}
+                        />
+                        <Avatar
+                          style={{
+                            height: "300px",
+                            width: "300px",
+                            cursor: "pointer",
+                          }}
+                          src={
+                            barImages.logo ? barImages.logo : editUser?.logo
+                          }
+                          alt="log"
+                          className="user-image"
+                        />
+                        <div class="img__description_layer">
+                          <p class="img__description">Add logo</p>
+                        </div>
+                      </div>
+                      <ErrorMessage
+                        name="OrgLogo"
+                        render={(msg) => (
+                          <div className="input-error">{msg}</div>
+                        )}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      {/* <Field
+                    component={TextField}
+                    label="Color"
+                    name="Color"
+                    fullWidth
+                  /> */}
+                      <SketchPicker
+                        name="OrgColor"
+                        color={blockPickerColor}
+                        onChange={(color) => {
+                          setBlockPickerColor(color.hex);
+                          setFieldValue("OrgColor", color.hex);
+                        }}
+                      />
+                      <div class="img__description_layer">
+                        <p class="img__description">Color</p>
+                      </div>
+                      <ErrorMessage
+                        name="color"
+                        render={(msg) => (
+                          <div className="input-error">{msg}</div>
+                        )}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <Field
+                        component={TextField}
+                        label="Name"
+                        name="OrgName"
+                        fullWidth
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} md={6}>
+                      <LoadScript
+                        googleMapsApiKey="AIzaSyAW5O831v7xI0OVGJufVHJiIcJgeMybNdA"
+                        libraries={libraries}
+                      >
+                        <Autocomplete
+                          onLoad={onAutoCompleteLoad}
+                          onPlaceChanged={onPlaceChanged}
+                        >
+                          <Field
+                            component={TextField}
+                            label="Address"
+                            name="OrgAddress"
+                            fullWidth
+                          />
+                        </Autocomplete>
+                      </LoadScript>
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <Field
+                        component={TextField}
+                        label="Email"
+                        name="OrgEmail"
+                        fullWidth
+                      />
+                    </Grid>
+                    {/* 
+              <Grid item xs={12} md={6}>
+                <FormControl fullWidth>
+                  <Field
+                    component={Select}
+                    type="text"
+                    label="Manager"
+                    name="manager"
+                  >
+                    {managers.map((item) => (
+                      <MenuItem value={item.id}  key={item.id}>
+                        {item.name}
+                      </MenuItem>
+                    ))}
+                  </Field>
+                </FormControl>
+              </Grid> */}
+                    <Grid item xs={12} md={6}>
+                      <Field
+                        component={TextField}
+                        label="Phone"
+                        name="OrgPhone"
+                        type="number"
+                        fullWidth
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <Field
+                        component={TextField}
+                        label="City"
+                        name="OrgCity"
+                        fullWidth
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <Field
+                        component={TextField}
+                        label="Country"
+                        name="OrgCountry"
+                        fullWidth
+                      />
+                    </Grid>
+                    
+                  </Grid>
+                  <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
+                    <Button
+                      color="inherit"
+                      disabled={activeStep === 0}
+                      onClick={handleBack}
+                      sx={{ mr: 1 }}
+                    >
+                      Back
+                    </Button>
+                    <Box sx={{ flex: "1 1 auto" }} />
+                    {/* {isStepOptional(activeStep) && (
+            <Button color="inherit" onClick={handleSkip} sx={{ mr: 1 }}>
+              Skip
+            </Button>
+          )} */}
+           <Button
+                      disabled={isSubmitting}
+                      disableElevation
+                     
+                      onClick={handleClose}
+                    >
+                     Close
+                    </Button>
+                    <Box sx={{ flex: "1 1 auto" }} />
+                    <Button onClick={handleNext}>
+                      {activeStep === step.length - 1 ? "Finish" : "Next"}
+                    </Button>
+                  </Box>
+                </React.Fragment>
+              )}
+             
+              {activeStep == 1 && (
+                <React.Fragment>
+                  <Grid container sx={{ mt: 2 }} spacing={2}>
+                 
+
+                    <Grid item xs={12} md={6}>
+                      <FormControl>
+                        <FormLabel id="demo-row-radio-buttons-group-label">
+                          Subscription Start Date
+                        </FormLabel>
+
+                        <DatePicker
+                          name="StartDate"
+                          selected={startDate}
+                          onChange={(date) => setStartDate(date)}
+                        />
+                      </FormControl>
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <FormControl>
+                        <FormLabel id="demo-row-radio-buttons-group-label">
+                          Subscription End Date
+                        </FormLabel>
+
+                        <DatePicker
+                          name="EndDate"
+                          selected={startDate2}
+                          onChange={(date) => setStartDate2(date)}
+                        />
+                      </FormControl>
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <Field
+                        component={TextField}
+                        label="Stripe Key"
+                        name="StripeKey"
+                        fullWidth
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <Field
+                        component={TextField}
+                        label="Secret Key"
+                        name="SecretKey"
+                        fullWidth
+                      />
+                    </Grid>
+                    
+
+                    
+                  </Grid>
+                  <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
+                    <Button
+                      color="inherit"
+                      disabled={activeStep === 0}
+                      onClick={handleBack}
+                      sx={{ mr: 1 }}
+                    >
+                      Back
+                    </Button>
+                    <Box sx={{ flex: "1 1 auto" }} />
+                   
+           <Button
+                      disabled={isSubmitting}
+                      disableElevation
+                  
+                      onClick={handleClose}
+                    >
+                     Close
+                    </Button>
+                    <Box sx={{ flex: "1 1 auto" }} />
+                    <Button onClick={handleEditSubmit}  variant="contained">
+                      {activeStep === step.length - 1 ? "Update" : "Next"}
+                    </Button>
+                  </Box>
+                </React.Fragment>
+              )}
+             
+            </Box>
+              
+              
+              
+              :
            
               <Box sx={{ width: "100%" }}>
                 <Stepper activeStep={activeStep}>
@@ -1189,7 +1496,7 @@ const AddNewBusinessUser = ({
                     </Box>
                   </React.Fragment>
                 )}
-              </Box>
+              </Box>}
             </Form>
           )}
         </Formik>

@@ -39,13 +39,34 @@ import {
   ModeComment,
   ConnectingAirportsOutlined,
 } from "@mui/icons-material";
+
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 const AddOrganiztion = lazy(() =>
   import("../../Components/AddNewBusinessUser/AddNewBusinessUser")
 );
 
 const ref = firebase.firestore().collection("Organizations");
 
-const Stats = () => {
+const Stats = ({navigation}) => {
+
+
+const options = [
+  'Managers',
+   'Users',
+   'Categories',
+    'Products'
+];
+const ITEM_HEIGHT = 48;
+const [anchorEl, setAnchorEl] = React.useState(null);
+const open = Boolean(anchorEl);
+const handleClick = (event) => {
+  setAnchorEl(event.currentTarget);
+};
+const handleClose = () => {
+  setAnchorEl(null);
+};
   const { enqueueSnackbar: notify } = useSnackbar();
   const [search, setSearch] = useState([]);
   const [allFilteredData, setAllFilteredData] = useState([]);
@@ -126,6 +147,22 @@ const Stats = () => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
+  const onPressItem=(option,user)=>{
+    alert(option)
+     if(option=="Managers"){
+      navigation.navigate('/admin/managers',{managers:user?.managers})
+     }
+     else if(option=="Users"){
+      navigation.navigate('/admin/users',{users:user?.users})
+     }
+     else if(option=="Categories"){
+      navigation.navigate('/admin/category',{categories:user?.categories})
+     }
+     else if(option=="products"){
+      navigation.navigate('/admin/products',{products:user?.products})
+     }
+
+  }
 
   return (
     <Box className="stats">
@@ -183,13 +220,14 @@ const Stats = () => {
                   <TableCell>Logo</TableCell>
                   <TableCell>Name</TableCell>
                   <TableCell>Email</TableCell>
-                  <TableCell>Phone</TableCell>
+
                   <TableCell>Address</TableCell>
                   <TableCell>Color</TableCell>
                   <TableCell>Subscribtion</TableCell>
                   <TableCell>Stripe Account</TableCell>
                   <TableCell>Stripe Secret</TableCell>
                   <TableCell>Actions</TableCell>
+                  <TableCell>Menu</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -215,12 +253,11 @@ const Stats = () => {
                       </TableCell>
                       <TableCell>{user.OrgName}</TableCell>
                       <TableCell>{user.OrgEmail}</TableCell>
-                      <TableCell>{user.OrgPhone}</TableCell>
                       <TableCell>{user.OrgAddress}</TableCell>
                       <TableCell
                         style={{
-                          color: user.color,
-                          backgroundColor: user.color,
+                          color: user.OrgColor,
+                          backgroundColor: user.OrgColor,
                         }}
                       >
                         {user.OrgColor}
@@ -254,6 +291,7 @@ const Stats = () => {
                           >
                             Edit
                           </Button>
+                          
 
                           <Button
                             onClick={() => handleDelete(user.id, user.name)}
@@ -262,6 +300,39 @@ const Stats = () => {
                             Delete
                           </Button>
                         </ButtonGroup>
+                      </TableCell>
+                      <TableCell>
+                      <IconButton
+                          aria-label="more"
+                          id="long-button"
+                          aria-controls={open ? 'long-menu' : undefined}
+                          aria-expanded={open ? 'true' : undefined}
+                          aria-haspopup="true"
+                          onClick={handleClick}
+                        >
+                          <MoreVertIcon />
+                        </IconButton>
+                        <Menu
+                          id="long-menu"
+                          MenuListProps={{
+                            'aria-labelledby': 'long-button',
+                          }}
+                          anchorEl={anchorEl}
+                          open={open}
+                          onClose={handleClose}
+                          PaperProps={{
+                            style: {
+                              maxHeight: ITEM_HEIGHT * 4.5,
+                              width: '20ch',
+                            },
+                          }}
+                        >
+                          {options.map((option) => (
+                            <MenuItem  key={option} selected={option === 'Pyxis'} onClick={()=>onPressItem(option,user)}>
+                              {option}
+                            </MenuItem>
+                          ))}
+                        </Menu>
                       </TableCell>
                     </TableRow>
                   </>
