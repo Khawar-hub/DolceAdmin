@@ -162,8 +162,8 @@ const navigate = useNavigate();
      else if(option=="Categories"){
       navigate(`/admin/category/${user?.id}`)
      }
-     else if(option=="products"){
-      navigation.navigate(`/admin/products/${user?.id}`)
+     else if(option=="Products"){
+      navigate(`/admin/products/${user?.id}`)
      }
 
   }
