@@ -250,8 +250,9 @@ const AddNewBusinessUser = ({
             }})
         }
        let prom3= await ref4.doc(catid).set({
-            CatLogo:url2,
+            CatImg:url2,
             CatName:values.CatName,
+            id:catid
           },{merge:true})
       
       let data = {
@@ -1237,7 +1238,7 @@ const AddNewBusinessUser = ({
                         <Field
                           component={TextField}
                           label="Name"
-                          name="Username"
+                          name="UserName"
                           fullWidth
                         />
                       </Grid>
@@ -1245,7 +1246,7 @@ const AddNewBusinessUser = ({
                         <Field
                           component={TextField}
                           label="Username"
-                          name="Userusername"
+                          name="UserUsername"
                           fullWidth
                         />
                       </Grid>

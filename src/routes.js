@@ -51,12 +51,14 @@ export const routes = [
     name: "Categories",
     icon: () => <Category />,
     component: <Categories />,
+    sidebar:false
   },
   {
     path: "/admin/products/:id",
     name: "Products",
     icon: () => <DataObject />,
     component: <Products />,
+    sidebar:false
   },
   {
     path: "/admin/country",

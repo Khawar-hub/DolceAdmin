@@ -116,7 +116,7 @@ const App = () => {
               paddingY={3}
               className="text-dark fw-bold"
             >
-              {projectName} @ DEVELO IT
+              {projectName} 
             </Box>
           </Box>
         </>

@@ -160,7 +160,7 @@ const AddCategory = ({
         .doc(editUser.id)
         .set(data, { merge: true })
         .then(() => {
-          notify(`${editUser.name} updated.`);
+          notify(`${editUser.CatName} updated.`);
           getUsers();
         });
     } catch (error) {
@@ -205,7 +205,7 @@ const AddCategory = ({
   return (
     <Dialog maxWidth="md" fullWidth open={open} onClose={handleClose}>
       <DialogTitle>
-        {edit ? `Edit ${editUser.name}` : "Add Category"}
+        {edit ? `Edit ${editUser.CatName}` : "Add Category"}
       </DialogTitle>
       <DialogContent>
         <Formik

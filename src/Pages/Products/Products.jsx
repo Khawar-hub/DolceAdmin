@@ -42,6 +42,7 @@ import { useParams } from 'react-router-dom';
 );
 const ref2 = firebase.firestore().collection("Organizations");
 const ref = firebase.firestore().collection("Products");
+const ref3 = firebase.firestore().collection("Categories");
   const Stats = () => {
     const { enqueueSnackbar: notify } = useSnackbar();
       const [search, setSearch] = useState([]);
@@ -76,11 +77,12 @@ const ref = firebase.firestore().collection("Products");
         const element=allDocs.data()
         
          
-           for(let x=0;x<element?.products?.length;x++){
+           for(let x=0;x<element?.Products?.length;x++){
       
-                  const id=element?.products[x]
+                  const id=element?.Products[x]
                   console.log(id)
                 const data=await ref.doc(id).get()
+                console.log(data.data())
                 if(data?.data()){
                   arr.push(data?.data())
                 }
@@ -97,7 +99,7 @@ const ref = firebase.firestore().collection("Products");
         console.log(error.message);
       }
     }
-    const handleDelete = async (id, name = "") => {
+    const handleDelete = async (id, name = "",id2) => {
      
       try {
        
@@ -108,6 +110,12 @@ const ref = firebase.firestore().collection("Products");
               notify(`${name} deleted.`);
               getUsers();
             });
+            await ref2.doc(params?.id).set({
+              Products:firebase.firestore.FieldValue.arrayRemove(id)
+           },{merge:true})
+           await ref3.doc(id2).set({
+            Products:firebase.firestore.FieldValue.arrayRemove(id)
+         },{merge:true})
           
       } catch (error) {
         notify(error.message, { variant: "error" });
@@ -222,14 +230,14 @@ const ref = firebase.firestore().collection("Products");
                      
                      <TableCell>
                         <Box sx={{ display: "flex", alignItems: "center" }}> 
-                        <Avatar src={user.logo} sx={{ mr: 5 }} />
+                        <Avatar src={user.ProdLogo} sx={{ mr: 5 }} />
                         
                          </Box>
                       </TableCell>
-                      <TableCell>{user.name}</TableCell>
-                      <TableCell>{user.price}</TableCell>
-                      <TableCell>{user.description}</TableCell>
-                      <TableCell>{user.catname}</TableCell>
+                      <TableCell>{user.ProdName}</TableCell>
+                      <TableCell>{user.ProdPrice}</TableCell>
+                      <TableCell>{user.ProdDescription}</TableCell>
+                      <TableCell>{user.ProdCategory}</TableCell>
                      
                      
                       <TableCell>
@@ -248,7 +256,7 @@ const ref = firebase.firestore().collection("Products");
                             </Button>
                            
                             <Button
-                             onClick={()=>handleDelete(user.id,user.name)}
+                             onClick={()=>handleDelete(user.id,user.name,user?.ProdCategoryId)}
                               color="error"
                             >
                               Delete

@@ -65,11 +65,11 @@ const AddProducts = ({
   };
 
   const editInitialState = {
-    ProdName: editUser?.name,
-   ProdLogo:editUser?.logo,
-   ProdPrice:editUser?.price,
-   ProdDescription:editUser?.description,
-   ProdCategory:"",
+    ProdName: editUser?.ProdName,
+   ProdLogo:editUser?.ProdLogo,
+   ProdPrice:editUser?.ProdPrice,
+   ProdDescription:editUser?.ProdDescription,
+   ProdCategory:editUser?.ProdCategory,
     
   };
   useEffect(() => {
@@ -107,20 +107,22 @@ const AddProducts = ({
 
   const handleSubmit = async (values, setSubmitting) => {
     try {
+      console.log('1',values?.ProdCategory)
       const dataManager= await ref2.doc(values.ProdCategory).get()
-
+      console.log('2',dataManager.data())
       const _id=firebase.firestore().collection('Random').doc().id;
       const url =await singleImageUpload(`images/Products/${_id}`,barImages.file)
             let data={
               ...values,
               id:_id,
               ProdLogo: url,
-              ProdCategory:dataManager?.data().name
+              ProdCategory:dataManager?.data()?.CatName,
+              ProdCategoryId:values?.ProdCategory
              
             }
           
            
-     
+            console.log('3',data)
         
             await ref
               .doc(_id)
@@ -130,18 +132,19 @@ const AddProducts = ({
                 setSubmitting(false);
                
               });
+              console.log('4')
               await ref3
               .doc(id)
               .set({
                 Products: firebase.firestore.FieldValue.arrayUnion(_id),
-              })
+              },{merge:true})
               await ref2
               .doc(values.ProdCategory)
-              .update({
+              .set({
                 Products: firebase.firestore.FieldValue.arrayUnion(_id),
-              })
+              },{merge:true})
               
-          
+          getUsers()
           
           
     
@@ -168,28 +171,19 @@ const AddProducts = ({
 
   const handleEditSubmit = async (values, setSubmitting) => {
     try {
-      const url =await singleImageUpload(`images/Products/${editUser.id}`,values.logo)
+      const url =await singleImageUpload(`images/Products/${editUser.id}`,values.ProdLogo)
       let data = {
        ...values,
-       logo:url
+       ProdLogo:url
      };
       await ref
         .doc(editUser.id)
         .set(data, { merge: true })
         .then(() => {
-          notify(`${editUser.name} updated.`);
+          notify(`${editUser.ProdName} updated.`);
           getUsers();
         });
-        let temp=[]
-              temp.push(values?.category)
-              await ref2
-              .doc(editUser.id)
-              .set({products:temp}, { merge: true })
-              .then(() => {
-                
-                setSubmitting(false);
-               
-              });
+       
     } catch (error) {
       console.log(error.message);
     } finally {
@@ -231,7 +225,7 @@ const AddProducts = ({
   return (
     <Dialog maxWidth="md" fullWidth open={open} onClose={handleClose}>
       <DialogTitle>
-        {edit ? `Edit ${editUser.name}` : "Add Product"}
+        {edit ? `Edit ${editUser.ProdName}` : "Add Product"}
       </DialogTitle>
       <DialogContent>
         <Formik

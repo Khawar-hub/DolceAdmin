@@ -1,6 +1,6 @@
 import { EMPTY_KEY, SET_KEY } from "../ActionTypes";
 
-const initialState = "/admin/statistics";
+const initialState = "/admin/home";
 
 export const Key = (state = initialState, action) => {
   switch (action.type) {
