@@ -211,6 +211,7 @@ const AddNewBusinessUser = ({
             ManagerPassword: values?.ManagerPassword,
             ManagerGender: values?.ManagerGender,
             isBlocked:false,
+                 OrgId:_id,
             role:"manager"
           }
         
@@ -237,6 +238,7 @@ const AddNewBusinessUser = ({
                 UserOfficeNumber: values?.UserOfficeNumber,
                 UserPassword: values?.UserPassword,
                 UserWallet: values?.UserWallet,
+                OrgId:_id,
                 role:"user"
               }
             
@@ -323,6 +325,7 @@ const AddNewBusinessUser = ({
       OrgName:values?.OrgName,
       OrgAddress:values?.OrgAddress,
       OrgEmail:values?.OrgEmail,
+      OrgPhone:values?.OrgPhone,
       startDate: startDate,
       EndDate: startDate2,
       SecretKey:values?.SecretKey,
