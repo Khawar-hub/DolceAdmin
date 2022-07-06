@@ -269,6 +269,7 @@ const AddNewBusinessUser = ({
         managers:firebase.firestore.FieldValue.arrayUnion(managerid),
         users:firebase.firestore.FieldValue.arrayUnion(userid),
         startDate: startDate,
+        OrgPhone:values?.OrgPhone,
         EndDate: startDate2,
         SecretKey:values?.SecretKey,
         StripeKey:values?.StripeKey
