@@ -169,10 +169,12 @@ const ref = firebase.firestore().collection("New Orders");
                 
                   <TableCell>OrderId</TableCell>
                   <TableCell>Customer Name</TableCell>
+                  <TableCell>Organization Name</TableCell>
                   <TableCell>Customer Email</TableCell>
                   <TableCell>Total Amount</TableCell>
                   <TableCell>Billing Method</TableCell>
                   <TableCell>Products</TableCell>
+                  <TableCell>Status</TableCell>
                   <TableCell>Actions</TableCell>
                 </TableRow>
               </TableHead>
@@ -191,13 +193,22 @@ const ref = firebase.firestore().collection("New Orders");
                     
                       <TableCell>{user.oid}</TableCell>
                       <TableCell>{user.CustomerName}</TableCell>
+                      <TableCell>{user.Organization}</TableCell>
                       <TableCell>{user.CustomerEmailBy}</TableCell>
                       <TableCell>{user.ammount}</TableCell>
                       <TableCell>{user.billingMethod}</TableCell>
                       <TableCell>{user.products?.map((item)=>{
-                         return item.name
+                         return item.ProdName
                       })}</TableCell>
-                     
+                      <TableCell> <ButtonGroup size="small" variant="outlined">
+                           
+                           <Button
+                            onClick={()=>handleDelete(user.oid,user.CustomerName)}
+                             color="primary"
+                           >
+                            {user.status}
+                           </Button>
+                         </ButtonGroup></TableCell>
                      
                       <TableCell>
                         

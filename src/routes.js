@@ -65,6 +65,7 @@ export const routes = [
     name: "Countries",
     icon: () => <Place />,
     component: <Country />,
+    sidebar:false
   },
 
   {

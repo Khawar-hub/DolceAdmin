@@ -21,7 +21,7 @@ export const authSignIn = (email, password, dispatch, navigate, notify) => {
             notify("Logged in.");
           }else if(doc.exists&& doc.data().role=='manager'){
             console.log("CALLED")
-            dispatch(userLogin({ email: user.email, uid: user.uid,role:doc.data().role }))
+            dispatch(userLogin(doc.data()))
             navigate("/admin/home");
             notify("Logged in.");
           }

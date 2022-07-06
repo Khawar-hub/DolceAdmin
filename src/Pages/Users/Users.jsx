@@ -36,6 +36,7 @@ import {
 
   import { KeyboardArrowRight, KeyboardArrowDown } from "@mui/icons-material";
 import { useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
   const AddUser = lazy(() =>
   import("../../Components/AddUser/AddUser")
 );
@@ -52,12 +53,18 @@ const ref = firebase.firestore().collection("Users");
     const [edit, setEdit] = useState(false);
     const[managers,setManagers]=useState([])
     const [searchValue, setSearchValue] = useState("");
+    const user = useSelector((state) => state.user.user);
     useEffect(() => {
       let arr = handleSearch(searchValue);
       setSearch(arr);
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [allFilteredData]);
     useEffect(()=>{
+      if(user?.role=='manager'){
+       getUser()
+      }else{
+
+      }
        getUsers()
     
     },[])
@@ -67,6 +74,35 @@ const ref = firebase.firestore().collection("Users");
       setEdit(false);
       setEditUser(null);
     };
+    const getUser=async()=>{
+      try {
+        const allDocs = await ref2.doc(user?.OrgId).get();
+
+        let arr = [];
+        const element=allDocs.data()
+        
+         
+           for(let x=0;x<element?.users?.length;x++){
+      
+                  const id=element?.users[x]
+                  console.log(id)
+                const data=await ref.doc(id).get()
+                if(data?.data()){
+                  arr.push(data?.data())
+                }
+           }
+            
+            
+
+        
+        console.log(arr)
+        setManagers(arr)
+        setAllFilteredData(arr)
+       
+      } catch (error) {
+        console.log(error.message);
+      }
+    }
     const getUsers=async()=>{
       try {
         const allDocs = await ref2.doc(params?.id).get();
