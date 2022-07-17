@@ -485,7 +485,7 @@ const AddNewBusinessUser = ({
   ];
  
   return (
-    <Dialog maxWidth="md" fullWidth open={open} >
+    <Dialog maxWidth="xl" fullWidth open={open} >
       <DialogTitle>
         {edit ? `Edit ${editUser.name}` : "Add new Organization"}
       </DialogTitle>

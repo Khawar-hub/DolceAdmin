@@ -15,21 +15,22 @@ import Country from './Pages/Country/Country'
 export const routes = [
   {
     path: "/admin/home",
-    name: "Home",
+    name: "Overview",
     icon: () => <Home />,
     component: <Homes />,
   },
-  {
-    path: "/admin/neworders",
-    name: "New Orders",
-    icon: () => <NotificationAdd/>,
-    component: <NewOrders />,
-  },
+  
   {
     path: "/admin/organization",
     name: "Add Organization",
     icon: () => <Add />,
     component: <Organization />,
+  },
+  {
+    path: "/admin/neworders",
+    name: "Orders",
+    icon: () => <NotificationAdd/>,
+    component: <NewOrders />,
   },
   {
     path: "/admin/managers/:id",
@@ -68,12 +69,6 @@ export const routes = [
     sidebar:false
   },
 
-  {
-    path: "/admin/settings",
-    name: "Settings",
-    icon: () => <Settings />,
-    component: <Setting />,
-  },
 ];
 export const route = [
   {
