@@ -165,6 +165,9 @@ const navigate = useNavigate();
      else if(option=="Products"){
       navigate(`/admin/products/${user?.id}`)
      }
+     else if(option=="Orders"){
+      navigate(`/admin/neworders/${user?.id}`)
+     }
 
   }
 
@@ -174,7 +177,7 @@ const navigate = useNavigate();
         <Grid item xs={12}>
           <Divider textAlign="left">
             <Typography variant="h5" color="primary">
-              Add New Organization
+              Edit/View Organization
             </Typography>
           </Divider>
         </Grid>
@@ -196,44 +199,21 @@ const navigate = useNavigate();
               type="text"
               onChange={(e) => handleSearch(e.target.value)}
             />
-            <Box sx={{ mt: { xs: 2, sm: 0 } }}>
-              {/* <Button
-             
-              startIcon={
-               <KeyboardArrowRight />
-              }
-            >
-              Filters
-            </Button> */}
-              <Button
-                onClick={() => setAddUserDialog(true)}
-                variant="contained"
-                color="primary"
-              >
-                Add Organization
-              </Button>
-            </Box>
+            
           </Box>
         </Grid>
 
         <Grid item xs={12}>
           <TableContainer component={Paper}>
             <Table>
-              <TableHead>
+              {/* <TableHead>
                 <TableRow>
                   <TableCell>Logo</TableCell>
                   <TableCell>Name</TableCell>
-                  <TableCell>Email</TableCell>
-
-                  <TableCell>Address</TableCell>
-                  <TableCell>Color</TableCell>
-                  <TableCell>Subscribtion</TableCell>
-                  <TableCell>Stripe Account</TableCell>
-                  <TableCell>Stripe Secret</TableCell>
                   <TableCell>Actions</TableCell>
-                  <TableCell>Menu</TableCell>
+                  
                 </TableRow>
-              </TableHead>
+              </TableHead> */}
               <TableBody>
                 {(rowsPerPage > 0
                   ? search.slice(
@@ -256,37 +236,12 @@ const navigate = useNavigate();
                         </Box>
                       </TableCell>
                       <TableCell>{user.OrgName}</TableCell>
-                      <TableCell>{user.OrgEmail}</TableCell>
-                      <TableCell>{user.OrgAddress}</TableCell>
-                      <TableCell
-                        style={{
-                          color: user.OrgColor,
-                          backgroundColor: user.OrgColor,
-                        }}
-                      >
-                        {user.OrgColor}
-                      </TableCell>
-                      <TableCell>
-                        {new Date().getDate(user.StartDate) +
-                          "/" +
-                          new Date().getMonth(user.StartDate) +
-                          "/" +
-                          new Date().getFullYear(user.StartDate) +
-                          "-" +
-                          new Date().getDate(user.EndDate) +
-                          "/" +
-                          new Date().getMonth(user.EndDate) +
-                          "/" +
-                          new Date().getFullYear(user.EndDate)}
-                      </TableCell>
-
-                      <TableCell>{user.StripeKey}</TableCell>
-                      <TableCell>{user.SecretKey}</TableCell>
-
                       <TableCell>
                         <ButtonGroup size="small" variant="outlined">
                           <Button
-                            color="info"
+                           variant="contained"
+                           color="primary"
+                           sx={{fontSize:'9px',whiteSpacing:'nowrap'}}
                             onClick={() => {
                               setEditUser(user);
                               setEdit(true);
@@ -299,45 +254,69 @@ const navigate = useNavigate();
 
                           <Button
                             onClick={() => handleDelete(user.id, user.name)}
-                            color="error"
+                            variant="contained"
+                            color="primary"
+                             sx={{fontSize:'9px',whiteSpacing:'nowrap'}}
                           >
                             Delete
                           </Button>
                         </ButtonGroup>
                       </TableCell>
                       <TableCell>
-                      <IconButton
-                          aria-label="more"
-                          id="long-button"
-                          aria-controls={open ? 'long-menu' : undefined}
-                          aria-expanded={open ? 'true' : undefined}
-                          aria-haspopup="true"
-                          onClick={handleClick}
-                        >
-                          <MoreVertIcon />
-                        </IconButton>
-                        <Menu
-                          id="long-menu"
-                          MenuListProps={{
-                            'aria-labelledby': 'long-button',
-                          }}
-                          anchorEl={anchorEl}
-                          open={open}
-                          onClose={handleClose}
-                          PaperProps={{
-                            style: {
-                              maxHeight: ITEM_HEIGHT * 4.5,
-                              width: '20ch',
-                            },
-                          }}
-                        >
-                          {options.map((option) => (
-                            <MenuItem  key={option} selected={option === 'Pyxis'} onClick={()=>onPressItem(option,user)}>
-                              {option}
-                            </MenuItem>
-                          ))}
-                        </Menu>
+                      <Button
+                            variant="contained"
+                            color="primary"
+                            sx={{fontSize:'9px',whiteSpacing:'nowrap'}}
+                            onClick={() => {
+                              onPressItem('Categories',user)
+                            }}
+                          >
+                            
+                            Add/Edit Category
+                          </Button>
                       </TableCell>
+                      <TableCell>
+                      <Button
+                            variant="contained"
+                            color="primary"
+                            sx={{fontSize:'9px',whiteSpacing:'nowrap'}}
+                            onClick={() => {
+                              onPressItem('Products',user)
+                            }}
+                          >
+                            Add/Edit Products
+                          </Button>
+                      </TableCell>
+                      <TableCell>
+                      <Button
+                             variant="contained"
+                             color="primary"
+                              sx={{fontSize:'9px',whiteSpacing:'nowrap'}}
+                            onClick={() => {
+                              onPressItem('Users',user)
+                            }}
+                          >
+                            Add/Edit Users
+                          </Button>
+                      </TableCell>
+                      <TableCell>
+                      <Button
+                             variant="contained"
+                             color="primary"
+                             sx={{fontSize:'9px',whiteSpacing:'nowrap'}}
+                            onClick={() => {
+                              onPressItem('Orders',user)
+                            }}
+                          >
+                            New Orders
+                          </Button>
+                      </TableCell>
+                     
+                    
+
+
+                     
+                      
                     </TableRow>
                   </>
                 ))}

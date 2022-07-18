@@ -1,9 +1,10 @@
-import { BarChart, Dashboard,Home,Add,Settings,ManageAccounts,Category,DataObject,NotificationAdd,Place
+import { BarChart, Dashboard,Home,Add,Settings,ManageAccounts,Category,DataObject,NotificationAdd,Place,Edit
  } from "@mui/icons-material";
 import Stats from "./Pages/Stats/Stats";
 import Users from "./Pages/Users/Users";
 import Homes from './Pages/Home/Home'
 import Organization from './Pages/Orgranization/Organization'
+import OrganizationEdit from './Pages/OrgranizationEdit/OrganizationEdit'
 import Setting from './Pages/Settings/Settings'
 import Managers from './Pages/Managers/Managers'
 import Categories from './Pages/Categories/Categories'
@@ -22,12 +23,19 @@ export const routes = [
   
   {
     path: "/admin/organization",
-    name: "Add Organization",
-    icon: () => <Add />,
+    name: "Edit/View Organization",
+    icon: () => <Edit />,
     component: <Organization />,
   },
+   
   {
-    path: "/admin/neworders",
+    path: "/admin/organizationedit",
+    name: "Add Organization",
+    icon: () => <Add />,
+    component: <OrganizationEdit />,
+  },
+  {
+    path: "/admin/neworders/:id",
     name: "Orders",
     icon: () => <NotificationAdd/>,
     component: <NewOrders />,
