@@ -129,6 +129,7 @@ const AddUser = ({
             .set(data, { merge: true })
             .then(() => {
               notify("User added");
+              getUsers()
               setSubmitting(false);
              
             });
@@ -263,7 +264,7 @@ const AddUser = ({
                     fullWidth
                   />
                 </Grid>
-               {edit?
+             
                 <Grid item xs={12} md={6}>
                   <Field
                     component={TextField}
@@ -271,7 +272,7 @@ const AddUser = ({
                     name="UserWallet"
                     fullWidth
                   />
-                </Grid>:null}
+                </Grid>
                 
                
                 {/* {!edit && (

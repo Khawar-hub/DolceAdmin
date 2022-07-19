@@ -129,6 +129,7 @@ const AddProducts = ({
               .set(data, { merge: true })
               .then(() => {
                 notify("Product added");
+                getUsers()
                 setSubmitting(false);
                
               });

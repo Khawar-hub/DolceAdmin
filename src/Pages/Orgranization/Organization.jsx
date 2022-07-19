@@ -243,9 +243,8 @@ const navigate = useNavigate();
                            color="primary"
                            sx={{fontSize:'9px',whiteSpacing:'nowrap'}}
                             onClick={() => {
-                              setEditUser(user);
-                              setEdit(true);
-                              setAddUserDialog(true);
+                              console.log(user?.id)
+                              navigate(`/admin/organizationedit/${user?.id}`)
                             }}
                           >
                             Edit

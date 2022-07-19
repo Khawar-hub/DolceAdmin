@@ -115,6 +115,7 @@ const AddCategory = ({
               .set(data, { merge: true })
               .then(() => {
                 notify("Category added");
+                getUsers();
                 setSubmitting(false);
                
               });

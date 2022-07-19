@@ -29,7 +29,7 @@ export const routes = [
   },
    
   {
-    path: "/admin/organizationedit",
+    path: "/admin/organizationedit/:id",
     name: "Add Organization",
     icon: () => <Add />,
     component: <OrganizationEdit />,
