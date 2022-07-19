@@ -57,9 +57,14 @@ const ref = firebase.firestore().collection("New Orders");
     }, [allFilteredData]);
     useEffect(()=>{
        getUsers()
+       getNewOrders()
     
     },[managers])
-  
+   const getNewOrders=async()=>{
+     await ref.onSnapshot(()=>{
+      alert("New Order has been placed")
+    })
+   }
     const getUsers=async()=>{
       try {
         const allDocs = await ref.get();
