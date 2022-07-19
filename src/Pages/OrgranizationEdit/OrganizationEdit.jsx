@@ -34,27 +34,29 @@ import {
 	Checkbox,
 } from '@mui/material';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
-import { TextField, Select, } from 'formik-mui';
+import { TextField, Select } from 'formik-mui';
 import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
 import { ADD_AUTH_USER } from '../../Shared/baseURL';
 import './styles.scss';
 import { singleImageUpload } from '../../Firebase/utils';
+import { useParams } from 'react-router-dom';
 
 const ref = firebase.firestore().collection('Managers');
 const ref2 = firebase.firestore().collection('Organizations');
 const ref3 = firebase.firestore().collection('Users');
 const ref4 = firebase.firestore().collection('Categories');
 
-const Stats = ({id }) => {
+const Stats = () => {
 	const { enqueueSnackbar: notify } = useSnackbar();
+	const params = useParams();
 	const [address, setAddress] = useState(null);
 	const [libraries] = useState(['places']);
 	const [startDate, setStartDate] = useState(new Date());
 	const [startDate2, setStartDate2] = useState(new Date());
 	const [preference, setPreference] = useState([]);
 	const [position, setPosition] = useState(null);
-   const [editUser,setEditUser]=useState({})
+	const [editUser, setEditUser] = useState(null);
 	const [blockPickerColor, setBlockPickerColor] = useState('#543f2d');
 	const [barImages, setBarImages] = React.useState({
 		logo: '',
@@ -63,11 +65,10 @@ const Stats = ({id }) => {
 		logo: '',
 	});
 	const autocompleteRef = React.useRef();
- useEffect(()=>{
-      alert(id)
-        if(id)
-         getOrganizationData()
- },[])
+	useEffect(() => {
+	
+		if (params?.id) getOrganizationData();
+	}, []);
 
 	const hiddenFileInput = React.useRef(null);
 	// validation schema
@@ -103,6 +104,33 @@ const Stats = ({id }) => {
 		// CatImg: yup.mixed().required("Required"),
 		// CatName: yup.string().required("Required"),
 	});
+  const EditSchema = yup.object().shape({
+		OrgName: yup.string().required('Required'),
+		OrgPhone: yup.string(),
+
+		OrgLogo: yup.mixed().required('Required'),
+		OrgAddress: yup.string(),
+		OrgCity: yup.string().required('Required'),
+		OrgCountry: yup.string().required('Required'),
+		OrgColor: yup.string(),
+		
+
+		// UserName: yup.string(),
+		// UserUsername: yup.string(),
+		// UserEmail: yup.string(),
+		// UserPhone: yup.string(),
+		// UserOfficeNumber: yup.string(),
+		// UserPassword: yup.string(),
+		// UserWallet: yup.string(),
+		StartDate: yup.string().required("Required"),
+		EndDate: yup.string().required("Required"),
+		StripeKey: yup.string().required('Required'),
+		SecretKey: yup.string().required('Required'),
+		OrderCollection: yup.string().required('Required'),
+		// CatImg: yup.mixed().required("Required"),
+		// CatName: yup.string().required("Required"),
+	});
+
 
 	// initial states
 	const initialState = {
@@ -136,36 +164,35 @@ const Stats = ({id }) => {
 		SecretKey: '',
 	};
 
-	const editInitialState = {
-	  OrgName: editUser?.OrgName,
-	  OrgAddress: editUser?.OrgAddress,
-	  OrgColor: editUser?.OrgColor,
-	  OrgLogo: editUser?.OrgLogo,
-	  OrgEmail: editUser?.OrgEmail,
-	  OrgCity: editUser?.OrgCity,
-	  OrgCountry: editUser?.OrgCountry,
-	  OrgPhone: editUser?.OrgPhone,
-	  ManagerName: editUser?.ManagerName,
-	  ManagerUsername: editUser?.ManagerUsername,
-	  ManagerEmail: editUser?.ManagerEmail,
-	  ManagerPhone: editUser?.ManagerPhone,
-	  ManagerAge: editUser?.ManagerAge,
-	
-	  ManagerGender: editUser?.ManagerGender,
-	 
-	  StartDate: editUser?.StartDate,
-	  EndDate: editUser?.EndDate,
-	  StripeKey: editUser?.StripeKey,
-	  SecretKey: editUser?.SecretKey,
-	 
+	const getOrganizationData = async () => {
+		const data = await ref2.doc(params?.id).get();
+		if (data.exists) {
+			setEditUser(data.data());
+			console.log(data.data(), 'data.data()');
+		}
 	};
-const  getOrganizationData=async()=>{
-  const data=await ref2.doc(id).get()
-  if(data.exists){
-     setEditUser(data.data())
-  }
+	const editInitialState = {
+		OrgName: editUser?.OrgName,
+		OrgAddress: editUser?.OrgAddress,
+		OrgColor: editUser?.OrgColor,
+		OrgLogo: editUser?.OrgLogo,
+		OrgEmail: editUser?.OrgEmail,
+		OrgCity: editUser?.OrgCity,
+		OrgCountry: editUser?.OrgCountry,
+		OrgPhone: editUser?.OrgPhone,
+		ManagerName: editUser?.ManagerName,
+		ManagerUsername: editUser?.ManagerUsername,
+		ManagerEmail: editUser?.ManagerEmail,
+		ManagerPhone: editUser?.ManagerPhone,
+		ManagerAge: editUser?.ManagerAge,
 
-}
+		ManagerGender: editUser?.ManagerGender,
+
+		StartDate: editUser?.StartDate,
+		EndDate: editUser?.EndDate,
+		StripeKey: editUser?.StripeKey,
+		SecretKey: editUser?.SecretKey,
+	};
 	const handleSubmit = async (values, setSubmitting) => {
 		console.log(values);
 		let managerid;
@@ -222,7 +249,6 @@ const  getOrganizationData=async()=>{
 				EndDate: startDate2,
 				SecretKey: values?.SecretKey,
 				StripeKey: values?.StripeKey,
-        
 			};
 			//   delete data.password;
 
@@ -296,7 +322,7 @@ const  getOrganizationData=async()=>{
 	const onPlaceChanged = (obj) => {
 		if (autocompleteRef !== null) {
 			console.log(autocompleteRef.current.getPlace().formatted_address);
-      setAddress(autocompleteRef.current.getPlace().formatted_address)
+			setAddress(autocompleteRef.current.getPlace().formatted_address);
 			setPosition(
 				obj ?? {
 					lat: autocompleteRef.current.getPlace().geometry.location.lat(),
@@ -318,50 +344,42 @@ const  getOrganizationData=async()=>{
 			console.log('Autocomplete is not loaded yet!');
 		}
 	};
-  const handleEditSubmit = async (values, setSubmitting) => {
-    try {
-      const url = await singleImageUpload(
-        `images/Organizations/${editUser.id}`,
-        values.OrgLogo
-      );
- let data={
+	const handleEditSubmit = async (values, setSubmitting) => {
+    console.log('called',values)
+		try {
+			const url = await singleImageUpload(
+				`images/Organizations/${editUser.id}`,
+				values.OrgLogo
+			);
+			let data = {
+				OrgName:values?.OrgName,
+				OrgAddress:values?.OrgAddress,
+				OrgColor:values?.OrgColor,
+				OrgLogo: url,
+			
+				OrgCity:values?.OrgCity,
+				OrgCountry:values?.OrgCountry,
+				OrgPhone:values?.OrgCity,
+				
 
-  OrgName: editUser?.OrgName,
-  OrgAddress: editUser?.OrgAddress,
-  OrgColor: editUser?.OrgColor,
-  OrgLogo: url,
-  OrgEmail: editUser?.OrgEmail,
-  OrgCity: editUser?.OrgCity,
-  OrgCountry: editUser?.OrgCountry,
-  OrgPhone: editUser?.OrgPhone,
-  ManagerName: editUser?.ManagerName,
-  ManagerUsername: editUser?.ManagerUsername,
-  ManagerEmail: editUser?.ManagerEmail,
-  ManagerPhone: editUser?.ManagerPhone,
-  ManagerAge: editUser?.ManagerAge,
- 
-  ManagerGender: editUser?.ManagerGender,
- 
-  StartDate: editUser?.StartDate,
-  EndDate: editUser?.EndDate,
-  StripeKey: editUser?.StripeKey,
-  SecretKey: editUser?.SecretKey,
-
- }
-      await ref2
-        .doc(editUser.id)
-        .set(data, { merge: true })
-        .then(() => {
-          notify(`${editUser.name} updated.`);
-          
-        });
-    } catch (error) {
-      console.log(error.message);
-    } finally {
-      setSubmitting(false);
-      restoreInitialState();
-    }
-  };
+				StartDate:values?.StartDate,
+				EndDate:values?.EndDate,
+				StripeKey:values?.StripeKey,
+				SecretKey:values?.SecretKey,
+			};
+			await ref2
+				.doc(editUser.id)
+				.set(data, { merge: true })
+				.then(() => {
+					notify(`organization updated.`);
+				});
+		} catch (error) {
+			console.log(error.message);
+		} finally {
+			setSubmitting(false);
+			restoreInitialState();
+		}
+	};
 	return (
 		<Box className="stats">
 			<Grid container alignItems="stretch" columnSpacing={2} rowSpacing={2}>
@@ -375,31 +393,54 @@ const  getOrganizationData=async()=>{
 
 				<Grid item xs={12}>
 					<Formik
-						initialValues={editUser?editInitialState: initialState}
-						onSubmit={(values, { setSubmitting ,resetForm}) => {
-							console.log(values);
+						initialValues={
+							editUser
+								? {
+										OrgName: editUser?.OrgName,
+										OrgAddress: editUser?.OrgAddress,
+										OrgColor: editUser?.OrgColor,
+										OrgLogo: editUser?.OrgLogo,
+								
+										OrgCity: editUser?.OrgCity,
+										OrgCountry: editUser?.OrgCountry,
+										OrgPhone: editUser?.OrgPhone,
+										
 
-              if (editUser) {
-                handleEditSubmit(values, setSubmitting);
-  
-                setTimeout(() => {
-                  setSubmitting(false);
-                }, 3000);
-              } else {
-                handleSubmit(values, setSubmitting);
-  
-                setTimeout(() => {
-                  setSubmitting(false);
-                  resetForm({values:''})
-                }, 3000);
-              }
+										StartDate: editUser?.startDate,
+										EndDate: editUser?.EndDate,
+										StripeKey: editUser?.StripeKey,
+										SecretKey: editUser?.SecretKey,
+								  }
+								: initialState
+						}
+            enableReinitialize
+						onSubmit={(values, { setSubmitting, resetForm }) => {
+					      console.log(values)
+
+							if (editUser!=null) {
+								handleEditSubmit(values, setSubmitting);
+
+								setTimeout(() => {
+									setSubmitting(false);
+								}, 3000);
+							} else {
+								handleSubmit(values, setSubmitting);
+
+								setTimeout(() => {
+									setSubmitting(false);
+									resetForm({ values: '' });
+								}, 3000);
+							}
 						}}
-						validationSchema={AddSchema}
+						validationSchema={editUser?null:AddSchema}
 					>
 						{({ isSubmitting, submitForm, values, setFieldValue, errors }) => (
+              	
 							<Form>
+                {	console.log(errors)}
 								<Box sx={{ width: '100%' }}>
 									<React.Fragment>
+										{console.log(values, 'console.log(values);')}
 										<Grid container sx={{ mt: 2 }} spacing={2}>
 											<Grid
 												style={{ flexDirection: 'row' }}
@@ -471,6 +512,7 @@ const  getOrganizationData=async()=>{
 													component={TextField}
 													label="Name"
 													name="OrgName"
+													value={values.OrgName}
 													fullWidth
 												/>
 											</Grid>
@@ -489,12 +531,12 @@ const  getOrganizationData=async()=>{
 															label="Address"
 															name="OrgAddress"
 															fullWidth
-                              value={address}
-                            
+															value={address}
 														/>
 													</Autocomplete>
 												</LoadScript>
 											</Grid>
+                      {editUser ? null : (
 											<Grid item xs={12} md={6}>
 												<Field
 													component={TextField}
@@ -502,7 +544,7 @@ const  getOrganizationData=async()=>{
 													name="OrgEmail"
 													fullWidth
 												/>
-											</Grid>
+											</Grid>)}
 											{/* 
                 <Grid item xs={12} md={6}>
                   <FormControl fullWidth>
@@ -547,7 +589,7 @@ const  getOrganizationData=async()=>{
 											</Grid>
 										</Grid>
 									</React.Fragment>
-
+                  {editUser ? null : (
 									<React.Fragment>
 										<Grid mt={3} item xs={12}>
 											<Divider textAlign="left">
@@ -573,6 +615,7 @@ const  getOrganizationData=async()=>{
 													fullWidth
 												/>
 											</Grid>
+                      {editUser ? null : (
 											<Grid item xs={12} md={6}>
 												<Field
 													component={TextField}
@@ -580,16 +623,17 @@ const  getOrganizationData=async()=>{
 													name="ManagerEmail"
 													fullWidth
 												/>
-											</Grid>
-                 {editUser?null:
-											<Grid item xs={12} md={6}>
-												<Field
-													component={TextField}
-													label="Password"
-													name="ManagerPassword"
-													fullWidth
-												/>
-											</Grid>}
+											</Grid>)}
+											{editUser ? null : (
+												<Grid item xs={12} md={6}>
+													<Field
+														component={TextField}
+														label="Password"
+														name="ManagerPassword"
+														fullWidth
+													/>
+												</Grid>
+											)}
 
 											<Grid item xs={12} md={6}>
 												<Field
@@ -643,7 +687,7 @@ const  getOrganizationData=async()=>{
 											</Grid>
 										</Grid>
 									</React.Fragment>
-
+                  )}
 									{/* <React.Fragment>
                   <Grid item xs={12}>
           <Divider textAlign="left">
@@ -720,7 +764,7 @@ const  getOrganizationData=async()=>{
                   </React.Fragment> */}
 
 									<React.Fragment>
-										<Grid  mt={3} item xs={12}>
+										<Grid mt={3} item xs={12}>
 											<Divider textAlign="left">
 												<Typography variant="h5" color="primary">
 													Payment and Subscription
@@ -757,7 +801,7 @@ const  getOrganizationData=async()=>{
 											<Grid item xs={12} md={6}>
 												<Field
 													component={TextField}
-                          type="password"
+													type="password"
 													label="Stripe Key"
 													name="StripeKey"
 													fullWidth
@@ -767,13 +811,13 @@ const  getOrganizationData=async()=>{
 												<Field
 													component={TextField}
 													label="Secret Key"
-                          type="password"
+													type="password"
 													name="SecretKey"
 													fullWidth
 												/>
 											</Grid>
 										</Grid>
-										<Grid  mt={3} item xs={12}>
+										<Grid mt={3} item xs={12}>
 											<Divider textAlign="left">
 												<Typography variant="h5" color="primary">
 													Orders Payment Collected By
