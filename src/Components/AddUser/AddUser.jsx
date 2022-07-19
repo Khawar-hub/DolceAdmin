@@ -117,6 +117,7 @@ const AddUser = ({
             ...values,
             id:res?.user?.uid,
             // orgname:dataManager.data().name,
+            OrgId:id,
             isBlocked:false,
             role:"user"
           }
