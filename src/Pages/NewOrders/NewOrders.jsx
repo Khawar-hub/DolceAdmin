@@ -63,11 +63,15 @@ const ref = firebase.firestore().collection("New Orders");
         getUser()
       }
        getUsers()
-
+      const sub= getNewOrders()
        
-    
-    },[managers])
-  
+       return sub;
+    },[])
+    const getNewOrders=async()=>{
+      await ref.onSnapshot(()=>{
+       alert("New Order has been placed")
+     })
+    } 
     const getUser=async()=>{
       try {
         const allDocs = await ref.where('OrganizationId','==',params?.id).get();
