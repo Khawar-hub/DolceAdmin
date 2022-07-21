@@ -22,7 +22,7 @@ import { firebase } from "../../Firebase/config";
   import "./styles.scss";
   const ref = firebase.firestore().collection("Organizations");
   const ref2 = firebase.firestore().collection("New Orders");
-  let tzOffset = (new Date()).getTimezoneOffset()
+
   const Stats = () => {
     const[managers,setManagers]=useState([])
     const[orders,setOrders]=useState(0)
@@ -85,8 +85,8 @@ import { firebase } from "../../Firebase/config";
                 <TableRow>
                 
                   <TableCell>Organization</TableCell>
-                
-                  <TableCell>Status</TableCell>
+                  <TableCell>Subscription End Date:</TableCell>
+                  {/* <TableCell>Status</TableCell> */}
                  
                 </TableRow>
               </TableHead>
@@ -103,12 +103,12 @@ import { firebase } from "../../Firebase/config";
                      
                     
                       <TableCell>{user.OrgName}</TableCell>
-                    
-                      <TableCell>
+                      <TableCell>{new Intl.DateTimeFormat('en-PK', {year: 'numeric', month: '2-digit',day: '2-digit'}).format(user.EndDate.seconds*1000)}</TableCell>
+                      {/* <TableCell>
                         <Button color="error">
-                        {dayjs(user.EndDate).isAfter(new Date())?"Expired":"Live"}
+                        {dayjs(new Intl.DateTimeFormat('en-PK', {year: 'numeric', month: '2-digit',day: '2-digit'}).format(user.EndDate.seconds*1000)).isBefore(dayjs().format('DD/MM/YYYY'))?"Expired":"Live"}
                         </Button>
-                      </TableCell>
+                      </TableCell> */}
 
                      
                      
