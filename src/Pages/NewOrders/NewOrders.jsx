@@ -36,6 +36,7 @@ import {
   import dayjs from "dayjs";
 
   import { KeyboardArrowRight, KeyboardArrowDown } from "@mui/icons-material";
+import { useParams } from 'react-router-dom';
  
 
 const ref = firebase.firestore().collection("New Orders");
@@ -50,21 +51,36 @@ const ref = firebase.firestore().collection("New Orders");
     const [edit, setEdit] = useState(false);
     const[managers,setManagers]=useState([])
     const [searchValue, setSearchValue] = useState("");
+    const params=useParams()
+    const [check,setcheck]=useState("")
     useEffect(() => {
       let arr = handleSearch(searchValue);
       setSearch(arr);
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [allFilteredData]);
     useEffect(()=>{
+      if(params?.id){
+        getUser()
+      }
        getUsers()
-       getNewOrders()
+
+       
     
     },[managers])
-   const getNewOrders=async()=>{
-     await ref.onSnapshot(()=>{
-      alert("New Order has been placed")
-    })
-   }
+  
+    const getUser=async()=>{
+      try {
+        const allDocs = await ref.where('OrganizationId','==',params?.id).get();
+        let arr = [];
+        allDocs.forEach((doc) => arr.push({ ...doc.data(), _id: doc.id }));
+        setManagers(arr)
+
+        setAllFilteredData(arr)
+       
+      } catch (error) {
+        console.log(error.message);
+      }
+    }
     const getUsers=async()=>{
       try {
         const allDocs = await ref.get();
@@ -77,6 +93,21 @@ const ref = firebase.firestore().collection("New Orders");
       } catch (error) {
         console.log(error.message);
       }
+    }
+    const updateStatus=async(statuss,id)=>{
+      
+      try {
+        const allDocs = await ref.doc(id).set({
+          status:statuss=="paid"?"unpaid":"paid"
+        },{merge:true});
+      getUsers()
+
+       
+       
+      } catch (error) {
+        console.log(error.message);
+      }
+          
     }
     const handleDelete = async (id, name = "") => {
      
@@ -202,13 +233,11 @@ const ref = firebase.firestore().collection("New Orders");
                       <TableCell>{user.CustomerEmailBy}</TableCell>
                       <TableCell>{user.ammount}</TableCell>
                       <TableCell>{user.billingMethod}</TableCell>
-                      <TableCell>{user.products?.map((item)=>{
-                         return item.ProdName
-                      })}</TableCell>
+                      <TableCell>{user.products?.length}</TableCell>
                       <TableCell> <ButtonGroup size="small" variant="outlined">
                            
                            <Button
-                            onClick={()=>handleDelete(user.oid,user.CustomerName)}
+                            onClick={()=>updateStatus(user.status,user.oid)}
                              color="primary"
                            >
                             {user.status}

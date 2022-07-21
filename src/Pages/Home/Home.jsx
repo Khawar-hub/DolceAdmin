@@ -1,3 +1,4 @@
+import { getDateRangePickerDayUtilityClass } from "@mui/lab";
 import {
     Divider,
     Typography,
@@ -6,11 +7,49 @@ import {
     Paper,
     Grid,
     Box,
+    TableContainer,
+    TableHead,
+    Button,
+    TableRow,
+    TableCell,
+    TableBody,
+    TextField,
+    Table
   } from "@mui/material";
   import dayjs from "dayjs";
+import { useEffect,useState } from "react";
+import { firebase } from "../../Firebase/config";
   import "./styles.scss";
-  
+  const ref = firebase.firestore().collection("Organizations");
+  const ref2 = firebase.firestore().collection("New Orders");
+  let tzOffset = (new Date()).getTimezoneOffset()
   const Stats = () => {
+    const[managers,setManagers]=useState([])
+    const[orders,setOrders]=useState(0)
+    useEffect(()=>{
+       getData()
+    },[])
+   
+    const getData=async()=>{
+      try {
+        const allDocss = await ref2.get();
+        setOrders(allDocss.size)
+        
+        
+        const allDocs = await ref.get();
+        let arr = [];
+      allDocs.forEach((doc) => arr.push({ ...doc.data(), _id: doc.id }));
+       
+       
+        setManagers(arr)
+        console.log(arr)
+
+    
+       
+      } catch (error) {
+        console.log(error.message);
+      }
+    }
     return (
       <Box className="stats">
         <Grid container alignItems="stretch" columnSpacing={2} rowSpacing={2}>
@@ -26,11 +65,61 @@ import {
               <CardActionArea>
                 <Paper component={Card} elevation={3} className="p-3">
                   <Typography variant="body2" color="primary">
-                    {dayjs().format("MMM DD, YYYY")}
+                    {dayjs().format("DD/MM/YYYY")}
                   </Typography>
+                
+                </Paper>
+                <Paper component={Card} elevation={3} className="p-3">
+                  <Typography variant="body2" color="primary">
+                    {"Total Orders:"+orders}
+                  </Typography>
+                
                 </Paper>
               </CardActionArea>
             </Box>
+            </Grid>
+            <Grid xs={8} item >
+            <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                
+                  <TableCell>Organization</TableCell>
+                
+                  <TableCell>Status</TableCell>
+                 
+                </TableRow>
+              </TableHead>
+              <TableBody>
+              {
+                  managers
+                 .map((user) => (
+                  <>
+                    <TableRow
+                      hover
+                      key={user.oid}
+                      sx={{ "& > *": { borderBottom: "unset" } }}
+                    >
+                     
+                    
+                      <TableCell>{user.OrgName}</TableCell>
+                    
+                      <TableCell>
+                        <Button color="error">
+                        {dayjs(user.EndDate).isAfter(new Date())?"Expired":"Live"}
+                        </Button>
+                      </TableCell>
+
+                     
+                     
+                    </TableRow>
+                  
+                  </>
+                ))}
+              </TableBody>
+             
+            </Table>
+          </TableContainer>
           </Grid>
         </Grid>
       </Box>
