@@ -52,7 +52,7 @@ const ref = firebase.firestore().collection("New Orders");
     const[managers,setManagers]=useState([])
     const [searchValue, setSearchValue] = useState("");
     const params=useParams()
-    const [check,setcheck]=useState(false)
+    const [check,setcheck]=useState(true)
     useEffect(() => {
   
       let arr = handleSearch(searchValue);
@@ -61,23 +61,27 @@ const ref = firebase.firestore().collection("New Orders");
     }, [allFilteredData]);
     
     useEffect(()=>{
-       
-        getUser()
      
+       getUsers()
+      
     
     },[])
-    // useEffect(()=>{
-    //   const sub= getNewOrders()
-       
-    //   return sub;
-    // },[])
-    // const getNewOrders=async()=>{
+    useEffect(()=>{
+      if(!check){
+      const sub= getNewOrders()
 
-    //   await ref.onSnapshot(()=>{
-    //     notify("New Order has been placed", { variant: "success" });
-    //  })
-   
-    // } 
+       
+      return sub;
+      }
+      
+    },[])
+    const getNewOrders=async()=>{
+
+      await ref.onSnapshot((data)=>{
+        notify("New Order has been placed", { variant: "success" });
+     })
+     setcheck(false)
+    } 
     const getUser=async()=>{
     
       try {

@@ -1,5 +1,6 @@
 export const LOGIN = "LOGIN";
 export const LOGOUT = "LOGOUT";
+export const ORDERS="ORDERS"
 
 // sidebar key
 export const SET_KEY = "SET_KEY";

@@ -10,6 +10,7 @@ import Managers from './Pages/Managers/Managers'
 import Categories from './Pages/Categories/Categories'
 import Products from './Pages/Products/Products'
 import NewOrders from './Pages/NewOrders/NewOrders'
+import NewOrders2 from './Pages/NewOrders2/NewOrders2'
 import Country from './Pages/Country/Country'
 
 
@@ -33,6 +34,13 @@ export const routes = [
     name: "Add Organization",
     icon: () => <Add />,
     component: <OrganizationEdit />,
+  },
+  {
+    path: "/admin/neworders/:id",
+    name: "Orders",
+    icon: () => <NotificationAdd/>,
+    component: <NewOrders2 />,
+    sidebar:false
   },
   {
     path: "/admin/neworders/:id",
