@@ -34,13 +34,14 @@ import {
   import { firebase } from "../../Firebase/config";
   import { useSnackbar } from "notistack";
   import dayjs from "dayjs";
-
+  import { useDispatch, useSelector } from "react-redux";
   import { KeyboardArrowRight, KeyboardArrowDown } from "@mui/icons-material";
 import { useParams } from 'react-router-dom';
- 
+ import {orders} from '../../Redux/Actions/orders'
 
 const ref = firebase.firestore().collection("New Orders");
   const Stats = () => {
+    const orders=useSelector(state=>state.orders.orders)
     const { enqueueSnackbar: notify } = useSnackbar();
       const [search, setSearch] = useState([]);
     const [allFilteredData, setAllFilteredData] = useState([]);
@@ -52,6 +53,8 @@ const ref = firebase.firestore().collection("New Orders");
     const[managers,setManagers]=useState([])
     const [searchValue, setSearchValue] = useState("");
     const params=useParams()
+    const dispatch = useDispatch();
+
     const [check,setcheck]=useState(true)
     useEffect(() => {
   
@@ -76,11 +79,19 @@ const ref = firebase.firestore().collection("New Orders");
       
     },[])
     const getNewOrders=async()=>{
-      if(!check){
-     ref.onSnapshot((data)=>{
+      
+      if(check){
+    }
+     else{
+    console.log('run')
+      ref.onSnapshot((data)=>{
+        console.log(data.size,orders?.length)
+        if(data.size>orders?.length){
         notify("New Order has been placed", { variant: "success" });
-
-     })}
+        }
+     })
+     }
+     dispatch(orders(managers))
      setcheck(false)
 
     } 
