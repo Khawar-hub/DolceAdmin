@@ -41,7 +41,7 @@ import { useParams } from 'react-router-dom';
 
 const ref = firebase.firestore().collection("New Orders");
   const Stats = () => {
-    const orders=useSelector(state=>state.orders.orders)
+    const orderss=useSelector(state=>state.orders.orders)
     const { enqueueSnackbar: notify } = useSnackbar();
       const [search, setSearch] = useState([]);
     const [allFilteredData, setAllFilteredData] = useState([]);
@@ -80,13 +80,11 @@ const ref = firebase.firestore().collection("New Orders");
     },[])
     const getNewOrders=async()=>{
       
-      if(check){
-    }
-     else{
+      if(!check){
     console.log('run')
       ref.onSnapshot((data)=>{
         console.log(data.size,orders?.length)
-        if(data.size>orders?.length){
+        if(data.size>orderss?.length){
         notify("New Order has been placed", { variant: "success" });
         }
      })
