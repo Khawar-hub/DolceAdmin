@@ -67,20 +67,22 @@ const ref = firebase.firestore().collection("New Orders");
     
     },[])
     useEffect(()=>{
-      if(!check){
+      
       const sub= getNewOrders()
 
-       
-      return sub;
-      }
+      
+      return ()=>sub;
+      
       
     },[])
     const getNewOrders=async()=>{
-
-      await ref.onSnapshot((data)=>{
+      if(!check){
+     ref.onSnapshot((data)=>{
         notify("New Order has been placed", { variant: "success" });
-     })
+
+     })}
      setcheck(false)
+
     } 
     const getUser=async()=>{
     
