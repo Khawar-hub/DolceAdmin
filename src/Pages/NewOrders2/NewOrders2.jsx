@@ -71,7 +71,7 @@ const ref = firebase.firestore().collection("New Orders");
       const sub= getNewOrders()
 
       
-      return ()=>sub;
+      return sub
       
       
     },[])
