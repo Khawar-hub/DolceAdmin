@@ -85,9 +85,9 @@ const Stats = () => {
 		ManagerUsername: yup.string().required('Required'),
 		ManagerEmail: yup.string().required('Required'),
 		ManagerPhone: yup.string().required('Required'),
-		ManagerAge: yup.string().required('Required'),
+		// ManagerAge: yup.string().required('Required'),
 		ManagerPassword: yup.string().required('Required'),
-		ManagerGender: yup.string().required('Required'),
+		// ManagerGender: yup.string().required('Required'),
 
 		// UserName: yup.string(),
 		// UserUsername: yup.string(),
@@ -146,9 +146,9 @@ const Stats = () => {
 		ManagerUsername: '',
 		ManagerEmail: '',
 		ManagerPhone: '',
-		ManagerAge: '',
+		// ManagerAge: '',
 		ManagerPassword: '',
-		ManagerGender: '',
+		// ManagerGender: '',
 		OrderCollection: '',
 
 		// UserName: "",
@@ -184,9 +184,9 @@ const Stats = () => {
 		ManagerUsername: editUser?.ManagerUsername,
 		ManagerEmail: editUser?.ManagerEmail,
 		ManagerPhone: editUser?.ManagerPhone,
-		ManagerAge: editUser?.ManagerAge,
+		// ManagerAge: editUser?.ManagerAge,
 
-		ManagerGender: editUser?.ManagerGender,
+		// ManagerGender: editUser?.ManagerGender,
 
 		StartDate: editUser?.StartDate,
 		EndDate: editUser?.EndDate,
@@ -221,9 +221,9 @@ const Stats = () => {
 							ManagerUsername: values?.ManagerUsername,
 							ManagerEmail: values?.ManagerEmail,
 							ManagerPhone: values?.ManagerPhone,
-							ManagerAge: values?.ManagerAge,
+							// ManagerAge: values?.ManagerAge,
 							ManagerPassword: values?.ManagerPassword,
-							ManagerGender: values?.ManagerGender,
+							// ManagerGender: values?.ManagerGender,
 							isBlocked: false,
 							OrgId: _id,
 							role: 'manager',
@@ -634,7 +634,7 @@ const Stats = () => {
 													/>
 												</Grid>
 											)}
-
+{/* 
 											<Grid item xs={12} md={6}>
 												<Field
 													component={TextField}
@@ -643,7 +643,7 @@ const Stats = () => {
 													type="text"
 													fullWidth
 												/>
-											</Grid>
+											</Grid> */}
 											<Grid item xs={12} md={6}>
 												<Field
 													component={TextField}
@@ -653,7 +653,7 @@ const Stats = () => {
 												/>
 											</Grid>
 
-											<Grid item xs={12} md={6}>
+											{/* <Grid item xs={12} md={6}>
 												<FormControl>
 													<FormLabel id="demo-row-radio-buttons-group-label">
 														Gender
@@ -684,7 +684,7 @@ const Stats = () => {
 														/>
 													</RadioGroup>
 												</FormControl>
-											</Grid>
+											</Grid> */}
 										</Grid>
 									</React.Fragment>
                   )}
