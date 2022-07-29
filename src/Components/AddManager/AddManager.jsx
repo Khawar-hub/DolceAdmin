@@ -46,8 +46,8 @@ const AddNewBusinessUser = ({
     ManagerPhone: yup.string(),
     ManagerEmail: yup.string().email().required("Required"),
     ManagerUsername: yup.string().required("Required"),
-    ManagerAge: yup.number().min(1).positive().integer().required("Required"),
-    ManagerGender: yup.string().required("Required"),
+    // ManagerAge: yup.number().min(1).positive().integer().required("Required"),
+    // ManagerGender: yup.string().required("Required"),
     ManagerPassword: edit
       ? yup.string()
       : yup
@@ -82,8 +82,8 @@ const AddNewBusinessUser = ({
     ManagerName: "",
     ManagerEmail: "",
     ManagerUsername: "",
-    ManagerAge: "",
-    ManagerGender: "Male",
+    // ManagerAge: "",
+    // ManagerGender: "Male",
     ManagerPhone: "",
     ManagerPassword: "",
   
@@ -93,8 +93,8 @@ const AddNewBusinessUser = ({
     ManagerName: editUser?.ManagerName,
     ManagerEmail: editUser?.ManagerEmail,
     ManagerUsername: editUser?.ManagerUsername,
-    ManagerAge: editUser?.ManagerAge,
-    ManagerGender: editUser?.ManagerGender,
+    // ManagerAge: editUser?.ManagerAge,
+    // ManagerGender: editUser?.ManagerGender,
     ManagerPassword: editUser?.ManagerPassword ?? "",
   };
 
@@ -258,15 +258,15 @@ const AddNewBusinessUser = ({
                     />
                   </Grid>
                 )}
-                <Grid item xs={12} md={6}>
+                {/* <Grid item xs={12} md={6}>
                   <Field
                     component={TextField}
                     label="Age"
                     name="ManagerAge"
                     type="text"
                     fullWidth
-                  />
-                </Grid>
+                  /> */}
+                
                 <Grid item xs={12} md={6}>
                   <Field
                     component={TextField}
@@ -322,7 +322,7 @@ const AddNewBusinessUser = ({
                     </FormControl>
                   </Grid>
                 )} */}
-                <Grid item xs={12} md={6}>
+                {/* <Grid item xs={12} md={6}>
                   <FormControl>
                     <FormLabel id="demo-row-radio-buttons-group-label">
                       Gender
@@ -351,7 +351,7 @@ const AddNewBusinessUser = ({
                       />
                     </RadioGroup>
                   </FormControl>
-                </Grid>
+                </Grid> */}
               
                 <Grid item xs={12}>
                   {isSubmitting && <LinearProgress />}
